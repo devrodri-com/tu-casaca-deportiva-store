@@ -44,3 +44,36 @@ export async function listCatalogProductsWithVariants(): Promise<
     };
   });
 }
+
+export async function getCatalogProductBySlug(
+  slug: string
+): Promise<CatalogProductRecord | null> {
+  const supabase = createServerSupabaseClient();
+
+  const productResult = await supabase
+    .from("products")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (productResult.error) {
+    throw new Error(`Failed to load product: ${productResult.error.message}`);
+  }
+  if (!productResult.data) {
+    return null;
+  }
+
+  const variantsResult = await supabase
+    .from("product_variants")
+    .select("*")
+    .eq("product_id", productResult.data.id);
+  if (variantsResult.error) {
+    throw new Error(
+      `Failed to load product variants: ${variantsResult.error.message}`
+    );
+  }
+
+  return {
+    product: mapProductRow(productResult.data),
+    variants: variantsResult.data.map((variantRow) => mapVariantRow(variantRow)),
+  };
+}

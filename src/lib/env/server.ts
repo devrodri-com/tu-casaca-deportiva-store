@@ -14,8 +14,18 @@ function getRequiredEnv(name: keyof ServerEnv): string {
   return value;
 }
 
-export const serverEnv: ServerEnv = {
-  NEXT_PUBLIC_SUPABASE_URL: getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: getRequiredEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
-  SUPABASE_SERVICE_ROLE_KEY: getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY"),
-};
+let cachedServerEnv: ServerEnv | null = null;
+
+export function getServerEnv(): ServerEnv {
+  if (cachedServerEnv) {
+    return cachedServerEnv;
+  }
+
+  cachedServerEnv = {
+    NEXT_PUBLIC_SUPABASE_URL: getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: getRequiredEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    SUPABASE_SERVICE_ROLE_KEY: getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY"),
+  };
+
+  return cachedServerEnv;
+}
