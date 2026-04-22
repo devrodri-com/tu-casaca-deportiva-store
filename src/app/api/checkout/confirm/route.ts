@@ -108,8 +108,10 @@ export async function POST(request: Request) {
   }
 
   const orderId = crypto.randomUUID();
+  const publicReference = crypto.randomUUID().replaceAll("-", "").slice(0, 16);
   const order = buildOrderFromCart({
     id: orderId,
+    publicReference,
     customer: {
       fullName: customer.fullName.trim(),
       phone: customer.phone.trim(),
@@ -120,5 +122,5 @@ export async function POST(request: Request) {
 
   await insertOrder(order);
 
-  return NextResponse.json({ ok: true, orderId });
+  return NextResponse.json({ ok: true, orderId, publicReference });
 }

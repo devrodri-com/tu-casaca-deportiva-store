@@ -7,6 +7,7 @@ type OrderItemInsert = Database["public"]["Tables"]["order_items"]["Insert"];
 export function toOrderRow(order: Order): OrderInsert {
   return {
     id: order.id,
+    public_reference: order.publicReference,
     total: order.total.toString(),
     customer_full_name: order.customer.fullName,
     customer_phone: order.customer.phone,
