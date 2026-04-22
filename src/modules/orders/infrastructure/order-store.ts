@@ -101,6 +101,37 @@ export async function getOrderWithItemsByPublicReference(
   };
 }
 
+export async function listOrdersWithItems(): Promise<
+  { order: OrderRow; items: OrderItemRow[] }[]
+> {
+  const supabase = createServiceRoleSupabaseClient();
+
+  const ordersResult = await supabase
+    .from("orders")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (ordersResult.error) {
+    throw new Error(`Failed to load orders: ${ordersResult.error.message}`);
+  }
+
+  const itemsResult = await supabase.from("order_items").select("*");
+  if (itemsResult.error) {
+    throw new Error(`Failed to load order items: ${itemsResult.error.message}`);
+  }
+
+  const itemsByOrderId = new Map<string, OrderItemRow[]>();
+  for (const item of itemsResult.data) {
+    const list = itemsByOrderId.get(item.order_id) ?? [];
+    list.push(item);
+    itemsByOrderId.set(item.order_id, list);
+  }
+
+  return ordersResult.data.map((order) => ({
+    order,
+    items: itemsByOrderId.get(order.id) ?? [],
+  }));
+}
+
 export async function updateOrderMercadoPagoPreferenceId(params: {
   orderId: string;
   preferenceId: string;
@@ -136,5 +167,73 @@ export async function updateOrderPaymentState(params: {
     .eq("id", params.orderId);
   if (result.error) {
     throw new Error(`Failed to update payment state: ${result.error.message}`);
+  }
+}
+
+export async function claimOrderStockDiscount(params: {
+  orderId: string;
+  discountedAt: string;
+}): Promise<boolean> {
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase
+    .from("orders")
+    .update({ stock_discounted_at: params.discountedAt })
+    .is("stock_discounted_at", null)
+    .eq("id", params.orderId)
+    .select("id");
+  if (result.error) {
+    throw new Error(`Failed to mark stock discounted: ${result.error.message}`);
+  }
+  return (result.data?.length ?? 0) === 1;
+}
+
+export async function rollbackOrderStockDiscountClaim(params: {
+  orderId: string;
+}): Promise<void> {
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase
+    .from("orders")
+    .update({ stock_discounted_at: null })
+    .eq("id", params.orderId);
+  if (result.error) {
+    throw new Error(
+      `Failed to rollback stock discounted claim: ${result.error.message}`
+    );
+  }
+}
+
+export async function discountExpressStockForOrderItems(
+  items: OrderItemRow[]
+): Promise<void> {
+  const supabase = createServiceRoleSupabaseClient();
+  const expressItems = items.filter(
+    (item) => item.fulfillment_snapshot === "express"
+  );
+
+  for (const item of expressItems) {
+    const variantResult = await supabase
+      .from("product_variants")
+      .select("id, express_stock")
+      .eq("id", item.variant_id)
+      .maybeSingle();
+    if (variantResult.error) {
+      throw new Error(
+        `Failed to load variant for stock discount: ${variantResult.error.message}`
+      );
+    }
+    if (!variantResult.data) {
+      continue;
+    }
+
+    const nextStock = Math.max(variantResult.data.express_stock - item.quantity, 0);
+    const updateResult = await supabase
+      .from("product_variants")
+      .update({ express_stock: nextStock })
+      .eq("id", item.variant_id);
+    if (updateResult.error) {
+      throw new Error(
+        `Failed to update variant stock: ${updateResult.error.message}`
+      );
+    }
   }
 }

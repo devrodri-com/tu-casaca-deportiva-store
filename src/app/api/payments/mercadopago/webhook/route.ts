@@ -6,7 +6,10 @@ import {
   parseOrderIdFromExternalReference,
 } from "@/modules/payments";
 import {
+  claimOrderStockDiscount,
+  discountExpressStockForOrderItems,
   getOrderWithItemsById,
+  rollbackOrderStockDiscountClaim,
   updateOrderPaymentState,
 } from "@/modules/orders/infrastructure/order-store";
 
@@ -98,6 +101,21 @@ export async function POST(request: Request) {
     mercadoPagoStatus: payment.status,
     paidAt: nextStatus === "paid" ? payment.date_approved ?? null : null,
   });
+
+  if (nextStatus === "paid" && !orderWithItems.order.stock_discounted_at) {
+    const claimed = await claimOrderStockDiscount({
+      orderId,
+      discountedAt: new Date().toISOString(),
+    });
+    if (claimed) {
+      try {
+        await discountExpressStockForOrderItems(orderWithItems.items);
+      } catch (error) {
+        await rollbackOrderStockDiscountClaim({ orderId });
+        throw error;
+      }
+    }
+  }
 
   return NextResponse.json({ ok: true });
 }
