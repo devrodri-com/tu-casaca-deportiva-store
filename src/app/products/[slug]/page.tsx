@@ -33,7 +33,14 @@ export default async function ProductDetailPage({
           <ul className="flex flex-col gap-2">
             {product.variants.map((variant) => (
               <li key={variant.id} className="rounded border p-3 text-sm">
-                size: {variant.size} - availability: {variant.availability}
+                <p>size: {variant.size}</p>
+                <p>availability: {variant.availability}</p>
+                <p>fulfillment: {variant.fulfillment}</p>
+                <p>
+                  promisedDays: {String(variant.promisedDays.minDays)} /{" "}
+                  {String(variant.promisedDays.maxDays)}
+                </p>
+                <p>finalUnitPrice: {variant.finalUnitPrice}</p>
               </li>
             ))}
           </ul>
