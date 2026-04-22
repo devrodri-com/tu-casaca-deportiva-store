@@ -14,16 +14,6 @@ type CheckoutError = {
   message: string;
 };
 
-function getCheckoutDeliveryLabel(line: CartLine): string {
-  if (line.fulfillment === "unavailable") {
-    return "Sin disponibilidad";
-  }
-  if (line.promisedDays.minDays === 0 && line.promisedDays.maxDays === 2) {
-    return "Entrega en 24-48h";
-  }
-  return "Entrega en 14-21 dias";
-}
-
 export function CheckoutClient() {
   const [lines] = useState<CartLine[]>(() => getCartLines());
   const [fullName, setFullName] = useState("");
@@ -41,28 +31,21 @@ export function CheckoutClient() {
 
   return (
     <section className="flex flex-col gap-4">
-      <p className="rounded border bg-foreground/[0.03] p-3 text-sm text-foreground/80">
-        El pago confirma tu pedido. Los productos por encargo y personalizados
-        pueden demorar mas.
-      </p>
       <ul className="flex flex-col gap-2">
         {lines.map((line, index) => (
           <li
             key={`${line.productId}-${line.variantId}-${line.customization?.isCustomized ?? false}-${index}`}
             className="rounded border p-3 text-sm"
           >
-            <p>Producto: {line.title}</p>
-            <p>Talle: {line.size}</p>
-            <p>Cantidad: {line.quantity}</p>
+            <p>title: {line.title}</p>
+            <p>size: {line.size}</p>
+            <p>quantity: {line.quantity}</p>
+            <p>fulfillment: {line.fulfillment}</p>
             <p>
-              Personalizacion:{" "}
-              {line.customization ? "Personalizacion incluida" : "No"}
+              promisedDays: {String(line.promisedDays.minDays)} /{" "}
+              {String(line.promisedDays.maxDays)}
             </p>
-            <p>Modalidad: {line.fulfillment === "express" ? "Entrega rapida" : line.fulfillment === "made_to_order" ? "Por encargo" : "Sin disponibilidad"}</p>
-            <p>
-              Tiempo estimado: {getCheckoutDeliveryLabel(line)}
-            </p>
-            <p>Precio: ${line.finalUnitPrice}</p>
+            <p>finalUnitPrice: {line.finalUnitPrice}</p>
           </li>
         ))}
       </ul>

@@ -13,7 +13,7 @@ type VariantSelectorProps = {
   customizationSurcharge: number | null;
 };
 
-function getDeliveryLabel(params: {
+function getDeliveryMessage(params: {
   minDays: number | null;
   maxDays: number | null;
   isUnavailable: boolean;
@@ -82,32 +82,60 @@ export function VariantSelector({
     showCustomization && selectedVariant?.customizedResolution !== null;
   const canAddToCart =
     selectedVariant?.availability !== "unavailable" && selectedVariant !== null;
+  const selectedDeliveryMessage = getDeliveryMessage({
+    minDays: selectedResolution?.promisedDays.minDays ?? null,
+    maxDays: selectedResolution?.promisedDays.maxDays ?? null,
+    isUnavailable: selectedVariant?.availability === "unavailable",
+    isCustomized: isCustomizedSelection,
+  });
 
   if (variants.length === 0 || !selectedVariant || !selectedResolution) {
     return <p className="text-sm text-foreground/80">Sin variantes.</p>;
   }
 
   return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-lg font-medium">Variantes</h2>
+    <section className="flex flex-col gap-4 rounded border p-4">
+      <div className="flex flex-col gap-1">
+        <p className="text-2xl font-semibold">${selectedResolution.finalUnitPrice}</p>
+        <p className="rounded border bg-foreground/[0.03] px-3 py-2 text-sm font-medium">
+          {selectedDeliveryMessage}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium">Talle seleccionado: {selectedVariant.sizeLabel}</h2>
+        {selectedVariant.availability === "unavailable" ? (
+          <p className="text-sm text-foreground/80">
+            Este talle no esta disponible ahora.
+          </p>
+        ) : null}
+      </div>
+
       <ul className="flex flex-wrap gap-2">
         {variants.map((variant) => (
           <li key={variant.id}>
             <button
               type="button"
               onClick={() => setSelectedVariantId(variant.id)}
-              className="rounded border px-3 py-1 text-sm"
+              className={`rounded border px-3 py-1 text-sm ${
+                variant.id === selectedVariant.id ? "bg-foreground text-background" : ""
+              }`}
             >
               {variant.sizeLabel}
             </button>
           </li>
         ))}
       </ul>
-      {supportsCustomization ? (
-        <div className="flex flex-col gap-2 text-sm">
-          <p>
-            Personalización disponible (surcharge:{" "}
-            {String(customizationSurcharge)})
+
+      {supportsCustomization && customizationSurcharge !== null ? (
+        <div className="flex flex-col gap-2 rounded border p-3 text-sm">
+          <p className="font-medium">
+            {showCustomization
+              ? `Precio con personalizacion: $${selectedResolution.finalUnitPrice}`
+              : "Personalizacion opcional"}
+          </p>
+          <p className="text-foreground/80">
+            Suma nombre y numero por + ${customizationSurcharge}
           </p>
           <div className="flex gap-2">
             <button
@@ -136,25 +164,12 @@ export function VariantSelector({
             </button>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <p className="text-sm text-foreground/80">
+          Este producto no admite personalizacion.
+        </p>
+      )}
 
-      <div className="rounded border p-3 text-sm">
-        <p>Talle: {selectedVariant.sizeLabel}</p>
-        <p>
-          {getDeliveryLabel({
-            minDays: selectedResolution.promisedDays.minDays,
-            maxDays: selectedResolution.promisedDays.maxDays,
-            isUnavailable: selectedVariant.availability === "unavailable",
-            isCustomized: isCustomizedSelection,
-          })}
-        </p>
-        <p>
-          Tiempo estimado: {String(selectedResolution.promisedDays.minDays)} /{" "}
-          {String(selectedResolution.promisedDays.maxDays)}
-        </p>
-        <p>Precio: ${selectedResolution.finalUnitPrice}</p>
-        <p>{selectedVariant.customizationLabel}</p>
-      </div>
       <button
         type="button"
         onClick={() => {
@@ -173,13 +188,18 @@ export function VariantSelector({
           });
           addCartLine(line);
         }}
-        className="w-fit rounded border px-3 py-1 text-sm disabled:opacity-50"
+        className="w-full rounded border px-3 py-2 text-sm font-medium disabled:opacity-50"
         disabled={!canAddToCart}
       >
-        {canAddToCart
-          ? "Agregar esta opcion al carrito"
-          : "Opcion sin disponibilidad"}
+        {canAddToCart ? "Agregar al carrito" : "Opcion sin disponibilidad"}
       </button>
+
+      <div className="flex flex-col gap-1 text-xs text-foreground/80">
+        <p>Podes revisar tu pedido antes de pagar.</p>
+        <p>Pago seguro con Mercado Pago.</p>
+        <p>Tu pedido se confirma al pagar.</p>
+        <p>Recibis exactamente lo que ves.</p>
+      </div>
     </section>
   );
 }
