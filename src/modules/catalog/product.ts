@@ -18,4 +18,6 @@ export type Product = {
   productType: ProductType;
   entity: CatalogEntity;
   era: ProductEra;
+  supportsCustomization: boolean;
+  customizationSurcharge: number | null;
 };
