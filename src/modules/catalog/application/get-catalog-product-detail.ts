@@ -20,6 +20,7 @@ export type CatalogProductDetailVariant = {
 };
 
 export type CatalogProductDetail = {
+  productId: string;
   slug: string;
   title: string;
   entity: {
@@ -91,6 +92,7 @@ export async function getCatalogProductDetail(
   const initialVariantId = firstAvailableVariant?.id ?? variants[0]?.id ?? null;
 
   return {
+    productId: record.product.id,
     slug: record.product.slug,
     title: record.product.title,
     entity: record.product.entity,
