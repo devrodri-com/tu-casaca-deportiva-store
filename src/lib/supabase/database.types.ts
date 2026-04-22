@@ -86,6 +86,11 @@ export type Database = {
           customer_full_name: string;
           customer_phone: string;
           customer_email: string | null;
+          payment_status: "awaiting_payment" | "pending" | "paid" | "failed";
+          mercado_pago_preference_id: string | null;
+          mercado_pago_payment_id: string | null;
+          mercado_pago_status: string | null;
+          paid_at: string | null;
           created_at: string;
         };
         Insert: {
@@ -94,6 +99,11 @@ export type Database = {
           customer_full_name: string;
           customer_phone: string;
           customer_email?: string | null;
+          payment_status?: "awaiting_payment" | "pending" | "paid" | "failed";
+          mercado_pago_preference_id?: string | null;
+          mercado_pago_payment_id?: string | null;
+          mercado_pago_status?: string | null;
+          paid_at?: string | null;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
