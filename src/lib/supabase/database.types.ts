@@ -171,6 +171,60 @@ export type Database = {
           }
         ];
       };
+      order_status_history: {
+        Row: {
+          id: string;
+          order_id: string;
+          previous_status:
+            | "paid"
+            | "preparing"
+            | "ready"
+            | "shipped"
+            | "delivered"
+            | "cancelled"
+            | null;
+          new_status:
+            | "paid"
+            | "preparing"
+            | "ready"
+            | "shipped"
+            | "delivered"
+            | "cancelled";
+          changed_at: string;
+          changed_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          previous_status?:
+            | "paid"
+            | "preparing"
+            | "ready"
+            | "shipped"
+            | "delivered"
+            | "cancelled"
+            | null;
+          new_status:
+            | "paid"
+            | "preparing"
+            | "ready"
+            | "shipped"
+            | "delivered"
+            | "cancelled";
+          changed_at?: string;
+          changed_by?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["order_status_history"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

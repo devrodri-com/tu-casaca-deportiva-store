@@ -34,6 +34,8 @@ export async function insertOrder(order: Order): Promise<void> {
 
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 type OrderItemRow = Database["public"]["Tables"]["order_items"]["Row"];
+type OrderStatusHistoryRow =
+  Database["public"]["Tables"]["order_status_history"]["Row"];
 type OperationalStatus =
   | "paid"
   | "preparing"
@@ -180,7 +182,7 @@ export async function updateOrderPaymentState(params: {
 export async function initializeOrderOperationalStatusAsPaid(params: {
   orderId: string;
   updatedAt: string;
-}): Promise<void> {
+}): Promise<boolean> {
   const supabase = createServiceRoleSupabaseClient();
   const result = await supabase
     .from("orders")
@@ -189,12 +191,14 @@ export async function initializeOrderOperationalStatusAsPaid(params: {
       operational_updated_at: params.updatedAt,
     })
     .is("operational_status", null)
-    .eq("id", params.orderId);
+    .eq("id", params.orderId)
+    .select("id");
   if (result.error) {
     throw new Error(
       `Failed to initialize operational status: ${result.error.message}`
     );
   }
+  return (result.data?.length ?? 0) === 1;
 }
 
 export async function claimOrderStockDiscount(params: {
@@ -283,4 +287,129 @@ export async function updateOrderOperationalStatus(params: {
       `Failed to update operational status: ${result.error.message}`
     );
   }
+}
+
+export async function applyOrderOperationalStatusChangeWithHistory(params: {
+  orderId: string;
+  previousStatus: OperationalStatus | null;
+  previousUpdatedAt: string | null;
+  nextStatus: OperationalStatus;
+  changedAt: string;
+  changedBy: string | null;
+  expectedCurrentStatus?: OperationalStatus | null;
+}): Promise<boolean> {
+  if (params.previousStatus === params.nextStatus) {
+    return false;
+  }
+
+  const supabase = createServiceRoleSupabaseClient();
+  let updateQuery = supabase
+    .from("orders")
+    .update({
+      operational_status: params.nextStatus,
+      operational_updated_at: params.changedAt,
+    })
+    .eq("id", params.orderId);
+
+  if (params.expectedCurrentStatus === null) {
+    updateQuery = updateQuery.is("operational_status", null);
+  } else if (params.expectedCurrentStatus !== undefined) {
+    updateQuery = updateQuery.eq(
+      "operational_status",
+      params.expectedCurrentStatus
+    );
+  }
+
+  const updateResult = await updateQuery.select("id");
+  if (updateResult.error) {
+    throw new Error(
+      `Failed to update operational status: ${updateResult.error.message}`
+    );
+  }
+  if ((updateResult.data?.length ?? 0) !== 1) {
+    return false;
+  }
+
+  try {
+    await appendOrderOperationalStatusHistory({
+      orderId: params.orderId,
+      previousStatus: params.previousStatus,
+      newStatus: params.nextStatus,
+      changedAt: params.changedAt,
+      changedBy: params.changedBy,
+    });
+  } catch (historyError) {
+    const rollbackResult = await supabase
+      .from("orders")
+      .update({
+        operational_status: params.previousStatus,
+        operational_updated_at: params.previousUpdatedAt,
+      })
+      .eq("operational_status", params.nextStatus)
+      .eq("operational_updated_at", params.changedAt)
+      .eq("id", params.orderId);
+
+    if (rollbackResult.error) {
+      throw new Error(
+        `Failed to append order status history and rollback operational status: ${rollbackResult.error.message}`
+      );
+    }
+    throw historyError;
+  }
+
+  return true;
+}
+
+export async function appendOrderOperationalStatusHistory(params: {
+  orderId: string;
+  previousStatus: OperationalStatus | null;
+  newStatus: OperationalStatus;
+  changedAt: string;
+  changedBy: string | null;
+}): Promise<void> {
+  if (params.previousStatus === params.newStatus) {
+    return;
+  }
+
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase.from("order_status_history").insert({
+    order_id: params.orderId,
+    previous_status: params.previousStatus,
+    new_status: params.newStatus,
+    changed_at: params.changedAt,
+    changed_by: params.changedBy,
+  });
+  if (result.error) {
+    throw new Error(
+      `Failed to append order status history: ${result.error.message}`
+    );
+  }
+}
+
+export async function listOrderStatusHistoryByOrderIds(
+  orderIds: string[]
+): Promise<Map<string, OrderStatusHistoryRow[]>> {
+  const byOrderId = new Map<string, OrderStatusHistoryRow[]>();
+  if (orderIds.length === 0) {
+    return byOrderId;
+  }
+
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase
+    .from("order_status_history")
+    .select("*")
+    .in("order_id", orderIds)
+    .order("changed_at", { ascending: false });
+  if (result.error) {
+    throw new Error(
+      `Failed to load order status history: ${result.error.message}`
+    );
+  }
+
+  for (const row of result.data) {
+    const list = byOrderId.get(row.order_id) ?? [];
+    list.push(row);
+    byOrderId.set(row.order_id, list);
+  }
+  return byOrderId;
 }

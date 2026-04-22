@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import {
+  applyOrderOperationalStatusChangeWithHistory,
   getOrderWithItemsById,
-  updateOrderOperationalStatus,
 } from "@/modules/orders/infrastructure/order-store";
 
 type OperationalStatus =
@@ -100,10 +100,14 @@ export async function POST(request: Request) {
     );
   }
 
-  await updateOrderOperationalStatus({
+  await applyOrderOperationalStatusChangeWithHistory({
     orderId,
-    nextOperationalStatus,
-    updatedAt: new Date().toISOString(),
+    previousStatus: order.order.operational_status,
+    previousUpdatedAt: order.order.operational_updated_at,
+    nextStatus: nextOperationalStatus,
+    changedAt: new Date().toISOString(),
+    changedBy: null,
+    expectedCurrentStatus: order.order.operational_status,
   });
 
   if (!contentType.includes("application/json")) {
