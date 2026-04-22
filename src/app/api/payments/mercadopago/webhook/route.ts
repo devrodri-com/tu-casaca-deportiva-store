@@ -6,10 +6,10 @@ import {
   parseOrderIdFromExternalReference,
 } from "@/modules/payments";
 import {
+  applyOrderOperationalStatusChangeWithHistory,
   claimOrderStockDiscount,
   discountExpressStockForOrderItems,
   getOrderWithItemsById,
-  initializeOrderOperationalStatusAsPaid,
   rollbackOrderStockDiscountClaim,
   updateOrderPaymentState,
 } from "@/modules/orders/infrastructure/order-store";
@@ -104,9 +104,14 @@ export async function POST(request: Request) {
   });
 
   if (nextStatus === "paid") {
-    await initializeOrderOperationalStatusAsPaid({
+    await applyOrderOperationalStatusChangeWithHistory({
       orderId,
-      updatedAt: new Date().toISOString(),
+      previousStatus: null,
+      previousUpdatedAt: null,
+      nextStatus: "paid",
+      changedAt: new Date().toISOString(),
+      changedBy: null,
+      expectedCurrentStatus: null,
     });
   }
 

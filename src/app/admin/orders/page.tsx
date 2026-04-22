@@ -1,10 +1,16 @@
 import Link from "next/link";
-import { listOrdersWithItems } from "@/modules/orders/infrastructure/order-store";
+import {
+  listOrderStatusHistoryByOrderIds,
+  listOrdersWithItems,
+} from "@/modules/orders/infrastructure/order-store";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminOrdersPage() {
   const orders = await listOrdersWithItems();
+  const historyByOrderId = await listOrderStatusHistoryByOrderIds(
+    orders.map(({ order }) => order.id)
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-6 py-10">
@@ -61,6 +67,20 @@ export default async function AdminOrdersPage() {
                   </li>
                 ))}
               </ul>
+              <div className="mt-2">
+                <p className="font-medium">Historial operativo:</p>
+                <ul className="flex flex-col gap-1">
+                  {(historyByOrderId.get(order.id) ?? []).map((event) => (
+                    <li key={event.id}>
+                      {event.previous_status ?? "null"} -&gt; {event.new_status} ·{" "}
+                      {event.changed_at}
+                    </li>
+                  ))}
+                  {(historyByOrderId.get(order.id) ?? []).length === 0 ? (
+                    <li>Sin historial</li>
+                  ) : null}
+                </ul>
+              </div>
             </li>
           ))}
         </ul>
