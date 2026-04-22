@@ -45,6 +45,16 @@ function getMainDeliveryMessage(
   return "Sin disponibilidad";
 }
 
+function pdpTalleModeLabel(availability: CatalogProductDetailVariant["availability"]): string {
+  if (availability === "express") {
+    return "Express";
+  }
+  if (availability === "made_to_order") {
+    return "Por encargo";
+  }
+  return "No disponible";
+}
+
 export function VariantSelector({
   productId,
   title,
@@ -132,18 +142,39 @@ export function VariantSelector({
         <ul className="flex flex-wrap gap-2" aria-label="Talles">
           {variants.map((variant) => {
             const isCurrent = variant.id === selectedVariant.id;
+            const isUnavailable = variant.availability === "unavailable";
+            const mode = pdpTalleModeLabel(variant.availability);
+            const common =
+              "inline-flex min-h-[3.25rem] min-w-[3.5rem] flex-col items-center justify-center rounded-md border px-2 py-1.5 text-sm transition-colors";
+            let buttonClass = common;
+            if (isUnavailable) {
+              buttonClass +=
+                " border-dashed border-border bg-surface/60 text-foreground/50";
+              if (isCurrent) {
+                buttonClass +=
+                  " ring-1 ring-foreground/20 bg-foreground/5 font-medium text-foreground/80";
+              }
+            } else if (isCurrent) {
+              buttonClass +=
+                " border-sky-300 bg-sky-50 font-semibold text-sky-900 ring-2 ring-sky-500 ring-offset-2 ring-offset-white";
+            } else {
+              buttonClass += " border border-gray-300 bg-white hover:bg-surface";
+            }
             return (
               <li key={variant.id}>
                 <button
                   type="button"
                   onClick={() => setSelectedVariantId(variant.id)}
-                  className={
-                    isCurrent
-                      ? "inline-flex min-h-[2.5rem] items-center justify-center rounded-md border border-sky-300 bg-sky-50 px-3 py-1.5 text-sm font-semibold text-sky-900 ring-2 ring-sky-500 ring-offset-2 ring-offset-white"
-                      : "tcds-btn-secondary min-h-[2.5rem] px-3 py-1.5"
-                  }
+                  className={buttonClass}
                 >
-                  {variant.sizeLabel}
+                  <span className="leading-tight">{variant.sizeLabel}</span>
+                  <span
+                    className={`mt-0.5 text-[10px] leading-tight ${
+                      isUnavailable ? "text-foreground/45" : "text-muted-foreground"
+                    }`}
+                  >
+                    {mode}
+                  </span>
                 </button>
               </li>
             );
