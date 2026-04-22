@@ -4,8 +4,10 @@ import type { ProductType } from "@/modules/catalog";
 import { resolveAvailability } from "@/modules/catalog";
 import { labelVariantAvailability } from "@/modules/catalog/admin/variant-availability-label";
 import { getCatalogProductWithVariantsById } from "@/modules/catalog/infrastructure/catalog-store";
+import { listProductImagesByProductId } from "@/modules/catalog/infrastructure/product-images-store";
 import { CreateVariantForm } from "../_components/create-variant-form";
 import { EditProductForm } from "../_components/edit-product-form";
+import { ProductImagesPanel } from "../_components/product-images-panel";
 import { VariantMatrixRow } from "../_components/variant-matrix-row";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +29,7 @@ export default async function AdminEditProductPage({ params }: PageProps) {
     notFound();
   }
   const { product, variants } = data;
+  const productImages = await listProductImagesByProductId(productId);
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -41,6 +44,8 @@ export default async function AdminEditProductPage({ params }: PageProps) {
       </div>
 
       <EditProductForm product={product} />
+
+      <ProductImagesPanel productId={product.id} images={productImages} />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold text-foreground">Variantes (precio por talle)</h2>

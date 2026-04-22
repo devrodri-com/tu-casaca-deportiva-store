@@ -1,5 +1,6 @@
-import { listCatalogProductsWithVariants } from "@/modules/catalog/infrastructure/catalog-store";
 import { resolveAvailability } from "@/modules/catalog";
+import { listCatalogProductsWithVariants } from "@/modules/catalog/infrastructure/catalog-store";
+import { getProductImageRowsForProductIds } from "@/modules/catalog/infrastructure/product-images-store";
 
 export type CatalogProductListItem = {
   slug: string;
@@ -9,21 +10,27 @@ export type CatalogProductListItem = {
   audienceLabel: string;
   productTypeLabel: string;
   deliveryBadgeLabel: "Entrega rapida" | "Por encargo" | "Sin stock";
+  primaryImageUrl: string | null;
+  primaryImageAlt: string | null;
 };
 
 export async function getCatalogProductList(): Promise<CatalogProductListItem[]> {
   const records = await listCatalogProductsWithVariants();
+  const imageMap = await getProductImageRowsForProductIds(
+    records.map(({ product }) => product.id)
+  );
   return records.map(({ product, variants }) => {
     const availabilities = variants.map(({ variant }) => resolveAvailability(variant));
     const hasExpress = availabilities.includes("express");
     const hasMadeToOrder = availabilities.includes("made_to_order");
 
+    const primary = imageMap.get(product.id);
     return {
       slug: product.slug,
       title: product.title,
       audience: product.audience,
       productType: product.productType,
-      audienceLabel: product.audience === "adult" ? "Adulto" : "Ninos",
+      audienceLabel: product.audience === "adult" ? "Adulto" : "Niños",
       productTypeLabel:
         product.productType === "football_jersey"
           ? "Camiseta de futbol"
@@ -35,6 +42,8 @@ export async function getCatalogProductList(): Promise<CatalogProductListItem[]>
         : hasMadeToOrder
           ? "Por encargo"
           : "Sin stock",
+      primaryImageUrl: primary?.publicUrl ?? null,
+      primaryImageAlt: primary?.altText ?? null,
     };
   });
 }

@@ -1,6 +1,7 @@
 import { resolveAvailability } from "@/modules/catalog";
-import { resolvePurchasableLine } from "@/modules/purchase";
 import { getCatalogProductBySlug } from "@/modules/catalog/infrastructure/catalog-store";
+import { listProductImagesByProductId } from "@/modules/catalog/infrastructure/product-images-store";
+import { resolvePurchasableLine } from "@/modules/purchase";
 
 export type CatalogProductDetailResolution = {
   fulfillment: "express" | "made_to_order" | "unavailable";
@@ -24,6 +25,13 @@ export type CatalogProductDetailVariant = {
   customizedResolution: CatalogProductDetailResolution | null;
 };
 
+export type CatalogProductDetailImage = {
+  id: string;
+  url: string;
+  alt: string | null;
+  isPrimary: boolean;
+};
+
 export type CatalogProductDetail = {
   productId: string;
   slug: string;
@@ -38,6 +46,7 @@ export type CatalogProductDetail = {
   customizationSurcharge: number | null;
   variants: CatalogProductDetailVariant[];
   initialVariantId: string | null;
+  images: CatalogProductDetailImage[];
 };
 
 export async function getCatalogProductDetail(
@@ -114,6 +123,14 @@ export async function getCatalogProductDetail(
   );
   const initialVariantId = firstAvailableVariant?.id ?? variants[0]?.id ?? null;
 
+  const imageRows = await listProductImagesByProductId(record.product.id);
+  const images: CatalogProductDetailImage[] = imageRows.map((row) => ({
+    id: row.id,
+    url: row.publicUrl,
+    alt: row.altText,
+    isPrimary: row.isPrimary,
+  }));
+
   return {
     productId: record.product.id,
     slug: record.product.slug,
@@ -124,5 +141,6 @@ export async function getCatalogProductDetail(
     customizationSurcharge: record.product.customizationSurcharge,
     variants,
     initialVariantId,
+    images,
   };
 }

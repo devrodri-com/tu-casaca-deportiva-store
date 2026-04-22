@@ -55,7 +55,7 @@ export default async function AdminProductsPage() {
             </thead>
             <tbody>
               {products.map(({ product, variants }) => {
-                const aud = product.audience === "adult" ? "Adulto" : "Ninos";
+                const aud = product.audience === "adult" ? "Adulto" : "Niños";
                 const pers =
                   product.supportsCustomization && product.customizationSurcharge !== null
                     ? `Si (+$${product.customizationSurcharge})`

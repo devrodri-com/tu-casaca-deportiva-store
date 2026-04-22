@@ -26,7 +26,7 @@ function getTypeLabel(type: "football_jersey" | "nba_jersey" | "jacket"): string
 }
 
 function getAudienceLabel(audience: "adult" | "kids"): string {
-  return audience === "adult" ? "Adulto" : "Ninos";
+  return audience === "adult" ? "Adulto" : "Niños";
 }
 
 function deliveryBadgeClassName(
@@ -89,19 +89,40 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 className="tcds-card block p-4 transition-shadow hover:shadow-md"
                 href={`/products/${product.slug}`}
               >
-                <div className="mb-3 flex items-start justify-between gap-3">
-                  <h2 className="text-lg font-medium text-foreground">{product.title}</h2>
-                  <span
-                    className={`whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium ${deliveryBadgeClassName(
-                      product.deliveryBadgeLabel
-                    )}`}
-                  >
-                    {product.deliveryBadgeLabel}
-                  </span>
+                <div className="flex gap-4">
+                  {product.primaryImageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={product.primaryImageUrl}
+                      alt={product.primaryImageAlt ?? product.title}
+                      className="h-24 w-24 shrink-0 rounded-md border border-border object-cover bg-surface"
+                      width={96}
+                      height={96}
+                    />
+                  ) : (
+                    <div
+                      className="flex h-24 w-24 shrink-0 items-center justify-center rounded-md border border-dashed border-border bg-surface/60 text-center text-[10px] leading-tight text-muted-foreground"
+                      aria-hidden
+                    >
+                      Sin imagen
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <h2 className="text-lg font-medium text-foreground">{product.title}</h2>
+                      <span
+                        className={`whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium ${deliveryBadgeClassName(
+                          product.deliveryBadgeLabel
+                        )}`}
+                      >
+                        {product.deliveryBadgeLabel}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Tipo: {product.productTypeLabel}</p>
+                    <p className="text-sm text-muted-foreground">Para: {product.audienceLabel}</p>
+                    <p className="tcds-link mt-3 inline-block text-sm">Ver producto</p>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground">Tipo: {product.productTypeLabel}</p>
-                <p className="text-sm text-muted-foreground">Para: {product.audienceLabel}</p>
-                <p className="tcds-link mt-3 inline-block text-sm">Ver producto</p>
               </Link>
             </li>
           ))}
@@ -117,7 +138,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             NBA
           </Link>
           <Link href="/products?audience=kids" className="tcds-btn-secondary">
-            Ninos
+            Niños
           </Link>
         </div>
       ) : null}
