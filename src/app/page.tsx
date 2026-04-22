@@ -30,7 +30,7 @@ export default function HomePage() {
               NBA
             </Link>
             <Link href="/products?audience=kids" className="tcds-btn-secondary">
-              Ninos
+              Niños
             </Link>
           </div>
         </section>

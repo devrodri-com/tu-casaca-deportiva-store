@@ -93,7 +93,7 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
             defaultValue={values.audience}
           >
             <option value="adult">Adulto</option>
-            <option value="kids">Ninos</option>
+            <option value="kids">Niños</option>
           </select>
         </label>
       </div>
