@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CatalogProductDetailVariant } from "@/modules/catalog/application/get-catalog-product-detail";
+import type {
+  CatalogProductDetailResolution,
+  CatalogProductDetailVariant,
+} from "@/modules/catalog/application/get-catalog-product-detail";
 import { addCartLine, createCartLineFromSelection } from "@/modules/cart";
 
 type VariantSelectorProps = {
@@ -13,22 +16,33 @@ type VariantSelectorProps = {
   customizationSurcharge: number | null;
 };
 
-function getDeliveryMessage(params: {
-  minDays: number | null;
-  maxDays: number | null;
-  isUnavailable: boolean;
-  isCustomized: boolean;
-}): string {
+function getMainDeliveryMessage(
+  resolution: CatalogProductDetailResolution,
+  params: { isUnavailable: boolean; isCustomized: boolean }
+): string {
   if (params.isUnavailable) {
     return "Sin disponibilidad";
   }
-  if (params.minDays === 0 && params.maxDays === 2) {
-    return "Entrega en 24-48h";
-  }
   if (params.isCustomized) {
-    return `Con personalizacion: entrega en ${params.minDays ?? "?"}-${params.maxDays ?? "?"} dias`;
+    const min = resolution.promisedDays.minDays;
+    const max = resolution.promisedDays.maxDays;
+    if (min !== null && max !== null) {
+      return `Con personalizacion: ${min}-${max} dias`;
+    }
+    return "Con personalizacion";
   }
-  return `Entrega en ${params.minDays ?? "?"}-${params.maxDays ?? "?"} dias`;
+  if (resolution.fulfillment === "express") {
+    return "Llega en 24-48h";
+  }
+  if (resolution.fulfillment === "made_to_order") {
+    const min = resolution.promisedDays.minDays;
+    const max = resolution.promisedDays.maxDays;
+    if (min !== null && max !== null) {
+      return `Llega en ${min}-${max} dias`;
+    }
+    return "Llega en 14-21 dias";
+  }
+  return "Sin disponibilidad";
 }
 
 export function VariantSelector({
@@ -82,50 +96,58 @@ export function VariantSelector({
     showCustomization && selectedVariant?.customizedResolution !== null;
   const canAddToCart =
     selectedVariant?.availability !== "unavailable" && selectedVariant !== null;
-  const selectedDeliveryMessage = getDeliveryMessage({
-    minDays: selectedResolution?.promisedDays.minDays ?? null,
-    maxDays: selectedResolution?.promisedDays.maxDays ?? null,
-    isUnavailable: selectedVariant?.availability === "unavailable",
-    isCustomized: isCustomizedSelection,
-  });
 
   if (variants.length === 0 || !selectedVariant || !selectedResolution) {
     return <p className="text-sm text-foreground/80">Sin variantes.</p>;
   }
 
-  return (
-    <section className="flex flex-col gap-4 rounded border p-4">
-      <div className="flex flex-col gap-1">
-        <p className="text-2xl font-semibold">${selectedResolution.finalUnitPrice}</p>
-        <p className="rounded border bg-foreground/[0.03] px-3 py-2 text-sm font-medium">
-          {selectedDeliveryMessage}
-        </p>
-      </div>
+  const mainDeliveryMessage = getMainDeliveryMessage(selectedResolution, {
+    isUnavailable: selectedVariant.availability === "unavailable",
+    isCustomized: isCustomizedSelection,
+  });
 
+  return (
+    <section className="flex flex-col gap-5 rounded border p-4 md:p-5">
       <div className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium">Talle seleccionado: {selectedVariant.sizeLabel}</h2>
-        {selectedVariant.availability === "unavailable" ? (
-          <p className="text-sm text-foreground/80">
-            Este talle no esta disponible ahora.
+        <p className="text-3xl font-semibold tabular-nums">
+          ${selectedResolution.finalUnitPrice}
+        </p>
+        <p className="text-base font-medium leading-snug text-foreground">
+          {mainDeliveryMessage}
+        </p>
+        {selectedVariant.isLowStock ? (
+          <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+            Quedan pocas unidades
           </p>
         ) : null}
       </div>
 
-      <ul className="flex flex-wrap gap-2">
-        {variants.map((variant) => (
-          <li key={variant.id}>
-            <button
-              type="button"
-              onClick={() => setSelectedVariantId(variant.id)}
-              className={`rounded border px-3 py-1 text-sm ${
-                variant.id === selectedVariant.id ? "bg-foreground text-background" : ""
-              }`}
-            >
-              {variant.sizeLabel}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div className="flex flex-col gap-2">
+        <h2 className="text-sm font-semibold">Talle seleccionado: {selectedVariant.sizeLabel}</h2>
+        {selectedVariant.availability === "unavailable" ? (
+          <p className="text-sm text-foreground/80">Este talle no esta disponible ahora.</p>
+        ) : null}
+        <ul className="flex flex-wrap gap-2" aria-label="Talles">
+          {variants.map((variant) => {
+            const isCurrent = variant.id === selectedVariant.id;
+            return (
+              <li key={variant.id}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedVariantId(variant.id)}
+                  className={`rounded border px-3 py-1.5 text-sm transition-colors ${
+                    isCurrent
+                      ? "bg-foreground font-semibold text-background ring-2 ring-foreground ring-offset-2 ring-offset-background"
+                      : "hover:bg-foreground/5"
+                  }`}
+                >
+                  {variant.sizeLabel}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
       {supportsCustomization && customizationSurcharge !== null ? (
         <div className="flex flex-col gap-2 rounded border p-3 text-sm">
@@ -134,10 +156,8 @@ export function VariantSelector({
               ? `Precio con personalizacion: $${selectedResolution.finalUnitPrice}`
               : "Personalizacion opcional"}
           </p>
-          <p className="text-foreground/80">
-            Suma nombre y numero por + ${customizationSurcharge}
-          </p>
-          <div className="flex gap-2">
+          <p className="text-foreground/80">Suma nombre y numero por + ${customizationSurcharge}</p>
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() =>
@@ -146,9 +166,9 @@ export function VariantSelector({
                   enabled: false,
                 })
               }
-              className="rounded border px-3 py-1"
+              className="rounded border px-3 py-1.5"
             >
-              Sin personalización
+              Sin personalizacion
             </button>
             <button
               type="button"
@@ -158,47 +178,49 @@ export function VariantSelector({
                   enabled: true,
                 })
               }
-              className="rounded border px-3 py-1"
+              className="rounded border px-3 py-1.5"
             >
-              Con personalización
+              Con personalizacion
             </button>
           </div>
         </div>
       ) : (
-        <p className="text-sm text-foreground/80">
-          Este producto no admite personalizacion.
-        </p>
+        <p className="text-sm text-foreground/80">Este producto no admite personalizacion.</p>
       )}
 
-      <button
-        type="button"
-        onClick={() => {
-          if (!canAddToCart) {
-            return;
-          }
-          const line = createCartLineFromSelection({
-            productId,
-            variantId: selectedVariant.id,
-            title,
-            size: selectedVariant.sizeLabel,
-            resolution: selectedResolution,
-            quantity: 1,
-            customizationEnabled: isCustomizedSelection,
-            customizationSurcharge,
-          });
-          addCartLine(line);
-        }}
-        className="w-full rounded border px-3 py-2 text-sm font-medium disabled:opacity-50"
-        disabled={!canAddToCart}
-      >
-        {canAddToCart ? "Agregar al carrito" : "Opcion sin disponibilidad"}
-      </button>
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            if (!canAddToCart) {
+              return;
+            }
+            const line = createCartLineFromSelection({
+              productId,
+              variantId: selectedVariant.id,
+              title,
+              size: selectedVariant.sizeLabel,
+              resolution: selectedResolution,
+              quantity: 1,
+              customizationEnabled: isCustomizedSelection,
+              customizationSurcharge,
+            });
+            addCartLine(line);
+          }}
+          className="w-full rounded border bg-foreground py-2.5 text-sm font-semibold text-background disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!canAddToCart}
+        >
+          Agregar al carrito
+        </button>
+        <p className="text-center text-xs text-foreground/80">
+          Sin compromiso. Podes revisar antes de pagar.
+        </p>
+      </div>
 
-      <div className="flex flex-col gap-1 text-xs text-foreground/80">
-        <p>Podes revisar tu pedido antes de pagar.</p>
-        <p>Pago seguro con Mercado Pago.</p>
-        <p>Tu pedido se confirma al pagar.</p>
-        <p>Recibis exactamente lo que ves.</p>
+      <div className="flex flex-col gap-1 border-t border-foreground/10 pt-3 text-xs text-foreground/80">
+        <p>Pago seguro con Mercado Pago</p>
+        <p>Pedido confirmado al pagar</p>
+        <p>Producto tal cual se muestra</p>
       </div>
     </section>
   );

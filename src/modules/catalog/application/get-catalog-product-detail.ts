@@ -15,6 +15,8 @@ export type CatalogProductDetailVariant = {
   id: string;
   sizeLabel: string;
   availability: "express" | "made_to_order" | "unavailable";
+  /** true solo con express real y express_stock 1-3; para UI, sin prometer cantidad exacta */
+  isLowStock: boolean;
   deliveryLabel: string;
   customizationLabel: string;
   priceLabel: string;
@@ -71,6 +73,7 @@ export async function getCatalogProductDetail(
         : null;
 
     const availability = resolveAvailability(variant);
+    const isLowStock = availability === "express" && variant.expressStock <= 3;
     const deliveryLabel =
       availability === "express"
         ? "Entrega en 24-48h"
@@ -87,6 +90,7 @@ export async function getCatalogProductDetail(
       id: variant.id,
       sizeLabel: variant.size,
       availability,
+      isLowStock,
       deliveryLabel,
       customizationLabel,
       priceLabel: `$${baseLine.finalUnitPrice}`,
