@@ -15,6 +15,7 @@ export type OrderItem = {
   fulfillmentSnapshot: PurchaseFulfillment;
   promisedDays: PromisedDaysRange;
   unitPriceSnapshot: number;
+  quantity: number;
   customizationSnapshot: OrderItemCustomizationSnapshot;
 };
 
@@ -22,5 +23,6 @@ export type OrderItemSource = {
   line: PurchasableLine;
   titleSnapshot: string;
   sizeSnapshot: string;
+  quantity: number;
   customizationSnapshot: OrderItemCustomizationSnapshot;
 };
