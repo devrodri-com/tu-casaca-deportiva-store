@@ -15,9 +15,11 @@ export default async function CheckoutPendingPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-6 py-10">
-      <h1 className="text-2xl font-semibold">Pago pendiente</h1>
+      <h1 className="text-2xl font-semibold">
+        Tu pago esta pendiente de confirmacion.
+      </h1>
       <p className="text-sm text-foreground/80">
-        Mercado Pago informó estado pendiente. El webhook actualizará la orden.
+        El estado se actualiza automaticamente en esta orden.
       </p>
       <p className="text-sm">orderId: {order?.orderId ?? "N/A"}</p>
       <p className="text-sm">

@@ -13,8 +13,11 @@ export type CatalogProductDetailResolution = {
 
 export type CatalogProductDetailVariant = {
   id: string;
-  size: string;
+  sizeLabel: string;
   availability: "express" | "made_to_order" | "unavailable";
+  deliveryLabel: string;
+  customizationLabel: string;
+  priceLabel: string;
   baseResolution: CatalogProductDetailResolution;
   customizedResolution: CatalogProductDetailResolution | null;
 };
@@ -67,10 +70,26 @@ export async function getCatalogProductDetail(
           })
         : null;
 
+    const availability = resolveAvailability(variant);
+    const deliveryLabel =
+      availability === "express"
+        ? "Entrega en 24-48h"
+        : availability === "made_to_order"
+          ? "Entrega en 14-21 dias"
+          : "Sin disponibilidad";
+    const customizationLabel =
+      record.product.supportsCustomization &&
+      record.product.customizationSurcharge !== null
+        ? `Personalizacion: + $${record.product.customizationSurcharge}`
+        : "Personalizacion no disponible";
+
     return {
       id: variant.id,
-      size: variant.size,
-      availability: resolveAvailability(variant),
+      sizeLabel: variant.size,
+      availability,
+      deliveryLabel,
+      customizationLabel,
+      priceLabel: `$${baseLine.finalUnitPrice}`,
       baseResolution: {
         fulfillment: baseLine.fulfillment,
         promisedDays: baseLine.promisedDays,
