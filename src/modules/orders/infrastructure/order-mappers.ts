@@ -8,6 +8,9 @@ export function toOrderRow(order: Order): OrderInsert {
   return {
     id: order.id,
     total: order.total.toString(),
+    customer_full_name: order.customer.fullName,
+    customer_phone: order.customer.phone,
+    customer_email: order.customer.email,
   };
 }
 
