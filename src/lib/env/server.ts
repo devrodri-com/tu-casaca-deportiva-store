@@ -6,6 +6,12 @@ type ServerEnv = {
   SUPABASE_SERVICE_ROLE_KEY: string;
 };
 
+type PaymentsEnv = {
+  MERCADO_PAGO_ACCESS_TOKEN: string;
+  MERCADO_PAGO_WEBHOOK_SECRET: string;
+  APP_URL: string;
+};
+
 function getRequiredEnv(name: keyof ServerEnv): string {
   const value = process.env[name];
   if (!value) {
@@ -14,7 +20,16 @@ function getRequiredEnv(name: keyof ServerEnv): string {
   return value;
 }
 
+function getRequiredRawEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
 let cachedServerEnv: ServerEnv | null = null;
+let cachedPaymentsEnv: PaymentsEnv | null = null;
 
 export function getServerEnv(): ServerEnv {
   if (cachedServerEnv) {
@@ -28,4 +43,18 @@ export function getServerEnv(): ServerEnv {
   };
 
   return cachedServerEnv;
+}
+
+export function getPaymentsEnv(): PaymentsEnv {
+  if (cachedPaymentsEnv) {
+    return cachedPaymentsEnv;
+  }
+
+  cachedPaymentsEnv = {
+    MERCADO_PAGO_ACCESS_TOKEN: getRequiredRawEnv("MERCADO_PAGO_ACCESS_TOKEN"),
+    MERCADO_PAGO_WEBHOOK_SECRET: getRequiredRawEnv("MERCADO_PAGO_WEBHOOK_SECRET"),
+    APP_URL: getRequiredRawEnv("APP_URL"),
+  };
+
+  return cachedPaymentsEnv;
 }

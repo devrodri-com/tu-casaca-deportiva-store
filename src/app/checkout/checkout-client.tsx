@@ -20,6 +20,7 @@ export function CheckoutClient() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [startingPayment, setStartingPayment] = useState(false);
   const [result, setResult] = useState<CheckoutSuccess | CheckoutError | null>(null);
 
   const total = useMemo(() => getCartTotal(lines), [lines]);
@@ -107,6 +108,38 @@ export function CheckoutClient() {
       >
         Confirmar pedido
       </button>
+
+      {result?.ok ? (
+        <button
+          type="button"
+          className="w-fit rounded border px-3 py-1 text-sm"
+          disabled={startingPayment}
+          onClick={async () => {
+            setStartingPayment(true);
+            const response = await fetch(
+              "/api/payments/mercadopago/preference",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId: result.orderId }),
+              }
+            );
+            const data = (await response.json()) as
+              | { ok: true; redirectUrl: string }
+              | CheckoutError;
+
+            if (!data.ok) {
+              setResult(data);
+              setStartingPayment(false);
+              return;
+            }
+
+            window.location.href = data.redirectUrl;
+          }}
+        >
+          Ir a pagar con Mercado Pago
+        </button>
+      ) : null}
 
       {result?.ok ? (
         <p className="text-sm">Pedido confirmado. orderId: {result.orderId}</p>
