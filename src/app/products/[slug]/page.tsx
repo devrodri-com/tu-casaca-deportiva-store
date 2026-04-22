@@ -27,6 +27,8 @@ export default async function ProductDetailPage({
       <p className="text-sm text-foreground/80">era: {product.era}</p>
 
       <VariantSelector
+        productId={product.productId}
+        title={product.title}
         variants={product.variants}
         initialVariantId={product.initialVariantId}
         supportsCustomization={product.supportsCustomization}

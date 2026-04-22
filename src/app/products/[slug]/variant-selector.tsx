@@ -2,8 +2,11 @@
 
 import { useMemo, useState } from "react";
 import type { CatalogProductDetailVariant } from "@/modules/catalog/application/get-catalog-product-detail";
+import { addCartLine, createCartLineFromSelection } from "@/modules/cart";
 
 type VariantSelectorProps = {
+  productId: string;
+  title: string;
   variants: CatalogProductDetailVariant[];
   initialVariantId: string | null;
   supportsCustomization: boolean;
@@ -11,6 +14,8 @@ type VariantSelectorProps = {
 };
 
 export function VariantSelector({
+  productId,
+  title,
   variants,
   initialVariantId,
   supportsCustomization,
@@ -55,6 +60,8 @@ export function VariantSelector({
     }
     return selectedVariant.baseResolution;
   }, [selectedVariant, showCustomization]);
+  const isCustomizedSelection =
+    showCustomization && selectedVariant?.customizedResolution !== null;
 
   if (variants.length === 0 || !selectedVariant || !selectedResolution) {
     return <p className="text-sm text-foreground/80">Sin variantes.</p>;
@@ -121,6 +128,25 @@ export function VariantSelector({
         </p>
         <p>finalUnitPrice: {selectedResolution.finalUnitPrice}</p>
       </div>
+      <button
+        type="button"
+        onClick={() => {
+          const line = createCartLineFromSelection({
+            productId,
+            variantId: selectedVariant.id,
+            title,
+            size: selectedVariant.size,
+            resolution: selectedResolution,
+            quantity: 1,
+            customizationEnabled: isCustomizedSelection,
+            customizationSurcharge,
+          });
+          addCartLine(line);
+        }}
+        className="w-fit rounded border px-3 py-1 text-sm"
+      >
+        Agregar al carrito
+      </button>
     </section>
   );
 }
