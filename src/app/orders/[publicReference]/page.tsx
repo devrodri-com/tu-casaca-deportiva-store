@@ -16,17 +16,19 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-6 py-10">
-      <h1 className="text-2xl font-semibold">Pedido</h1>
-      <p className="text-sm">orderId: {order.orderId}</p>
-      <p className="text-sm">publicReference: {order.publicReference}</p>
-      <p className="text-sm">
-        paymentStatus: {order.paymentStatus} ({order.paymentStatusLabel})
-      </p>
-      <p className="text-sm font-medium">total: {order.total}</p>
+      <h1 className="tcds-title-page">Pedido</h1>
+      <div className="tcds-card p-4 text-sm text-foreground">
+        <p>orderId: {order.orderId}</p>
+        <p>publicReference: {order.publicReference}</p>
+        <p>
+          paymentStatus: {order.paymentStatus} ({order.paymentStatusLabel})
+        </p>
+        <p className="font-medium">total: {order.total}</p>
+      </div>
 
       <ul className="flex flex-col gap-2">
         {order.items.map((item, index) => (
-          <li key={`${item.title}-${index}`} className="rounded border p-3 text-sm">
+          <li key={`${item.title}-${index}`} className="tcds-card p-3 text-sm">
             <p>title: {item.title}</p>
             <p>quantity: {item.quantity}</p>
             <p>customization: {item.customization}</p>
@@ -41,7 +43,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         ))}
       </ul>
 
-      <Link className="text-sm underline" href="/checkout">
+      <Link className="tcds-link text-sm" href="/checkout">
         Volver a checkout
       </Link>
     </main>

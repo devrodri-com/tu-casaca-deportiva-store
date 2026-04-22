@@ -26,7 +26,7 @@ export function CheckoutClient() {
   const total = useMemo(() => getCartTotal(lines), [lines]);
 
   if (lines.length === 0) {
-    return <p className="text-sm text-foreground/80">Carrito vacío.</p>;
+    return <p className="tcds-prose">Carrito vacío.</p>;
   }
 
   return (
@@ -35,7 +35,7 @@ export function CheckoutClient() {
         {lines.map((line, index) => (
           <li
             key={`${line.productId}-${line.variantId}-${line.customization?.isCustomized ?? false}-${index}`}
-            className="rounded border p-3 text-sm"
+            className="tcds-card p-3 text-sm"
           >
             <p>title: {line.title}</p>
             <p>size: {line.size}</p>
@@ -50,28 +50,28 @@ export function CheckoutClient() {
         ))}
       </ul>
 
-      <p className="text-sm font-medium">total: {total}</p>
+      <p className="text-sm font-medium text-foreground">total: {total}</p>
 
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-foreground">
         fullName
         <input
-          className="rounded border px-3 py-2"
+          className="tcds-input"
           value={fullName}
           onChange={(event) => setFullName(event.target.value)}
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-foreground">
         phone
         <input
-          className="rounded border px-3 py-2"
+          className="tcds-input"
           value={phone}
           onChange={(event) => setPhone(event.target.value)}
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-foreground">
         email (opcional)
         <input
-          className="rounded border px-3 py-2"
+          className="tcds-input"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
@@ -79,7 +79,7 @@ export function CheckoutClient() {
 
       <button
         type="button"
-        className="w-fit rounded border px-3 py-1 text-sm"
+        className="tcds-btn-primary w-fit"
         disabled={submitting}
         onClick={async () => {
           setSubmitting(true);
@@ -112,7 +112,7 @@ export function CheckoutClient() {
       {result?.ok ? (
         <button
           type="button"
-          className="w-fit rounded border px-3 py-1 text-sm"
+          className="tcds-btn-primary w-fit"
           disabled={startingPayment}
           onClick={async () => {
             setStartingPayment(true);
@@ -142,10 +142,10 @@ export function CheckoutClient() {
       ) : null}
 
       {result?.ok ? (
-        <p className="text-sm">Pedido confirmado. orderId: {result.orderId}</p>
+        <p className="tcds-prose">Pedido confirmado. orderId: {result.orderId}</p>
       ) : null}
       {result && !result.ok ? (
-        <p className="text-sm text-red-600">{result.message}</p>
+        <p className="text-sm font-medium text-red-600">{result.message}</p>
       ) : null}
     </section>
   );

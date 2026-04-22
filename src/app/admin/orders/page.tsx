@@ -14,13 +14,13 @@ export default async function AdminOrdersPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-6 py-10">
-      <h1 className="text-2xl font-semibold">Admin · Pedidos</h1>
+      <h1 className="tcds-title-page">Admin · Pedidos</h1>
       {orders.length === 0 ? (
-        <p className="text-sm text-foreground/80">No hay pedidos.</p>
+        <p className="tcds-prose">No hay pedidos.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {orders.map(({ order, items }) => (
-            <li key={order.id} className="rounded border p-3 text-sm">
+            <li key={order.id} className="tcds-card p-3 text-sm text-foreground">
               <p>orderId: {order.id}</p>
               <p>publicReference: {order.public_reference}</p>
               <p>paymentStatus: {order.payment_status}</p>
@@ -37,7 +37,7 @@ export default async function AdminOrdersPage() {
                 <select
                   name="nextOperationalStatus"
                   defaultValue={order.operational_status ?? ""}
-                  className="rounded border px-2 py-1"
+                  className="tcds-input w-auto min-w-40"
                 >
                   <option value="" disabled>
                     Seleccionar estado
@@ -49,12 +49,12 @@ export default async function AdminOrdersPage() {
                   <option value="delivered">delivered</option>
                   <option value="cancelled">cancelled</option>
                 </select>
-                <button type="submit" className="rounded border px-2 py-1">
+                <button type="submit" className="tcds-btn-secondary">
                   Guardar estado
                 </button>
               </form>
               <Link
-                className="underline"
+                className="tcds-link"
                 href={`/orders/${order.public_reference}`}
               >
                 Ver detalle
