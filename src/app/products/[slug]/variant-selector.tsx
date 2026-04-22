@@ -13,6 +13,24 @@ type VariantSelectorProps = {
   customizationSurcharge: number | null;
 };
 
+function getDeliveryLabel(params: {
+  minDays: number | null;
+  maxDays: number | null;
+  isUnavailable: boolean;
+  isCustomized: boolean;
+}): string {
+  if (params.isUnavailable) {
+    return "Sin disponibilidad";
+  }
+  if (params.minDays === 0 && params.maxDays === 2) {
+    return "Entrega en 24-48h";
+  }
+  if (params.isCustomized) {
+    return `Con personalizacion: entrega en ${params.minDays ?? "?"}-${params.maxDays ?? "?"} dias`;
+  }
+  return `Entrega en ${params.minDays ?? "?"}-${params.maxDays ?? "?"} dias`;
+}
+
 export function VariantSelector({
   productId,
   title,
@@ -62,6 +80,8 @@ export function VariantSelector({
   }, [selectedVariant, showCustomization]);
   const isCustomizedSelection =
     showCustomization && selectedVariant?.customizedResolution !== null;
+  const canAddToCart =
+    selectedVariant?.availability !== "unavailable" && selectedVariant !== null;
 
   if (variants.length === 0 || !selectedVariant || !selectedResolution) {
     return <p className="text-sm text-foreground/80">Sin variantes.</p>;
@@ -78,7 +98,7 @@ export function VariantSelector({
               onClick={() => setSelectedVariantId(variant.id)}
               className="rounded border px-3 py-1 text-sm"
             >
-              {variant.size}
+              {variant.sizeLabel}
             </button>
           </li>
         ))}
@@ -119,23 +139,33 @@ export function VariantSelector({
       ) : null}
 
       <div className="rounded border p-3 text-sm">
-        <p>size: {selectedVariant.size}</p>
-        <p>availability: {selectedVariant.availability}</p>
-        <p>fulfillment: {selectedResolution.fulfillment}</p>
+        <p>Talle: {selectedVariant.sizeLabel}</p>
         <p>
-          promisedDays: {String(selectedResolution.promisedDays.minDays)} /{" "}
+          {getDeliveryLabel({
+            minDays: selectedResolution.promisedDays.minDays,
+            maxDays: selectedResolution.promisedDays.maxDays,
+            isUnavailable: selectedVariant.availability === "unavailable",
+            isCustomized: isCustomizedSelection,
+          })}
+        </p>
+        <p>
+          Tiempo estimado: {String(selectedResolution.promisedDays.minDays)} /{" "}
           {String(selectedResolution.promisedDays.maxDays)}
         </p>
-        <p>finalUnitPrice: {selectedResolution.finalUnitPrice}</p>
+        <p>Precio: ${selectedResolution.finalUnitPrice}</p>
+        <p>{selectedVariant.customizationLabel}</p>
       </div>
       <button
         type="button"
         onClick={() => {
+          if (!canAddToCart) {
+            return;
+          }
           const line = createCartLineFromSelection({
             productId,
             variantId: selectedVariant.id,
             title,
-            size: selectedVariant.size,
+            size: selectedVariant.sizeLabel,
             resolution: selectedResolution,
             quantity: 1,
             customizationEnabled: isCustomizedSelection,
@@ -143,9 +173,12 @@ export function VariantSelector({
           });
           addCartLine(line);
         }}
-        className="w-fit rounded border px-3 py-1 text-sm"
+        className="w-fit rounded border px-3 py-1 text-sm disabled:opacity-50"
+        disabled={!canAddToCart}
       >
-        Agregar al carrito
+        {canAddToCart
+          ? "Agregar esta opcion al carrito"
+          : "Opcion sin disponibilidad"}
       </button>
     </section>
   );
