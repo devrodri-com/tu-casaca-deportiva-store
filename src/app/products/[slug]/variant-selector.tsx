@@ -117,7 +117,7 @@ export function VariantSelector({
         </p>
         {selectedVariant.isLowStock ? (
           <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-            Quedan pocas unidades
+            Quedan pocas unidades en este talle
           </p>
         ) : null}
       </div>
@@ -212,15 +212,19 @@ export function VariantSelector({
         >
           Agregar al carrito
         </button>
-        <p className="text-center text-xs text-foreground/80">
-          Sin compromiso. Podes revisar antes de pagar.
-        </p>
+        <div className="flex flex-col gap-1 text-center text-xs text-foreground/80">
+          <p>Podes revisar todo antes de pagar</p>
+          <p>No se cobra hasta confirmar en Mercado Pago</p>
+          <p>Sin sorpresas: ves lo que compras</p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-1 border-t border-foreground/10 pt-3 text-xs text-foreground/80">
+        <p className="font-medium text-foreground">Producto popular</p>
         <p>Pago seguro con Mercado Pago</p>
-        <p>Pedido confirmado al pagar</p>
+        <p>Confirmamos tu pedido al pagar</p>
         <p>Producto tal cual se muestra</p>
+        <p>Compra simple y segura</p>
       </div>
     </section>
   );
