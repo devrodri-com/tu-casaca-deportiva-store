@@ -15,17 +15,19 @@ export default async function CheckoutSuccessPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-6 py-10">
-      <h1 className="text-2xl font-semibold">Pago en proceso de confirmación</h1>
-      <p className="text-sm text-foreground/80">
+      <h1 className="tcds-title-page">Pago en proceso de confirmación</h1>
+      <p className="tcds-prose max-w-2xl">
         Volviste desde Mercado Pago. Esta pantalla no confirma pago por sí sola.
       </p>
-      <p className="text-sm">orderId: {order?.orderId ?? "N/A"}</p>
-      <p className="text-sm">
-        paymentStatus: {order?.paymentStatus ?? "N/A"}{" "}
-        {order ? `(${order.paymentStatusLabel})` : ""}
-      </p>
+      <div className="tcds-card p-4 text-sm text-foreground">
+        <p>orderId: {order?.orderId ?? "N/A"}</p>
+        <p>
+          paymentStatus: {order?.paymentStatus ?? "N/A"}{" "}
+          {order ? `(${order.paymentStatusLabel})` : ""}
+        </p>
+      </div>
       {order ? (
-        <Link className="text-sm underline" href={`/orders/${order.publicReference}`}>
+        <Link className="tcds-link text-sm" href={`/orders/${order.publicReference}`}>
           Ver detalle del pedido
         </Link>
       ) : null}

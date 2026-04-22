@@ -18,7 +18,7 @@ export function CartClient() {
   );
 
   if (lines.length === 0) {
-    return <p className="text-sm text-foreground/80">Carrito vacío.</p>;
+    return <p className="tcds-prose">Carrito vacío.</p>;
   }
 
   return (
@@ -27,7 +27,7 @@ export function CartClient() {
         {lines.map((line, index) => (
           <li
             key={`${line.productId}-${line.variantId}-${line.customization?.isCustomized ?? false}-${index}`}
-            className="rounded border p-3 text-sm"
+            className="tcds-card p-3 text-sm"
           >
             <p>title: {line.title}</p>
             <p>size: {line.size}</p>
@@ -44,7 +44,7 @@ export function CartClient() {
             </p>
             <p>finalUnitPrice: {line.finalUnitPrice}</p>
             <p>quantity: {line.quantity}</p>
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -62,7 +62,7 @@ export function CartClient() {
                   );
                   setLines(getCartLines());
                 }}
-                className="rounded border px-2 py-1"
+                className="tcds-btn-secondary min-w-8 px-2"
                 disabled={line.quantity <= 1}
               >
                 -
@@ -80,7 +80,7 @@ export function CartClient() {
                   );
                   setLines(getCartLines());
                 }}
-                className="rounded border px-2 py-1"
+                className="tcds-btn-secondary min-w-8 px-2"
               >
                 +
               </button>
@@ -94,7 +94,7 @@ export function CartClient() {
                   });
                   setLines(getCartLines());
                 }}
-                className="rounded border px-2 py-1"
+                className="tcds-btn-secondary"
               >
                 Remover
               </button>
@@ -102,7 +102,7 @@ export function CartClient() {
           </li>
         ))}
       </ul>
-      <p className="text-sm font-medium">total: {total}</p>
+      <p className="text-sm font-medium text-foreground">total: {total}</p>
     </section>
   );
 }

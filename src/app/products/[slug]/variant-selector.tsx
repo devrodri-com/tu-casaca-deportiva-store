@@ -98,7 +98,7 @@ export function VariantSelector({
     selectedVariant?.availability !== "unavailable" && selectedVariant !== null;
 
   if (variants.length === 0 || !selectedVariant || !selectedResolution) {
-    return <p className="text-sm text-foreground/80">Sin variantes.</p>;
+    return <p className="tcds-prose">Sin variantes.</p>;
   }
 
   const mainDeliveryMessage = getMainDeliveryMessage(selectedResolution, {
@@ -107,25 +107,27 @@ export function VariantSelector({
   });
 
   return (
-    <section className="flex flex-col gap-5 rounded border p-4 md:p-5">
+    <section className="tcds-card flex flex-col gap-5 p-4 md:p-5">
       <div className="flex flex-col gap-2">
-        <p className="text-3xl font-semibold tabular-nums">
+        <p className="text-3xl font-semibold tabular-nums text-foreground">
           ${selectedResolution.finalUnitPrice}
         </p>
         <p className="text-base font-medium leading-snug text-foreground">
           {mainDeliveryMessage}
         </p>
         {selectedVariant.isLowStock ? (
-          <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+          <p className="text-sm font-medium text-amber-800">
             Quedan pocas unidades en este talle
           </p>
         ) : null}
       </div>
 
       <div className="flex flex-col gap-2">
-        <h2 className="text-sm font-semibold">Talle seleccionado: {selectedVariant.sizeLabel}</h2>
+        <h2 className="text-sm font-semibold text-foreground">
+          Talle seleccionado: {selectedVariant.sizeLabel}
+        </h2>
         {selectedVariant.availability === "unavailable" ? (
-          <p className="text-sm text-foreground/80">Este talle no esta disponible ahora.</p>
+          <p className="tcds-prose">Este talle no esta disponible ahora.</p>
         ) : null}
         <ul className="flex flex-wrap gap-2" aria-label="Talles">
           {variants.map((variant) => {
@@ -135,11 +137,11 @@ export function VariantSelector({
                 <button
                   type="button"
                   onClick={() => setSelectedVariantId(variant.id)}
-                  className={`rounded border px-3 py-1.5 text-sm transition-colors ${
+                  className={
                     isCurrent
-                      ? "bg-foreground font-semibold text-background ring-2 ring-foreground ring-offset-2 ring-offset-background"
-                      : "hover:bg-foreground/5"
-                  }`}
+                      ? "inline-flex min-h-[2.5rem] items-center justify-center rounded-md border border-sky-300 bg-sky-50 px-3 py-1.5 text-sm font-semibold text-sky-900 ring-2 ring-sky-500 ring-offset-2 ring-offset-white"
+                      : "tcds-btn-secondary min-h-[2.5rem] px-3 py-1.5"
+                  }
                 >
                   {variant.sizeLabel}
                 </button>
@@ -150,13 +152,13 @@ export function VariantSelector({
       </div>
 
       {supportsCustomization && customizationSurcharge !== null ? (
-        <div className="flex flex-col gap-2 rounded border p-3 text-sm">
-          <p className="font-medium">
+        <div className="tcds-card flex flex-col gap-2 p-3 text-sm">
+          <p className="font-medium text-foreground">
             {showCustomization
               ? `Precio con personalizacion: $${selectedResolution.finalUnitPrice}`
               : "Personalizacion opcional"}
           </p>
-          <p className="text-foreground/80">Suma nombre y numero por + ${customizationSurcharge}</p>
+          <p className="tcds-prose">Suma nombre y numero por + ${customizationSurcharge}</p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
@@ -166,7 +168,7 @@ export function VariantSelector({
                   enabled: false,
                 })
               }
-              className="rounded border px-3 py-1.5"
+              className="tcds-btn-secondary"
             >
               Sin personalizacion
             </button>
@@ -178,14 +180,14 @@ export function VariantSelector({
                   enabled: true,
                 })
               }
-              className="rounded border px-3 py-1.5"
+              className="tcds-btn-secondary"
             >
               Con personalizacion
             </button>
           </div>
         </div>
       ) : (
-        <p className="text-sm text-foreground/80">Este producto no admite personalizacion.</p>
+        <p className="tcds-prose">Este producto no admite personalizacion.</p>
       )}
 
       <div className="flex flex-col gap-2">
@@ -207,19 +209,19 @@ export function VariantSelector({
             });
             addCartLine(line);
           }}
-          className="w-full rounded border bg-foreground py-2.5 text-sm font-semibold text-background disabled:cursor-not-allowed disabled:opacity-50"
+          className="tcds-btn-primary w-full"
           disabled={!canAddToCart}
         >
           Agregar al carrito
         </button>
-        <div className="flex flex-col gap-1 text-center text-xs text-foreground/80">
+        <div className="flex flex-col gap-1 text-center text-xs text-muted-foreground">
           <p>Podes revisar todo antes de pagar</p>
           <p>No se cobra hasta confirmar en Mercado Pago</p>
           <p>Sin sorpresas: ves lo que compras</p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 border-t border-foreground/10 pt-3 text-xs text-foreground/80">
+      <div className="flex flex-col gap-1 border-t border-border pt-3 text-xs text-muted-foreground">
         <p className="font-medium text-foreground">Producto popular</p>
         <p>Pago seguro con Mercado Pago</p>
         <p>Confirmamos tu pedido al pagar</p>

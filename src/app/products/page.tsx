@@ -29,6 +29,19 @@ function getAudienceLabel(audience: "adult" | "kids"): string {
   return audience === "adult" ? "Adulto" : "Ninos";
 }
 
+function deliveryBadgeClassName(
+  label: "Entrega rapida" | "Por encargo" | "Sin stock"
+): string {
+  switch (label) {
+    case "Entrega rapida":
+      return "border border-emerald-200 bg-emerald-50 text-emerald-800";
+    case "Por encargo":
+      return "border border-sky-100 bg-sky-50 text-sky-800";
+    default:
+      return "border border-red-200 bg-red-50 text-red-800";
+  }
+}
+
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
   const products = await getCatalogProductList();
@@ -49,44 +62,46 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-8 md:py-10">
-      <h1 className="text-2xl font-semibold">Productos</h1>
-      <p className="text-sm text-foreground/80">
+      <h1 className="tcds-title-page">Productos</h1>
+      <p className="tcds-prose">
         Elegi tu camiseta por tipo, publico y modalidad de entrega.
       </p>
 
       {hasActiveFilter ? (
-        <div className="flex items-center justify-between rounded border bg-foreground/3 px-3 py-2 text-sm">
-          <p>
+        <div className="tcds-card flex items-center justify-between gap-3 px-3 py-2 text-sm">
+          <p className="text-foreground">
             Filtro activo: {selectedType ? `tipo ${getTypeLabel(selectedType)}` : "todos los tipos"}
             {selectedAudience ? ` + publico ${getAudienceLabel(selectedAudience)}` : ""}
           </p>
-          <Link href="/products" className="underline">
+          <Link href="/products" className="tcds-link flex-shrink-0 text-sm">
             Limpiar
           </Link>
         </div>
       ) : null}
 
       {filteredProducts.length === 0 ? (
-        <p className="text-sm text-foreground/80">
-          No encontramos productos para ese filtro.
-        </p>
+        <p className="tcds-prose">No encontramos productos para ese filtro.</p>
       ) : (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {filteredProducts.map((product) => (
             <li key={product.slug}>
               <Link
-                className="block rounded border p-4 transition-colors hover:bg-foreground/3"
+                className="tcds-card block p-4 transition-shadow hover:shadow-md"
                 href={`/products/${product.slug}`}
               >
                 <div className="mb-3 flex items-start justify-between gap-3">
-                  <h2 className="text-lg font-medium">{product.title}</h2>
-                  <span className="rounded border px-2 py-0.5 text-xs">
+                  <h2 className="text-lg font-medium text-foreground">{product.title}</h2>
+                  <span
+                    className={`whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium ${deliveryBadgeClassName(
+                      product.deliveryBadgeLabel
+                    )}`}
+                  >
                     {product.deliveryBadgeLabel}
                   </span>
                 </div>
-                <p className="text-sm text-foreground/80">Tipo: {product.productTypeLabel}</p>
-                <p className="text-sm text-foreground/80">Para: {product.audienceLabel}</p>
-                <p className="mt-2 text-sm underline">Ver producto</p>
+                <p className="text-sm text-muted-foreground">Tipo: {product.productTypeLabel}</p>
+                <p className="text-sm text-muted-foreground">Para: {product.audienceLabel}</p>
+                <p className="tcds-link mt-3 inline-block text-sm">Ver producto</p>
               </Link>
             </li>
           ))}
@@ -95,13 +110,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
       {!hasActiveFilter ? (
         <div className="flex flex-wrap gap-2 text-sm">
-          <Link href="/products?type=football_jersey" className="rounded border px-3 py-1">
+          <Link href="/products?type=football_jersey" className="tcds-btn-secondary">
             Futbol
           </Link>
-          <Link href="/products?type=nba_jersey" className="rounded border px-3 py-1">
+          <Link href="/products?type=nba_jersey" className="tcds-btn-secondary">
             NBA
           </Link>
-          <Link href="/products?audience=kids" className="rounded border px-3 py-1">
+          <Link href="/products?audience=kids" className="tcds-btn-secondary">
             Ninos
           </Link>
         </div>

@@ -20,7 +20,7 @@ export default async function ProductDetailPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-6 py-8 md:py-10">
-      <h1 className="text-2xl font-semibold leading-tight">{product.title}</h1>
+      <h1 className="tcds-title-page leading-tight md:text-3xl">{product.title}</h1>
 
       <VariantSelector
         productId={product.productId}
