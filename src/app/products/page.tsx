@@ -16,14 +16,13 @@ export default async function ProductsPage() {
         <ul className="flex flex-col gap-4">
           {products.map((product) => (
             <li key={product.slug} className="rounded border p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <h2 className="text-lg font-medium">{product.title}</h2>
-                <span className="rounded border px-2 py-0.5 text-xs">
-                  {product.deliveryBadgeLabel}
-                </span>
-              </div>
-              <p className="text-sm text-foreground/80">{product.audienceLabel}</p>
-              <p className="text-sm text-foreground/80">{product.productTypeLabel}</p>
+              <h2 className="text-lg font-medium">{product.title}</h2>
+              <p className="text-sm text-foreground/80">
+                audience: {product.audience}
+              </p>
+              <p className="text-sm text-foreground/80">
+                productType: {product.productType}
+              </p>
               <Link className="text-sm underline" href={`/products/${product.slug}`}>
                 Ver detalle
               </Link>
