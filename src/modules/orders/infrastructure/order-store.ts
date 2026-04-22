@@ -34,6 +34,13 @@ export async function insertOrder(order: Order): Promise<void> {
 
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 type OrderItemRow = Database["public"]["Tables"]["order_items"]["Row"];
+type OperationalStatus =
+  | "paid"
+  | "preparing"
+  | "ready"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 export async function getOrderWithItemsById(orderId: string): Promise<{
   order: OrderRow;
@@ -170,6 +177,26 @@ export async function updateOrderPaymentState(params: {
   }
 }
 
+export async function initializeOrderOperationalStatusAsPaid(params: {
+  orderId: string;
+  updatedAt: string;
+}): Promise<void> {
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase
+    .from("orders")
+    .update({
+      operational_status: "paid",
+      operational_updated_at: params.updatedAt,
+    })
+    .is("operational_status", null)
+    .eq("id", params.orderId);
+  if (result.error) {
+    throw new Error(
+      `Failed to initialize operational status: ${result.error.message}`
+    );
+  }
+}
+
 export async function claimOrderStockDiscount(params: {
   orderId: string;
   discountedAt: string;
@@ -235,5 +262,25 @@ export async function discountExpressStockForOrderItems(
         `Failed to update variant stock: ${updateResult.error.message}`
       );
     }
+  }
+}
+
+export async function updateOrderOperationalStatus(params: {
+  orderId: string;
+  nextOperationalStatus: OperationalStatus;
+  updatedAt: string;
+}): Promise<void> {
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase
+    .from("orders")
+    .update({
+      operational_status: params.nextOperationalStatus,
+      operational_updated_at: params.updatedAt,
+    })
+    .eq("id", params.orderId);
+  if (result.error) {
+    throw new Error(
+      `Failed to update operational status: ${result.error.message}`
+    );
   }
 }

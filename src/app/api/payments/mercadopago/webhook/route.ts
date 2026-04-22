@@ -9,6 +9,7 @@ import {
   claimOrderStockDiscount,
   discountExpressStockForOrderItems,
   getOrderWithItemsById,
+  initializeOrderOperationalStatusAsPaid,
   rollbackOrderStockDiscountClaim,
   updateOrderPaymentState,
 } from "@/modules/orders/infrastructure/order-store";
@@ -101,6 +102,13 @@ export async function POST(request: Request) {
     mercadoPagoStatus: payment.status,
     paidAt: nextStatus === "paid" ? payment.date_approved ?? null : null,
   });
+
+  if (nextStatus === "paid") {
+    await initializeOrderOperationalStatusAsPaid({
+      orderId,
+      updatedAt: new Date().toISOString(),
+    });
+  }
 
   if (nextStatus === "paid" && !orderWithItems.order.stock_discounted_at) {
     const claimed = await claimOrderStockDiscount({
