@@ -3,4 +3,9 @@ export type {
   OrderItemCustomizationSnapshot,
   OrderItemSource,
 } from "./order-item";
-export { buildOrder, type Order } from "./order";
+export {
+  buildOrder,
+  buildOrderFromCart,
+  type Order,
+  type OrderCustomerSnapshot,
+} from "./order";

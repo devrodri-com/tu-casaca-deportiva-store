@@ -83,11 +83,17 @@ export type Database = {
         Row: {
           id: string;
           total: string;
+          customer_full_name: string;
+          customer_phone: string;
+          customer_email: string | null;
           created_at: string;
         };
         Insert: {
           id: string;
           total: string;
+          customer_full_name: string;
+          customer_phone: string;
+          customer_email?: string | null;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;

@@ -77,3 +77,40 @@ export async function getCatalogProductBySlug(
     variants: variantsResult.data.map((variantRow) => mapVariantRow(variantRow)),
   };
 }
+
+export async function getCatalogProductAndVariantByIds(
+  productId: string,
+  variantId: string
+): Promise<{ product: Product; variantRecord: CatalogVariantRecord } | null> {
+  const supabase = createServerSupabaseClient();
+
+  const productResult = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", productId)
+    .maybeSingle();
+  if (productResult.error) {
+    throw new Error(`Failed to load product: ${productResult.error.message}`);
+  }
+  if (!productResult.data) {
+    return null;
+  }
+
+  const variantResult = await supabase
+    .from("product_variants")
+    .select("*")
+    .eq("id", variantId)
+    .eq("product_id", productId)
+    .maybeSingle();
+  if (variantResult.error) {
+    throw new Error(`Failed to load variant: ${variantResult.error.message}`);
+  }
+  if (!variantResult.data) {
+    return null;
+  }
+
+  return {
+    product: mapProductRow(productResult.data),
+    variantRecord: mapVariantRow(variantResult.data),
+  };
+}
