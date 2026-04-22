@@ -2,17 +2,18 @@
 
 import { useMemo, useState } from "react";
 import type { CartLine } from "@/modules/cart";
-import { getCartLines } from "@/modules/cart";
+import {
+  getCartLines,
+  getCartTotal,
+  removeCartLine,
+  updateCartLineQuantity,
+} from "@/modules/cart";
 
 export function CartClient() {
-  const [lines] = useState<CartLine[]>(() => getCartLines());
+  const [lines, setLines] = useState<CartLine[]>(() => getCartLines());
 
   const total = useMemo(
-    () =>
-      lines.reduce(
-        (accumulator, line) => accumulator + line.finalUnitPrice * line.quantity,
-        0
-      ),
+    () => getCartTotal(lines),
     [lines]
   );
 
@@ -43,6 +44,61 @@ export function CartClient() {
             </p>
             <p>finalUnitPrice: {line.finalUnitPrice}</p>
             <p>quantity: {line.quantity}</p>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const nextQuantity = line.quantity - 1;
+                  if (nextQuantity < 1) {
+                    return;
+                  }
+                  updateCartLineQuantity(
+                    {
+                      productId: line.productId,
+                      variantId: line.variantId,
+                      isCustomized: line.customization?.isCustomized ?? false,
+                    },
+                    nextQuantity
+                  );
+                  setLines(getCartLines());
+                }}
+                className="rounded border px-2 py-1"
+                disabled={line.quantity <= 1}
+              >
+                -
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  updateCartLineQuantity(
+                    {
+                      productId: line.productId,
+                      variantId: line.variantId,
+                      isCustomized: line.customization?.isCustomized ?? false,
+                    },
+                    line.quantity + 1
+                  );
+                  setLines(getCartLines());
+                }}
+                className="rounded border px-2 py-1"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  removeCartLine({
+                    productId: line.productId,
+                    variantId: line.variantId,
+                    isCustomized: line.customization?.isCustomized ?? false,
+                  });
+                  setLines(getCartLines());
+                }}
+                className="rounded border px-2 py-1"
+              >
+                Remover
+              </button>
+            </div>
           </li>
         ))}
       </ul>
