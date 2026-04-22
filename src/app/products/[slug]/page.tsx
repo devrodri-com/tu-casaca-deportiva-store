@@ -29,6 +29,8 @@ export default async function ProductDetailPage({
       <VariantSelector
         variants={product.variants}
         initialVariantId={product.initialVariantId}
+        supportsCustomization={product.supportsCustomization}
+        customizationSurcharge={product.customizationSurcharge}
       />
     </main>
   );

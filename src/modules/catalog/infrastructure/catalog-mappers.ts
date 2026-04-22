@@ -22,6 +22,11 @@ export function mapProductRow(row: ProductRow): Product {
       kind: row.entity_kind,
     },
     era: row.era,
+    supportsCustomization: row.supports_customization,
+    customizationSurcharge:
+      row.customization_surcharge === null
+        ? null
+        : Number(row.customization_surcharge),
   };
 }
 

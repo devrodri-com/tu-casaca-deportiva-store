@@ -2,16 +2,21 @@ import { resolveAvailability } from "@/modules/catalog";
 import { resolvePurchasableLine } from "@/modules/purchase";
 import { getCatalogProductBySlug } from "@/modules/catalog/infrastructure/catalog-store";
 
-export type CatalogProductDetailVariant = {
-  id: string;
-  size: string;
-  availability: "express" | "made_to_order" | "unavailable";
+export type CatalogProductDetailResolution = {
   fulfillment: "express" | "made_to_order" | "unavailable";
   promisedDays: {
     minDays: number | null;
     maxDays: number | null;
   };
   finalUnitPrice: number;
+};
+
+export type CatalogProductDetailVariant = {
+  id: string;
+  size: string;
+  availability: "express" | "made_to_order" | "unavailable";
+  baseResolution: CatalogProductDetailResolution;
+  customizedResolution: CatalogProductDetailResolution | null;
 };
 
 export type CatalogProductDetail = {
@@ -23,6 +28,8 @@ export type CatalogProductDetail = {
     kind: "club" | "national_team" | "franchise";
   };
   era: "current" | "retro";
+  supportsCustomization: boolean;
+  customizationSurcharge: number | null;
   variants: CatalogProductDetailVariant[];
   initialVariantId: string | null;
 };
@@ -36,7 +43,7 @@ export async function getCatalogProductDetail(
   }
 
   const variants = record.variants.map(({ variant, unitBasePrice }) => {
-    const line = resolvePurchasableLine({
+    const baseLine = resolvePurchasableLine({
       product: record.product,
       variant,
       unitBasePrice,
@@ -45,14 +52,36 @@ export async function getCatalogProductDetail(
         surchargeAmount: 0,
       },
     });
+    const customizedLine =
+      record.product.supportsCustomization &&
+      record.product.customizationSurcharge !== null
+        ? resolvePurchasableLine({
+            product: record.product,
+            variant,
+            unitBasePrice,
+            customization: {
+              isCustomized: true,
+              surchargeAmount: record.product.customizationSurcharge,
+            },
+          })
+        : null;
 
     return {
       id: variant.id,
       size: variant.size,
       availability: resolveAvailability(variant),
-      fulfillment: line.fulfillment,
-      promisedDays: line.promisedDays,
-      finalUnitPrice: line.finalUnitPrice,
+      baseResolution: {
+        fulfillment: baseLine.fulfillment,
+        promisedDays: baseLine.promisedDays,
+        finalUnitPrice: baseLine.finalUnitPrice,
+      },
+      customizedResolution: customizedLine
+        ? {
+            fulfillment: customizedLine.fulfillment,
+            promisedDays: customizedLine.promisedDays,
+            finalUnitPrice: customizedLine.finalUnitPrice,
+          }
+        : null,
     };
   });
 
@@ -66,6 +95,8 @@ export async function getCatalogProductDetail(
     title: record.product.title,
     entity: record.product.entity,
     era: record.product.era,
+    supportsCustomization: record.product.supportsCustomization,
+    customizationSurcharge: record.product.customizationSurcharge,
     variants,
     initialVariantId,
   };

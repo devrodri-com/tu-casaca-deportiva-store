@@ -20,6 +20,8 @@ export type Database = {
           entity_name: string;
           entity_kind: "club" | "national_team" | "franchise";
           era: "current" | "retro";
+          supports_customization: boolean;
+          customization_surcharge: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -33,6 +35,8 @@ export type Database = {
           entity_name: string;
           entity_kind: "club" | "national_team" | "franchise";
           era: "current" | "retro";
+          supports_customization?: boolean;
+          customization_surcharge?: string | null;
           created_at?: string;
           updated_at?: string;
         };
