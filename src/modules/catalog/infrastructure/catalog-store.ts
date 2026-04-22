@@ -114,3 +114,17 @@ export async function getCatalogProductAndVariantByIds(
     variantRecord: mapVariantRow(variantResult.data),
   };
 }
+
+export async function updateVariantExpressStock(params: {
+  variantId: string;
+  expressStock: number;
+}): Promise<void> {
+  const supabase = createServerSupabaseClient();
+  const result = await supabase
+    .from("product_variants")
+    .update({ express_stock: params.expressStock })
+    .eq("id", params.variantId);
+  if (result.error) {
+    throw new Error(`Failed to update variant stock: ${result.error.message}`);
+  }
+}

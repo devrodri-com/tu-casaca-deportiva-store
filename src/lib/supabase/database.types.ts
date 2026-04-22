@@ -92,6 +92,7 @@ export type Database = {
           mercado_pago_payment_id: string | null;
           mercado_pago_status: string | null;
           paid_at: string | null;
+          stock_discounted_at: string | null;
           created_at: string;
         };
         Insert: {
@@ -106,6 +107,7 @@ export type Database = {
           mercado_pago_payment_id?: string | null;
           mercado_pago_status?: string | null;
           paid_at?: string | null;
+          stock_discounted_at?: string | null;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
