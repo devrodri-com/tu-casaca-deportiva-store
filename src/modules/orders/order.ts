@@ -7,6 +7,12 @@ export type Order = {
 };
 
 export function buildOrder(params: { id: string; items: OrderItemSource[] }): Order {
+  for (const source of params.items) {
+    if (source.quantity < 1) {
+      throw new Error("quantity must be >= 1");
+    }
+  }
+
   const items: OrderItem[] = params.items.map((source) => ({
     productId: source.line.productId,
     variantId: source.line.variantId,
@@ -18,6 +24,7 @@ export function buildOrder(params: { id: string; items: OrderItemSource[] }): Or
       maxDays: source.line.promisedDays.maxDays,
     },
     unitPriceSnapshot: source.line.finalUnitPrice,
+    quantity: source.quantity,
     customizationSnapshot: source.customizationSnapshot
       ? {
           isCustomized: source.customizationSnapshot.isCustomized,
@@ -27,7 +34,7 @@ export function buildOrder(params: { id: string; items: OrderItemSource[] }): Or
   }));
 
   const total = items.reduce(
-    (accumulator, item) => accumulator + item.unitPriceSnapshot,
+    (accumulator, item) => accumulator + item.unitPriceSnapshot * item.quantity,
     0
   );
 
