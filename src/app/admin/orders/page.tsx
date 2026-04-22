@@ -18,9 +18,35 @@ export default async function AdminOrdersPage() {
               <p>orderId: {order.id}</p>
               <p>publicReference: {order.public_reference}</p>
               <p>paymentStatus: {order.payment_status}</p>
+              <p>operationalStatus: {order.operational_status ?? "sin estado"}</p>
               <p>
                 stockDiscountedAt: {order.stock_discounted_at ?? "no descontado"}
               </p>
+              <form
+                action="/api/admin/orders/status"
+                method="post"
+                className="mt-2 flex items-center gap-2"
+              >
+                <input type="hidden" name="orderId" value={order.id} />
+                <select
+                  name="nextOperationalStatus"
+                  defaultValue={order.operational_status ?? ""}
+                  className="rounded border px-2 py-1"
+                >
+                  <option value="" disabled>
+                    Seleccionar estado
+                  </option>
+                  <option value="paid">paid</option>
+                  <option value="preparing">preparing</option>
+                  <option value="ready">ready</option>
+                  <option value="shipped">shipped</option>
+                  <option value="delivered">delivered</option>
+                  <option value="cancelled">cancelled</option>
+                </select>
+                <button type="submit" className="rounded border px-2 py-1">
+                  Guardar estado
+                </button>
+              </form>
               <Link
                 className="underline"
                 href={`/orders/${order.public_reference}`}
