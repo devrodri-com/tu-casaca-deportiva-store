@@ -67,6 +67,40 @@ export async function getOrderWithItemsById(orderId: string): Promise<{
   };
 }
 
+export async function getOrderWithItemsByPublicReference(
+  publicReference: string
+): Promise<{
+  order: OrderRow;
+  items: OrderItemRow[];
+} | null> {
+  const supabase = createServiceRoleSupabaseClient();
+
+  const orderResult = await supabase
+    .from("orders")
+    .select("*")
+    .eq("public_reference", publicReference)
+    .maybeSingle();
+  if (orderResult.error) {
+    throw new Error(`Failed to load order: ${orderResult.error.message}`);
+  }
+  if (!orderResult.data) {
+    return null;
+  }
+
+  const itemsResult = await supabase
+    .from("order_items")
+    .select("*")
+    .eq("order_id", orderResult.data.id);
+  if (itemsResult.error) {
+    throw new Error(`Failed to load order items: ${itemsResult.error.message}`);
+  }
+
+  return {
+    order: orderResult.data,
+    items: itemsResult.data,
+  };
+}
+
 export async function updateOrderMercadoPagoPreferenceId(params: {
   orderId: string;
   preferenceId: string;

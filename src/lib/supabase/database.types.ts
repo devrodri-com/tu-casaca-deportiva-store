@@ -82,6 +82,7 @@ export type Database = {
       orders: {
         Row: {
           id: string;
+          public_reference: string;
           total: string;
           customer_full_name: string;
           customer_phone: string;
@@ -95,6 +96,7 @@ export type Database = {
         };
         Insert: {
           id: string;
+          public_reference: string;
           total: string;
           customer_full_name: string;
           customer_phone: string;

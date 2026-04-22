@@ -26,9 +26,9 @@ export function buildMercadoPagoPreferencePayload(params: {
     external_reference: `order:${order.id}`,
     notification_url: `${appUrl}/api/payments/mercadopago/webhook`,
     back_urls: {
-      success: `${appUrl}/checkout/success?orderId=${order.id}`,
-      pending: `${appUrl}/checkout/pending?orderId=${order.id}`,
-      failure: `${appUrl}/checkout/failure?orderId=${order.id}`,
+      success: `${appUrl}/checkout/success?publicReference=${order.public_reference}`,
+      pending: `${appUrl}/checkout/pending?publicReference=${order.public_reference}`,
+      failure: `${appUrl}/checkout/failure?publicReference=${order.public_reference}`,
     },
     auto_return: "approved",
     payer: order.customer_email ? { email: order.customer_email } : undefined,
