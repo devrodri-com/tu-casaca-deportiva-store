@@ -24,6 +24,7 @@ export type CatalogProductDetail = {
   };
   era: "current" | "retro";
   variants: CatalogProductDetailVariant[];
+  initialVariantId: string | null;
 };
 
 export async function getCatalogProductDetail(
@@ -34,30 +35,38 @@ export async function getCatalogProductDetail(
     return null;
   }
 
+  const variants = record.variants.map(({ variant, unitBasePrice }) => {
+    const line = resolvePurchasableLine({
+      product: record.product,
+      variant,
+      unitBasePrice,
+      customization: {
+        isCustomized: false,
+        surchargeAmount: 0,
+      },
+    });
+
+    return {
+      id: variant.id,
+      size: variant.size,
+      availability: resolveAvailability(variant),
+      fulfillment: line.fulfillment,
+      promisedDays: line.promisedDays,
+      finalUnitPrice: line.finalUnitPrice,
+    };
+  });
+
+  const firstAvailableVariant = variants.find(
+    (variant) => variant.availability !== "unavailable"
+  );
+  const initialVariantId = firstAvailableVariant?.id ?? variants[0]?.id ?? null;
+
   return {
     slug: record.product.slug,
     title: record.product.title,
     entity: record.product.entity,
     era: record.product.era,
-    variants: record.variants.map(({ variant, unitBasePrice }) => {
-      const line = resolvePurchasableLine({
-        product: record.product,
-        variant,
-        unitBasePrice,
-        customization: {
-          isCustomized: false,
-          surchargeAmount: 0,
-        },
-      });
-
-      return {
-        id: variant.id,
-        size: variant.size,
-        availability: resolveAvailability(variant),
-        fulfillment: line.fulfillment,
-        promisedDays: line.promisedDays,
-        finalUnitPrice: line.finalUnitPrice,
-      };
-    }),
+    variants,
+    initialVariantId,
   };
 }
