@@ -12,6 +12,10 @@ export function toOrderRow(order: Order): OrderInsert {
     customer_full_name: order.customer.fullName,
     customer_phone: order.customer.phone,
     customer_email: order.customer.email,
+    customer_address: order.customer.address,
+    customer_city: order.customer.city,
+    customer_department: order.customer.department,
+    customer_country: order.customer.country,
   };
 }
 

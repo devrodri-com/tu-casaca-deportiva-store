@@ -119,6 +119,10 @@ export type Database = {
           customer_full_name: string;
           customer_phone: string;
           customer_email: string | null;
+          customer_address: string;
+          customer_city: string;
+          customer_department: string;
+          customer_country: string;
           payment_status: "awaiting_payment" | "pending" | "paid" | "failed";
           mercado_pago_preference_id: string | null;
           mercado_pago_payment_id: string | null;
@@ -143,6 +147,10 @@ export type Database = {
           customer_full_name: string;
           customer_phone: string;
           customer_email?: string | null;
+          customer_address?: string;
+          customer_city?: string;
+          customer_department?: string;
+          customer_country?: string;
           payment_status?: "awaiting_payment" | "pending" | "paid" | "failed";
           mercado_pago_preference_id?: string | null;
           mercado_pago_payment_id?: string | null;

@@ -9,6 +9,7 @@ export type CartLineCustomization = {
 
 export type CartLine = {
   productId: string;
+  productSlug?: string | null;
   variantId: string;
   title: string;
   imageUrl: string | null;
@@ -26,6 +27,7 @@ export type CartLine = {
 
 type CreateCartLineFromSelectionInput = {
   productId: string;
+  productSlug?: string | null;
   variantId: string;
   title: string;
   imageUrl: string | null;
@@ -72,6 +74,7 @@ export function createCartLineFromSelection(
 
   return {
     productId: input.productId,
+    productSlug: input.productSlug ?? null,
     variantId: input.variantId,
     title: input.title,
     imageUrl: input.imageUrl,

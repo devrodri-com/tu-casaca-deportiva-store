@@ -5,6 +5,10 @@ export type OrderCustomerSnapshot = {
   fullName: string;
   phone: string;
   email: string | null;
+  address: string;
+  city: string;
+  department: string;
+  country: "Uruguay";
 };
 
 export type Order = {

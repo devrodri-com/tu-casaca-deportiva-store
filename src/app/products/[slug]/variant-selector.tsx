@@ -9,6 +9,7 @@ import { addCartLine, createCartLineFromSelection } from "@/modules/cart";
 
 type VariantSelectorProps = {
   productId: string;
+  productSlug: string;
   title: string;
   imageUrl: string | null;
   imageAlt: string | null;
@@ -59,6 +60,7 @@ function pdpTalleModeLabel(availability: CatalogProductDetailVariant["availabili
 
 export function VariantSelector({
   productId,
+  productSlug,
   title,
   imageUrl,
   imageAlt,
@@ -374,6 +376,7 @@ export function VariantSelector({
                 const madeToOrderQty = quantity - selectedVariant.expressStock;
                 const expressLine = createCartLineFromSelection({
                   productId,
+                  productSlug,
                   variantId: selectedVariant.id,
                   title,
                   imageUrl,
@@ -388,6 +391,7 @@ export function VariantSelector({
                 });
                 const madeToOrderLine = createCartLineFromSelection({
                   productId,
+                  productSlug,
                   variantId: selectedVariant.id,
                   title,
                   imageUrl,
@@ -405,6 +409,7 @@ export function VariantSelector({
               } else {
                 const line = createCartLineFromSelection({
                   productId,
+                  productSlug,
                   variantId: selectedVariant.id,
                   title,
                   imageUrl,
