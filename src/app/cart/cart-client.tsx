@@ -26,7 +26,7 @@ export function CartClient() {
       <ul className="flex flex-col gap-2">
         {lines.map((line, index) => (
           <li
-            key={`${line.productId}-${line.variantId}-${line.customization?.isCustomized ?? false}-${index}`}
+            key={`${line.productId}-${line.variantId}-${line.customization?.isCustomized ?? false}-${line.customization?.jerseyNumber ?? ""}-${line.customization?.jerseyName ?? ""}-${index}`}
             className="tcds-card p-3 text-sm"
           >
             <p>title: {line.title}</p>
@@ -37,6 +37,11 @@ export function CartClient() {
                 ? `sí (+${line.customization.surchargeAmount})`
                 : "no"}
             </p>
+            {line.customization ? (
+              <p>
+                detalle: #{line.customization.jerseyNumber} · {line.customization.jerseyName}
+              </p>
+            ) : null}
             <p>fulfillment: {line.fulfillment}</p>
             <p>
               promisedDays: {String(line.promisedDays.minDays)} /{" "}
@@ -56,7 +61,10 @@ export function CartClient() {
                     {
                       productId: line.productId,
                       variantId: line.variantId,
+                      fulfillment: line.fulfillment,
                       isCustomized: line.customization?.isCustomized ?? false,
+                      customizationNumber: line.customization?.jerseyNumber ?? null,
+                      customizationName: line.customization?.jerseyName ?? null,
                     },
                     nextQuantity
                   );
@@ -74,7 +82,10 @@ export function CartClient() {
                     {
                       productId: line.productId,
                       variantId: line.variantId,
+                      fulfillment: line.fulfillment,
                       isCustomized: line.customization?.isCustomized ?? false,
+                      customizationNumber: line.customization?.jerseyNumber ?? null,
+                      customizationName: line.customization?.jerseyName ?? null,
                     },
                     line.quantity + 1
                   );
@@ -90,7 +101,10 @@ export function CartClient() {
                   removeCartLine({
                     productId: line.productId,
                     variantId: line.variantId,
+                    fulfillment: line.fulfillment,
                     isCustomized: line.customization?.isCustomized ?? false,
+                    customizationNumber: line.customization?.jerseyNumber ?? null,
+                    customizationName: line.customization?.jerseyName ?? null,
                   });
                   setLines(getCartLines());
                 }}

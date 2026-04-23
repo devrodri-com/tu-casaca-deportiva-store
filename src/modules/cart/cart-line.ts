@@ -3,6 +3,8 @@ import type { CatalogProductDetailResolution } from "@/modules/catalog/applicati
 export type CartLineCustomization = {
   isCustomized: boolean;
   surchargeAmount: number;
+  jerseyNumber: string;
+  jerseyName: string;
 } | null;
 
 export type CartLine = {
@@ -29,6 +31,8 @@ type CreateCartLineFromSelectionInput = {
   quantity: number;
   customizationEnabled: boolean;
   customizationSurcharge: number | null;
+  customizationNumber: string | null;
+  customizationName: string | null;
 };
 
 export function createCartLineFromSelection(
@@ -45,9 +49,19 @@ export function createCartLineFromSelection(
             "customizationSurcharge is required when customization is enabled"
           );
         }
+        const number = (input.customizationNumber ?? "").trim();
+        const name = (input.customizationName ?? "").trim();
+        if (!/^\d+$/.test(number)) {
+          throw new Error("customizationNumber must contain only digits");
+        }
+        if (name.length === 0) {
+          throw new Error("customizationName is required when customization is enabled");
+        }
         return {
           isCustomized: true,
           surchargeAmount: input.customizationSurcharge,
+          jerseyNumber: number,
+          jerseyName: name,
         };
       })()
     : null;

@@ -27,7 +27,7 @@ export function ProductPdpGallery({ images, title }: ProductPdpGalleryProps) {
   if (images.length === 0) {
     return (
       <div
-        className="flex aspect-[4/3] w-full max-w-xl items-center justify-center rounded-lg border border-dashed border-border bg-surface/60 text-sm text-muted-foreground"
+        className="flex aspect-[4/3] w-full items-center justify-center rounded-2xl border border-dashed border-white/15 bg-neutral-900/70 text-sm text-neutral-500"
         aria-label="Sin imagen de producto"
       >
         Sin imagen por ahora
@@ -36,17 +36,17 @@ export function ProductPdpGallery({ images, title }: ProductPdpGalleryProps) {
   }
 
   return (
-    <div className="flex max-w-xl flex-col gap-3">
+    <div className="flex flex-col gap-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={main.url}
         alt={main.alt ?? title}
-        className="aspect-[4/3] w-full rounded-lg border border-border object-contain bg-surface/40"
+        className="aspect-[4/3] w-full rounded-2xl border border-white/10 bg-linear-to-b from-neutral-900 to-neutral-800 object-contain p-3 shadow-lg shadow-black/30"
         width={800}
         height={600}
       />
       {images.length > 1 ? (
-        <ul className="flex flex-wrap gap-2" aria-label="Miniaturas">
+        <ul className="flex flex-wrap gap-2.5" aria-label="Miniaturas">
           {images.map((img, idx) => {
             const selected = idx === safeIndex;
             return (
@@ -54,10 +54,10 @@ export function ProductPdpGallery({ images, title }: ProductPdpGalleryProps) {
                 <button
                   type="button"
                   onClick={() => setActiveIndex(idx)}
-                  className={`rounded-md border p-0.5 transition-shadow ${
+                  className={`rounded-lg border p-0.5 transition ${
                     selected
-                      ? "border-sky-500 ring-2 ring-sky-400 ring-offset-2 ring-offset-white"
-                      : "border-border hover:border-foreground/30"
+                      ? "border-sky-500 ring-2 ring-sky-400/70"
+                      : "border-white/15 hover:border-sky-500/40"
                   }`}
                   aria-current={selected ? "true" : undefined}
                   aria-label={`Ver imagen ${idx + 1}`}
@@ -66,7 +66,7 @@ export function ProductPdpGallery({ images, title }: ProductPdpGalleryProps) {
                   <img
                     src={img.url}
                     alt=""
-                    className="h-14 w-14 rounded object-cover"
+                    className="h-14 w-14 rounded-md bg-neutral-900 object-contain p-1.5"
                     width={56}
                     height={56}
                   />
