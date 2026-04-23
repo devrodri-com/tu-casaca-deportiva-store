@@ -58,6 +58,7 @@ export default async function ProductDetailPage({
 
           <VariantSelector
             productId={product.productId}
+            productSlug={slug}
             title={product.title}
             imageUrl={product.images[0]?.url ?? null}
             imageAlt={product.images[0]?.alt ?? product.title}

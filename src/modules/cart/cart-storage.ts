@@ -87,6 +87,8 @@ function normalizeCartLine(raw: PersistedCartLine): CartLine | null {
 
   return {
     productId: raw.productId,
+    productSlug:
+      typeof raw.productSlug === "string" ? raw.productSlug : raw.productSlug === null ? null : null,
     variantId: raw.variantId,
     title: raw.title,
     imageUrl,

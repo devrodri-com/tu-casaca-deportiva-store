@@ -11,8 +11,34 @@ type CheckoutConfirmBody = {
     fullName: string;
     phone: string;
     email: string | null;
+    address: string;
+    city: string;
+    department: string;
+    country: "Uruguay";
   };
 };
+
+const URUGUAY_DEPARTMENTS = new Set([
+  "Montevideo",
+  "Canelones",
+  "Maldonado",
+  "Colonia",
+  "San José",
+  "Florida",
+  "Lavalleja",
+  "Rocha",
+  "Treinta y Tres",
+  "Cerro Largo",
+  "Durazno",
+  "Flores",
+  "Soriano",
+  "Río Negro",
+  "Paysandú",
+  "Salto",
+  "Artigas",
+  "Rivera",
+  "Tacuarembó",
+]);
 
 export async function POST(request: Request) {
   const body = (await request.json()) as CheckoutConfirmBody;
@@ -34,7 +60,35 @@ export async function POST(request: Request) {
 
   if (!customer || customer.phone.trim().length === 0) {
     return NextResponse.json(
-      { ok: false, message: "phone es requerido." },
+      { ok: false, message: "Teléfono es requerido." },
+      { status: 400 }
+    );
+  }
+
+  if (!customer || customer.address.trim().length === 0) {
+    return NextResponse.json(
+      { ok: false, message: "Dirección es requerida." },
+      { status: 400 }
+    );
+  }
+
+  if (!customer || customer.city.trim().length === 0) {
+    return NextResponse.json(
+      { ok: false, message: "Barrio o ciudad es requerido." },
+      { status: 400 }
+    );
+  }
+
+  if (!customer || !URUGUAY_DEPARTMENTS.has(customer.department.trim())) {
+    return NextResponse.json(
+      { ok: false, message: "Seleccioná un departamento válido de Uruguay." },
+      { status: 400 }
+    );
+  }
+
+  if (!customer || customer.country.trim() !== "Uruguay") {
+    return NextResponse.json(
+      { ok: false, message: "País inválido para este checkout." },
       { status: 400 }
     );
   }
@@ -130,6 +184,10 @@ export async function POST(request: Request) {
       fullName: customer.fullName.trim(),
       phone: customer.phone.trim(),
       email: customer.email?.trim() ? customer.email.trim() : null,
+      address: customer.address.trim(),
+      city: customer.city.trim(),
+      department: customer.department.trim(),
+      country: "Uruguay",
     },
     lines: validatedLines,
   });
