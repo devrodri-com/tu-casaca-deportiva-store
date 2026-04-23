@@ -94,6 +94,8 @@ export async function POST(request: Request) {
           productId: authoritative.product.id,
           variantId: authoritative.variantRecord.variant.id,
           title: authoritative.product.title,
+          imageUrl: line.imageUrl ?? null,
+          imageAlt: line.imageAlt ?? null,
           size: authoritative.variantRecord.variant.size,
           fulfillment: resolvedLine.fulfillment,
           promisedDays: {

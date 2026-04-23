@@ -11,6 +11,8 @@ export type CartLine = {
   productId: string;
   variantId: string;
   title: string;
+  imageUrl: string | null;
+  imageAlt: string | null;
   size: string;
   fulfillment: "express" | "made_to_order" | "unavailable";
   promisedDays: {
@@ -26,6 +28,8 @@ type CreateCartLineFromSelectionInput = {
   productId: string;
   variantId: string;
   title: string;
+  imageUrl: string | null;
+  imageAlt: string | null;
   size: string;
   resolution: CatalogProductDetailResolution;
   quantity: number;
@@ -70,6 +74,8 @@ export function createCartLineFromSelection(
     productId: input.productId,
     variantId: input.variantId,
     title: input.title,
+    imageUrl: input.imageUrl,
+    imageAlt: input.imageAlt,
     size: input.size,
     fulfillment: input.resolution.fulfillment,
     promisedDays: {

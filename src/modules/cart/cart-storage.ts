@@ -41,6 +41,68 @@ function writeCartLines(lines: CartLine[]): void {
   window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(lines));
 }
 
+type PersistedCartLine = Partial<CartLine> & {
+  primaryImageUrl?: string | null;
+  primaryImageAlt?: string | null;
+};
+
+function normalizeCartLine(raw: PersistedCartLine): CartLine | null {
+  if (
+    typeof raw.productId !== "string" ||
+    typeof raw.variantId !== "string" ||
+    typeof raw.title !== "string" ||
+    typeof raw.size !== "string" ||
+    (raw.fulfillment !== "express" &&
+      raw.fulfillment !== "made_to_order" &&
+      raw.fulfillment !== "unavailable") ||
+    !raw.promisedDays ||
+    typeof raw.promisedDays.minDays !== "number" && raw.promisedDays.minDays !== null ||
+    typeof raw.promisedDays.maxDays !== "number" && raw.promisedDays.maxDays !== null ||
+    typeof raw.finalUnitPrice !== "number" ||
+    typeof raw.quantity !== "number"
+  ) {
+    return null;
+  }
+
+  const imageUrl =
+    typeof raw.imageUrl === "string"
+      ? raw.imageUrl
+      : raw.imageUrl === null
+        ? null
+        : typeof raw.primaryImageUrl === "string"
+          ? raw.primaryImageUrl
+          : raw.primaryImageUrl === null
+            ? null
+            : null;
+  const imageAlt =
+    typeof raw.imageAlt === "string"
+      ? raw.imageAlt
+      : raw.imageAlt === null
+        ? null
+        : typeof raw.primaryImageAlt === "string"
+          ? raw.primaryImageAlt
+          : raw.primaryImageAlt === null
+            ? null
+            : null;
+
+  return {
+    productId: raw.productId,
+    variantId: raw.variantId,
+    title: raw.title,
+    imageUrl,
+    imageAlt,
+    size: raw.size,
+    fulfillment: raw.fulfillment,
+    promisedDays: {
+      minDays: raw.promisedDays.minDays,
+      maxDays: raw.promisedDays.maxDays,
+    },
+    finalUnitPrice: raw.finalUnitPrice,
+    customization: raw.customization ?? null,
+    quantity: raw.quantity,
+  };
+}
+
 export function getCartLines(): CartLine[] {
   if (typeof window === "undefined") {
     return [];
@@ -52,7 +114,10 @@ export function getCartLines(): CartLine[] {
   }
 
   try {
-    return JSON.parse(raw) as CartLine[];
+    const parsed = JSON.parse(raw) as PersistedCartLine[];
+    return parsed
+      .map((line) => normalizeCartLine(line))
+      .filter((line): line is CartLine => line !== null);
   } catch {
     return [];
   }
@@ -73,6 +138,8 @@ export function addCartLine(line: CartLine): void {
   const existing = updated[existingIndex];
   updated[existingIndex] = {
     ...existing,
+    imageUrl: existing.imageUrl ?? line.imageUrl,
+    imageAlt: existing.imageAlt ?? line.imageAlt,
     quantity: existing.quantity + line.quantity,
   };
   writeCartLines(updated);

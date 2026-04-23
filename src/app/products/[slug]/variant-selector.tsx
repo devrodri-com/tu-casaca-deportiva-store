@@ -10,6 +10,8 @@ import { addCartLine, createCartLineFromSelection } from "@/modules/cart";
 type VariantSelectorProps = {
   productId: string;
   title: string;
+  imageUrl: string | null;
+  imageAlt: string | null;
   variants: CatalogProductDetailVariant[];
   initialVariantId: string | null;
   supportsCustomization: boolean;
@@ -58,6 +60,8 @@ function pdpTalleModeLabel(availability: CatalogProductDetailVariant["availabili
 export function VariantSelector({
   productId,
   title,
+  imageUrl,
+  imageAlt,
   variants,
   initialVariantId,
   supportsCustomization,
@@ -372,6 +376,8 @@ export function VariantSelector({
                   productId,
                   variantId: selectedVariant.id,
                   title,
+                  imageUrl,
+                  imageAlt,
                   size: selectedVariant.sizeLabel,
                   resolution: selectedVariant.baseResolution,
                   quantity: expressQty,
@@ -384,6 +390,8 @@ export function VariantSelector({
                   productId,
                   variantId: selectedVariant.id,
                   title,
+                  imageUrl,
+                  imageAlt,
                   size: selectedVariant.sizeLabel,
                   resolution: selectedVariant.madeToOrderResolution,
                   quantity: madeToOrderQty,
@@ -399,6 +407,8 @@ export function VariantSelector({
                   productId,
                   variantId: selectedVariant.id,
                   title,
+                  imageUrl,
+                  imageAlt,
                   size: selectedVariant.sizeLabel,
                   resolution: selectedResolution,
                   quantity,
