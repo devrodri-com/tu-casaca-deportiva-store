@@ -1,4 +1,9 @@
 import Link from "next/link";
+import { StoreProductsEmptyState } from "@/app/products/_components/store-products-empty-state";
+import { StoreProductsFilterBar } from "@/app/products/_components/store-products-filter-bar";
+import { StoreProductCard } from "@/app/products/_components/store-product-card";
+import { StorePublicFooter } from "@/components/storefront/store-public-footer";
+import { StorePublicHeader } from "@/components/storefront/store-public-header";
 import { getCatalogProductList } from "@/modules/catalog/application/get-catalog-product-list";
 
 export const dynamic = "force-dynamic";
@@ -13,33 +18,6 @@ function isValidProductType(value: string | undefined): value is "football_jerse
 
 function isValidAudience(value: string | undefined): value is "adult" | "kids" {
   return value === "adult" || value === "kids";
-}
-
-function getTypeLabel(type: "football_jersey" | "nba_jersey" | "jacket"): string {
-  if (type === "football_jersey") {
-    return "Futbol";
-  }
-  if (type === "nba_jersey") {
-    return "NBA";
-  }
-  return "Campera";
-}
-
-function getAudienceLabel(audience: "adult" | "kids"): string {
-  return audience === "adult" ? "Adulto" : "Niños";
-}
-
-function deliveryBadgeClassName(
-  label: "Entrega rapida" | "Por encargo" | "Sin stock"
-): string {
-  switch (label) {
-    case "Entrega rapida":
-      return "border border-emerald-200 bg-emerald-50 text-emerald-800";
-    case "Por encargo":
-      return "border border-sky-100 bg-sky-50 text-sky-800";
-    default:
-      return "border border-red-200 bg-red-50 text-red-800";
-  }
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
@@ -59,89 +37,51 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   });
 
   const hasActiveFilter = selectedType !== null || selectedAudience !== null;
+  const productGridClass =
+    filteredProducts.length <= 2
+      ? "mx-auto mt-7 grid max-w-4xl items-stretch gap-4 sm:grid-cols-2"
+      : "mt-7 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-8 md:py-10">
-      <h1 className="tcds-title-page">Productos</h1>
-      <p className="tcds-prose">
-        Elegi tu camiseta por tipo, publico y modalidad de entrega.
-      </p>
-
-      {hasActiveFilter ? (
-        <div className="tcds-card flex items-center justify-between gap-3 px-3 py-2 text-sm">
-          <p className="text-foreground">
-            Filtro activo: {selectedType ? `tipo ${getTypeLabel(selectedType)}` : "todos los tipos"}
-            {selectedAudience ? ` + publico ${getAudienceLabel(selectedAudience)}` : ""}
+    <div className="flex min-h-dvh flex-col bg-neutral-950 text-neutral-100">
+      <StorePublicHeader variant="dark" />
+      <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-9 md:px-6 md:py-12">
+        <section className="mx-auto max-w-3xl text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-400/90">
+            TIENDA
           </p>
-          <Link href="/products" className="tcds-link flex-shrink-0 text-sm">
-            Limpiar
-          </Link>
-        </div>
-      ) : null}
-
-      {filteredProducts.length === 0 ? (
-        <p className="tcds-prose">No encontramos productos para ese filtro.</p>
-      ) : (
-        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {filteredProducts.map((product) => (
-            <li key={product.slug}>
-              <Link
-                className="tcds-card block p-4 transition-shadow hover:shadow-md"
-                href={`/products/${product.slug}`}
-              >
-                <div className="flex gap-4">
-                  {product.primaryImageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={product.primaryImageUrl}
-                      alt={product.primaryImageAlt ?? product.title}
-                      className="h-24 w-24 shrink-0 rounded-md border border-border object-cover bg-surface"
-                      width={96}
-                      height={96}
-                    />
-                  ) : (
-                    <div
-                      className="flex h-24 w-24 shrink-0 items-center justify-center rounded-md border border-dashed border-border bg-surface/60 text-center text-[10px] leading-tight text-muted-foreground"
-                      aria-hidden
-                    >
-                      Sin imagen
-                    </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                      <h2 className="text-lg font-medium text-foreground">{product.title}</h2>
-                      <span
-                        className={`whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium ${deliveryBadgeClassName(
-                          product.deliveryBadgeLabel
-                        )}`}
-                      >
-                        {product.deliveryBadgeLabel}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Tipo: {product.productTypeLabel}</p>
-                    <p className="text-sm text-muted-foreground">Para: {product.audienceLabel}</p>
-                    <p className="tcds-link mt-3 inline-block text-sm">Ver producto</p>
-                  </div>
-                </div>
+          <h1 className="mt-2.5 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+            Catálogo
+          </h1>
+          <p className="mt-3.5 text-sm leading-relaxed text-neutral-300 md:text-base">
+            Elegí tu casaca por categoría, disponibilidad y estilo. Stock express 24–48 h o pedidos
+            por encargo cuando el talle no está disponible, con personalización en productos
+            habilitados.
+          </p>
+          <StoreProductsFilterBar selectedType={selectedType} selectedAudience={selectedAudience} />
+          {hasActiveFilter ? (
+            <p className="mt-3 text-center text-xs text-neutral-500">
+              Estás viendo productos filtrados.{" "}
+              <Link href="/products" className="text-sky-400 hover:text-sky-300 hover:underline">
+                Ver catálogo completo
               </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+            </p>
+          ) : null}
+        </section>
 
-      {!hasActiveFilter ? (
-        <div className="flex flex-wrap gap-2 text-sm">
-          <Link href="/products?type=football_jersey" className="tcds-btn-secondary">
-            Futbol
-          </Link>
-          <Link href="/products?type=nba_jersey" className="tcds-btn-secondary">
-            NBA
-          </Link>
-          <Link href="/products?audience=kids" className="tcds-btn-secondary">
-            Niños
-          </Link>
-        </div>
-      ) : null}
-    </main>
+        {filteredProducts.length === 0 ? (
+          <StoreProductsEmptyState />
+        ) : (
+          <ul className={productGridClass}>
+            {filteredProducts.map((product) => (
+              <li key={product.slug} className="h-full">
+                <StoreProductCard product={product} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
+      <StorePublicFooter variant="dark" />
+    </div>
   );
 }
