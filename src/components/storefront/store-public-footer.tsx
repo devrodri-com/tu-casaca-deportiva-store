@@ -33,8 +33,14 @@ export function StorePublicFooter({ variant = "light" }: StorePublicFooterProps)
           <span className={`font-medium ${isDark ? "text-neutral-300" : "text-foreground"}`}>
             Enlaces
           </span>
+          <Link href="/" className={link}>
+            Inicio
+          </Link>
           <Link href="/products" className={link}>
             Catálogo
+          </Link>
+          <Link href="/nosotros" className={link}>
+            Nosotros
           </Link>
           <Link href="/cart" className={link}>
             Carrito

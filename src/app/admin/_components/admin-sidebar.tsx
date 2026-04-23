@@ -31,7 +31,7 @@ export function AdminSidebar() {
           Panel
         </p>
         <p className="mt-0.5 text-sm font-semibold leading-tight text-foreground">
-          Tu Casaca
+          Tu Casaca Deportiva
         </p>
         <p className="text-xs text-muted-foreground">Administración</p>
       </div>
