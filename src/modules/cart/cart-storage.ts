@@ -5,14 +5,20 @@ const CART_STORAGE_KEY = "tcds_cart_lines";
 type CartLineIdentity = {
   productId: string;
   variantId: string;
+  fulfillment: CartLine["fulfillment"];
   isCustomized: boolean;
+  customizationNumber: string | null;
+  customizationName: string | null;
 };
 
 function getLineIdentity(line: CartLine): CartLineIdentity {
   return {
     productId: line.productId,
     variantId: line.variantId,
+    fulfillment: line.fulfillment,
     isCustomized: line.customization?.isCustomized ?? false,
+    customizationNumber: line.customization?.jerseyNumber ?? null,
+    customizationName: line.customization?.jerseyName ?? null,
   };
 }
 
@@ -21,7 +27,10 @@ function isSameLineIdentity(line: CartLine, identity: CartLineIdentity): boolean
   return (
     lineIdentity.productId === identity.productId &&
     lineIdentity.variantId === identity.variantId &&
-    lineIdentity.isCustomized === identity.isCustomized
+    lineIdentity.fulfillment === identity.fulfillment &&
+    lineIdentity.isCustomized === identity.isCustomized &&
+    lineIdentity.customizationNumber === identity.customizationNumber &&
+    lineIdentity.customizationName === identity.customizationName
   );
 }
 

@@ -69,6 +69,16 @@ export async function POST(request: Request) {
         if (customizationSurcharge === null) {
           throw new Error("La personalización no es válida para este producto.");
         }
+        const customizationNumber = line.customization?.jerseyNumber?.trim() ?? "";
+        const customizationName = line.customization?.jerseyName?.trim() ?? "";
+        if (customizationEnabled) {
+          if (!/^\d+$/.test(customizationNumber)) {
+            throw new Error("Número de personalización inválido.");
+          }
+          if (customizationName.length === 0) {
+            throw new Error("Nombre de personalización requerido.");
+          }
+        }
 
         const resolvedLine = resolvePurchasableLine({
           product: authoritative.product,
@@ -95,6 +105,8 @@ export async function POST(request: Request) {
             ? {
                 isCustomized: true,
                 surchargeAmount: customizationSurcharge,
+                jerseyNumber: customizationNumber,
+                jerseyName: customizationName,
               }
             : null,
           quantity: line.quantity,

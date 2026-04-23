@@ -16,12 +16,15 @@ export type CatalogProductDetailVariant = {
   id: string;
   sizeLabel: string;
   availability: "express" | "made_to_order" | "unavailable";
+  expressStock: number;
+  canMadeToOrder: boolean;
   /** true solo con express real y express_stock 1-3; para UI, sin prometer cantidad exacta */
   isLowStock: boolean;
   deliveryLabel: string;
   customizationLabel: string;
   priceLabel: string;
   baseResolution: CatalogProductDetailResolution;
+  madeToOrderResolution: CatalogProductDetailResolution | null;
   customizedResolution: CatalogProductDetailResolution | null;
 };
 
@@ -36,6 +39,9 @@ export type CatalogProductDetail = {
   productId: string;
   slug: string;
   title: string;
+  audienceLabel: string;
+  productTypeLabel: string;
+  startingPrice: number | null;
   entity: {
     slug: string;
     name: string;
@@ -83,6 +89,21 @@ export async function getCatalogProductDetail(
 
     const availability = resolveAvailability(variant);
     const isLowStock = availability === "express" && variant.expressStock <= 3;
+    const canMadeToOrder =
+      variant.allowMadeToOrder &&
+      variant.madeToOrderMinDays !== null &&
+      variant.madeToOrderMaxDays !== null;
+    const madeToOrderResolution: CatalogProductDetailResolution | null =
+      canMadeToOrder
+        ? {
+            fulfillment: "made_to_order",
+            promisedDays: {
+              minDays: variant.madeToOrderMinDays,
+              maxDays: variant.madeToOrderMaxDays,
+            },
+            finalUnitPrice: baseLine.finalUnitPrice,
+          }
+        : null;
     const deliveryLabel =
       availability === "express"
         ? "Entrega en 24-48h"
@@ -99,6 +120,8 @@ export async function getCatalogProductDetail(
       id: variant.id,
       sizeLabel: variant.size,
       availability,
+      expressStock: variant.expressStock,
+      canMadeToOrder,
       isLowStock,
       deliveryLabel,
       customizationLabel,
@@ -108,6 +131,7 @@ export async function getCatalogProductDetail(
         promisedDays: baseLine.promisedDays,
         finalUnitPrice: baseLine.finalUnitPrice,
       },
+      madeToOrderResolution,
       customizedResolution: customizedLine
         ? {
             fulfillment: customizedLine.fulfillment,
@@ -130,11 +154,25 @@ export async function getCatalogProductDetail(
     alt: row.altText,
     isPrimary: row.isPrimary,
   }));
+  const startingPrice =
+    variants.length > 0
+      ? Math.min(...variants.map((variant) => variant.baseResolution.finalUnitPrice))
+      : null;
+  const productTypeLabel =
+    record.product.productType === "football_jersey"
+      ? "Camiseta de fútbol"
+      : record.product.productType === "nba_jersey"
+        ? "Camiseta de NBA"
+        : "Campera";
+  const audienceLabel = record.product.audience === "adult" ? "Adulto" : "Niños";
 
   return {
     productId: record.product.id,
     slug: record.product.slug,
     title: record.product.title,
+    audienceLabel,
+    productTypeLabel,
+    startingPrice,
     entity: record.product.entity,
     era: record.product.era,
     supportsCustomization: record.product.supportsCustomization,
