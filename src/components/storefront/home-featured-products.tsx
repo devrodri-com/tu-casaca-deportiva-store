@@ -6,13 +6,18 @@ type HomeFeaturedProductsProps = {
 };
 
 export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
+  const featuredGridClass =
+    items.length <= 2
+      ? "mx-auto mt-10 grid max-w-3xl justify-items-center gap-4 sm:grid-cols-2"
+      : "mx-auto mt-10 grid max-w-5xl justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3";
+
   return (
     <section
-      className="border-b border-white/10 bg-neutral-950 py-14 md:py-20"
+      className="bg-neutral-950 py-14 md:py-20"
       aria-labelledby="home-featured-heading"
     >
       <div className="mx-auto max-w-6xl px-5 md:px-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
           <div>
             <h2
               id="home-featured-heading"
@@ -20,13 +25,13 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
             >
               En tienda ahora
             </h2>
-            <p className="mt-2 max-w-lg text-sm text-neutral-400 md:text-base">
+            <p className="mt-2 max-w-xl text-sm text-neutral-400 md:text-base">
               Productos activos del catálogo. Entrá al detalle para ver talles y disponibilidad.
             </p>
           </div>
           <Link
             href="/products"
-            className="w-fit text-sm font-semibold text-sky-400 hover:text-sky-300 hover:underline"
+            className="mt-4 inline-flex w-fit text-sm font-semibold text-sky-400 underline-offset-2 transition hover:text-sky-300 hover:underline"
           >
             Ver todo el catálogo
           </Link>
@@ -46,14 +51,14 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
             </Link>
           </div>
         ) : (
-          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className={featuredGridClass}>
             {items.map((p) => (
-              <li key={p.slug}>
-                <Link
+              <li key={p.slug} className="h-full w-full max-w-[18.5rem]">
+                  <Link
                   href={`/products/${p.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-neutral-900 transition hover:border-sky-500/40"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/90 shadow-md shadow-black/25 ring-1 ring-white/5 transition hover:border-sky-500/40 hover:shadow-sky-900/20"
                 >
-                  <div className="relative aspect-[4/3] bg-neutral-800">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-neutral-800">
                     {p.primaryImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element -- catálogo remoto Supabase; sin optimizador en esta etapa
                       <img
@@ -69,8 +74,8 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-1 flex-col gap-2 p-4">
-                    <span className="line-clamp-2 text-base font-semibold leading-snug text-white group-hover:text-sky-100">
+                  <div className="flex min-h-30 flex-1 flex-col gap-1.5 p-3.5">
+                    <span className="line-clamp-2 text-sm font-semibold leading-snug text-white group-hover:text-sky-100 md:text-[0.95rem]">
                       {p.title}
                     </span>
                     <span className="text-xs text-neutral-500">{p.productTypeLabel}</span>
