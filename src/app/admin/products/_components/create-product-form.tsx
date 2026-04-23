@@ -30,7 +30,7 @@ export function CreateProductForm() {
         <p className="mt-2 text-xs text-muted-foreground">
           Obligatorio si la audiencia es <strong>Adulto</strong>: se crean automaticamente S, M, L,
           XL y XXL con este precio y sin disponibilidad hasta que cargues stock o encargo. No aplica
-          a <strong>Ninos</strong>.
+          a <strong>Niños</strong>.
         </p>
       </div>
       <button type="submit" className="tcds-btn-primary w-fit" disabled={pending}>
