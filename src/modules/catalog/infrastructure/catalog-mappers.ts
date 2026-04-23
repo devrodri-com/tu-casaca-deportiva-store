@@ -27,6 +27,7 @@ export function mapProductRow(row: ProductRow): Product {
       row.customization_surcharge === null
         ? null
         : Number(row.customization_surcharge),
+    isActive: row.is_active,
   };
 }
 

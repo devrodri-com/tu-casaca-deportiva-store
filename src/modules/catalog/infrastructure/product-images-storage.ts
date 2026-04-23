@@ -34,3 +34,14 @@ export async function removeProductImageObject(storagePath: string): Promise<voi
     throw new Error(result.error.message);
   }
 }
+
+export async function removeProductImageObjects(storagePaths: readonly string[]): Promise<void> {
+  if (storagePaths.length === 0) {
+    return;
+  }
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase.storage.from(PRODUCT_IMAGES_BUCKET).remove([...storagePaths]);
+  if (result.error) {
+    throw new Error(result.error.message);
+  }
+}

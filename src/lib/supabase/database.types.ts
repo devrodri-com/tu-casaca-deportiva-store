@@ -22,6 +22,7 @@ export type Database = {
           era: "current" | "retro";
           supports_customization: boolean;
           customization_surcharge: string | null;
+          is_active: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -37,6 +38,7 @@ export type Database = {
           era: "current" | "retro";
           supports_customization?: boolean;
           customization_surcharge?: string | null;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };

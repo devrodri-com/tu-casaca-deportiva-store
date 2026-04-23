@@ -15,7 +15,7 @@ export type CatalogProductListItem = {
 };
 
 export async function getCatalogProductList(): Promise<CatalogProductListItem[]> {
-  const records = await listCatalogProductsWithVariants();
+  const records = await listCatalogProductsWithVariants({ onlyActive: true });
   const imageMap = await getProductImageRowsForProductIds(
     records.map(({ product }) => product.id)
   );
