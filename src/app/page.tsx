@@ -1,6 +1,8 @@
 import { HomeCategoryGrid } from "@/components/storefront/home-category-grid";
 import { HomeFeaturedProducts } from "@/components/storefront/home-featured-products";
 import { HomeHeroCarousel } from "@/components/storefront/home-hero-carousel";
+import { HomeInstagramStrip } from "@/components/storefront/home-instagram-strip";
+import { HomeInstitutionalBlock } from "@/components/storefront/home-institutional-block";
 import { HomeTrustBar } from "@/components/storefront/home-trust-bar";
 import { StorePublicFooter } from "@/components/storefront/store-public-footer";
 import { StorePublicHeader } from "@/components/storefront/store-public-header";
@@ -17,7 +19,9 @@ export default async function HomePage() {
       <StorePublicHeader variant="dark" />
       <HomeHeroCarousel />
       <HomeTrustBar />
+      <HomeInstagramStrip />
       <HomeCategoryGrid />
+      <HomeInstitutionalBlock />
       <HomeFeaturedProducts items={featured} />
       <div className="flex-1" aria-hidden />
       <StorePublicFooter variant="dark" />

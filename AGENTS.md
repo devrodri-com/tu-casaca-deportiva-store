@@ -178,3 +178,29 @@ Cuando ayudes:
 - ajustes visuales simples
 - textos
 - cambios de layout menores
+
+---
+
+## Regla de prompts para Cursor (CRÍTICA)
+
+Todo prompt generado para Cursor debe eliminar ambigüedad de ejecución.
+
+Debe incluir SIEMPRE:
+
+1. Resultado observable:
+- Qué debe poder verificarse en UI o comportamiento final
+- No solo intención, sino resultado visible
+
+2. Invariantes:
+- Qué no se puede romper o cambiar
+- Qué debe mantenerse exactamente igual
+
+3. Casos correctos vs incorrectos:
+- Mostrar explícitamente qué output es válido
+- Mostrar explícitamente qué output NO es válido
+
+Si alguno de estos falta, el prompt está incompleto y no debe ejecutarse.
+
+Excepción:
+Para cambios puramente visuales o triviales (textos, spacing, layout menor),
+puede omitirse el punto 3 SOLO si no hay transformación de datos, labels o lógica.

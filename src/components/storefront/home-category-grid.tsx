@@ -25,25 +25,25 @@ const CATEGORIES = [
 export function HomeCategoryGrid() {
   return (
     <section
-      className="border-b border-white/10 bg-neutral-950 py-14 md:py-20"
+      className="bg-neutral-950 py-12 md:py-20"
       aria-labelledby="home-categories-heading"
     >
       <div className="mx-auto max-w-6xl px-5 md:px-6">
+        <p className="text-center text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-400/90">
+          EXPLORÁ LA TIENDA
+        </p>
         <h2
           id="home-categories-heading"
-          className="text-2xl font-semibold tracking-tight text-white md:text-3xl"
+          className="mt-3 text-center text-3xl font-semibold tracking-tight text-white sm:text-4xl md:mt-4 md:text-[2.4rem] md:leading-tight"
         >
-          Elegí categoría
+          Explorar por categoría
         </h2>
-        <p className="mt-2 max-w-xl text-sm text-neutral-400 md:text-base">
-          Entradas principales a Tu Casaca Deportiva. Mismo stock y precios que en la tienda.
-        </p>
-        <ul className="mt-10 grid gap-5 md:grid-cols-3 md:gap-6">
+        <ul className="mt-8 grid gap-4 sm:mt-10 md:grid-cols-3 md:gap-6">
           {CATEGORIES.map((cat) => (
             <li key={cat.href}>
               <Link
                 href={cat.href}
-                className="group relative block min-h-[18rem] overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 shadow-lg transition hover:border-sky-500/40 hover:shadow-sky-900/20 md:min-h-[20rem]"
+                className="group relative block min-h-70 overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 shadow-lg transition hover:border-sky-500/35 hover:shadow-sky-950/30 md:min-h-80 lg:min-h-88"
               >
                 <Image
                   src={cat.image}
@@ -53,19 +53,16 @@ export function HomeCategoryGrid() {
                   sizes="(min-width: 768px) 33vw, 100vw"
                 />
                 <div
-                  className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/20"
+                  className="absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-black/5"
                   aria-hidden
                 />
-                <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 md:p-7">
-                  <span className="text-xs font-semibold uppercase tracking-widest text-sky-300">
-                    Categoría
-                  </span>
-                  <span className="mt-1 block text-2xl font-bold tracking-tight text-white md:text-3xl">
+                <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 md:p-8">
+                  <span className="text-2xl font-bold leading-none tracking-tight text-white sm:text-3xl">
                     {cat.label}
                   </span>
-                  <span className="mt-1.5 text-sm text-neutral-200">{cat.line}</span>
-                  <span className="mt-5 inline-flex w-fit text-sm font-semibold text-sky-400 transition group-hover:text-sky-300">
-                    Explorar →
+                  <span className="mt-1.5 max-w-sm text-sm text-neutral-200/90">{cat.line}</span>
+                  <span className="mt-5 inline-flex w-fit border-b border-sky-400/70 pb-0.5 text-sm font-semibold text-sky-300 transition group-hover:border-sky-300 group-hover:text-sky-200">
+                    Ver colección
                   </span>
                 </div>
               </Link>
