@@ -8,6 +8,7 @@ import { listProductImagesByProductId } from "@/modules/catalog/infrastructure/p
 import { CreateVariantForm } from "../_components/create-variant-form";
 import { EditProductForm } from "../_components/edit-product-form";
 import { ProductImagesPanel } from "../_components/product-images-panel";
+import { ProductActiveToggle } from "../_components/product-active-toggle";
 import { VariantMatrixRow } from "../_components/variant-matrix-row";
 
 export const dynamic = "force-dynamic";
@@ -38,9 +39,23 @@ export default async function AdminEditProductPage({ params }: PageProps) {
           ← Volver a productos
         </Link>
         <h1 className="tcds-title-page">Editar producto</h1>
-        <p className="text-sm text-foreground">
-          {productTypeLabel[product.productType]} · {product.title}
-        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-sm text-foreground">
+            {productTypeLabel[product.productType]} · {product.title}
+          </p>
+          <span
+            className={`rounded px-2 py-0.5 text-[11px] font-medium ${
+              product.isActive
+                ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
+                : "border border-neutral-300 bg-neutral-100 text-neutral-700"
+            }`}
+          >
+            {product.isActive ? "Activo en tienda" : "Inactivo (no visible en tienda)"}
+          </span>
+        </div>
+        <div className="mt-2">
+          <ProductActiveToggle productId={product.id} isActive={product.isActive} />
+        </div>
       </div>
 
       <EditProductForm product={product} />

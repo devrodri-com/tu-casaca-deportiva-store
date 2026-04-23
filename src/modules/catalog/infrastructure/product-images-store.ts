@@ -44,6 +44,20 @@ export async function getProductSlugByProductId(
   return result.data?.slug ?? null;
 }
 
+export async function listProductImageStoragePathsByProductId(
+  productId: string
+): Promise<string[]> {
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase
+    .from("product_images")
+    .select("storage_path")
+    .eq("product_id", productId);
+  if (result.error) {
+    throw new Error(result.error.message);
+  }
+  return (result.data ?? []).map((row) => row.storage_path);
+}
+
 export async function listProductImagesByProductId(
   productId: string
 ): Promise<CatalogProductImageRow[]> {

@@ -1,5 +1,7 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
+import { listProductImageStoragePathsByProductId } from "@/modules/catalog/infrastructure/product-images-store";
+import { removeProductImageObjects } from "@/modules/catalog/infrastructure/product-images-storage";
 import type { Product } from "@/modules/catalog";
 import type {
   ValidatedProductInput,
@@ -20,12 +22,17 @@ export type CatalogProductRecord = {
   variants: CatalogVariantRecord[];
 };
 
-export async function listCatalogProductsWithVariants(): Promise<
-  CatalogProductRecord[]
-> {
+export async function listCatalogProductsWithVariants(options?: {
+  /** Solo productos visibles en la tienda (is_active = true) */
+  onlyActive?: boolean;
+}): Promise<CatalogProductRecord[]> {
   const supabase = createServerSupabaseClient();
 
-  const productsResult = await supabase.from("products").select("*");
+  let productsQuery = supabase.from("products").select("*");
+  if (options?.onlyActive) {
+    productsQuery = productsQuery.eq("is_active", true);
+  }
+  const productsResult = await productsQuery;
   if (productsResult.error) {
     throw new Error(`Failed to load products: ${productsResult.error.message}`);
   }
@@ -65,6 +72,7 @@ export async function getCatalogProductBySlug(
     .from("products")
     .select("*")
     .eq("slug", slug)
+    .eq("is_active", true)
     .maybeSingle();
   if (productResult.error) {
     throw new Error(`Failed to load product: ${productResult.error.message}`);
@@ -106,6 +114,10 @@ export async function getCatalogProductAndVariantByIds(
     throw new Error(`Failed to load product: ${productResult.error.message}`);
   }
   if (!productResult.data) {
+    return null;
+  }
+
+  if (!productResult.data.is_active) {
     return null;
   }
 
@@ -333,4 +345,51 @@ export async function updateCatalogVariant(params: {
   if (result.error) {
     throw new Error(result.error.message);
   }
+}
+
+export async function setCatalogProductActiveState(params: {
+  productId: string;
+  isActive: boolean;
+}): Promise<void> {
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase
+    .from("products")
+    .update({
+      is_active: params.isActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", params.productId);
+  if (result.error) {
+    throw new Error(result.error.message);
+  }
+}
+
+export async function deleteCatalogProductSafely(params: {
+  productId: string;
+}): Promise<void> {
+  const supabase = createServiceRoleSupabaseClient();
+  const productResult = await supabase
+    .from("products")
+    .select("id")
+    .eq("id", params.productId)
+    .maybeSingle();
+  if (productResult.error) {
+    throw new Error(productResult.error.message);
+  }
+  if (!productResult.data) {
+    throw new Error("Producto no encontrado");
+  }
+  const paths = await listProductImageStoragePathsByProductId(params.productId);
+  const delVariants = await supabase
+    .from("product_variants")
+    .delete()
+    .eq("product_id", params.productId);
+  if (delVariants.error) {
+    throw new Error(delVariants.error.message);
+  }
+  const delProduct = await supabase.from("products").delete().eq("id", params.productId);
+  if (delProduct.error) {
+    throw new Error(delProduct.error.message);
+  }
+  await removeProductImageObjects(paths);
 }

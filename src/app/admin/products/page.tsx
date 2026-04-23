@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ProductType } from "@/modules/catalog";
 import { listCatalogProductsWithVariants } from "@/modules/catalog/infrastructure/catalog-store";
+import { AdminDeleteProductButton } from "./_components/admin-delete-product-button";
+import { ProductActiveToggle } from "./_components/product-active-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -39,10 +41,11 @@ export default async function AdminProductsPage() {
         <p className="tcds-prose">No hay productos. Creá el primero.</p>
       ) : (
         <div className="tcds-card overflow-x-auto p-0">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[880px] text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-surface/50 text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="px-3 py-2 font-medium">Producto</th>
+                <th className="px-3 py-2 font-medium">Estado</th>
                 <th className="px-3 py-2 font-medium">Tipo</th>
                 <th className="px-3 py-2 font-medium">Publico</th>
                 <th className="px-3 py-2 font-medium">Entidad</th>
@@ -50,7 +53,7 @@ export default async function AdminProductsPage() {
                 <th className="px-3 py-2 font-medium">Pers.</th>
                 <th className="px-3 py-2 font-medium">Var.</th>
                 <th className="px-3 py-2 font-medium">Precio</th>
-                <th className="px-3 py-2 font-medium" />
+                <th className="px-3 py-2 font-medium text-right">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -68,6 +71,20 @@ export default async function AdminProductsPage() {
                     <td className="px-3 py-2 font-medium text-foreground">
                       {product.title}
                     </td>
+                    <td className="px-3 py-2 align-top text-muted-foreground">
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`inline-flex w-fit rounded px-2 py-0.5 text-[11px] font-medium ${
+                            product.isActive
+                              ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
+                              : "border border-neutral-300 bg-neutral-100 text-neutral-700"
+                          }`}
+                        >
+                          {product.isActive ? "Activo" : "Inactivo"}
+                        </span>
+                        <ProductActiveToggle productId={product.id} isActive={product.isActive} />
+                      </div>
+                    </td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {productTypeLabel[product.productType]}
                     </td>
@@ -84,12 +101,18 @@ export default async function AdminProductsPage() {
                       {minPriceFromVariants(variants)}
                     </td>
                     <td className="px-3 py-2 text-right">
-                      <Link
-                        className="tcds-link text-sm"
-                        href={`/admin/products/${product.id}`}
-                      >
-                        Editar
-                      </Link>
+                      <div className="flex flex-col items-end gap-2">
+                        <Link
+                          className="tcds-link text-sm"
+                          href={`/admin/products/${product.id}`}
+                        >
+                          Editar
+                        </Link>
+                        <AdminDeleteProductButton
+                          productId={product.id}
+                          productTitle={product.title}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );

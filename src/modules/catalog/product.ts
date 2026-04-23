@@ -20,4 +20,6 @@ export type Product = {
   era: ProductEra;
   supportsCustomization: boolean;
   customizationSurcharge: number | null;
+  /** Publicacion en storefront; no es disponibilidad por variante */
+  isActive: boolean;
 };
