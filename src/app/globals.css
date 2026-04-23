@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
-/* TCDS — Branding V1: solo light; sin preferencia de sistema a oscuro */
+/* Modo oscuro manual: clase `dark` en <html> (ver ThemeBootScript + toggle storefront) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* TCDS — tokens semánticos; :root = modo claro, .dark = storefront oscuro */
 :root {
   --background: #ffffff;
   --foreground: #000000;
@@ -27,6 +30,26 @@
     Consolas, "DejaVu Sans Mono", monospace;
 }
 
+.dark {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --muted-foreground: #a3a3a3;
+  --border: rgba(255, 255, 255, 0.12);
+  --surface: #171717;
+  --card: #171717;
+}
+
+/* Panel admin: fuerza tokens claros aunque <html> tenga .dark (storefront) */
+.admin-root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --muted-foreground: #4b5563;
+  --border: #d1d5db;
+  --surface: #f3f4f6;
+  --card: #ffffff;
+  color-scheme: light;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -44,13 +67,19 @@
   html {
     color-scheme: light;
   }
+  html.dark {
+    color-scheme: dark;
+  }
 }
 
-/* Sin dark mode por preferencia: la UI es siempre clara */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans-stack);
+}
+
+@utility storefront-shell {
+  @apply flex min-h-dvh flex-col bg-zinc-50 text-zinc-900 dark:bg-neutral-950 dark:text-neutral-100;
 }
 
 @layer components {

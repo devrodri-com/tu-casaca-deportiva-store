@@ -47,6 +47,17 @@ const URUGUAY_DEPARTMENTS = [
   "Tacuarembó",
 ] as const;
 
+const checkoutCardClass =
+  "rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg shadow-zinc-200/40 ring-1 ring-zinc-100 md:p-5 dark:border-white/10 dark:bg-neutral-900/90 dark:shadow-black/25 dark:ring-white/5";
+
+const checkoutInputClass =
+  "min-h-10 rounded-md border border-zinc-300 bg-white px-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-sky-500/70 dark:border-white/15 dark:bg-neutral-950 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-sky-400/70";
+
+const checkoutLabelClass = "flex flex-col gap-1 text-sm text-zinc-700 dark:text-neutral-200";
+
+const checkoutReadonlyInputClass =
+  "min-h-10 rounded-md border border-zinc-200 bg-zinc-100 px-3 text-sm text-zinc-600 dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-300";
+
 function checkoutLineKey(line: CartLine): string {
   const customizationNumber = line.customization?.jerseyNumber ?? "none";
   const customizationName = line.customization?.jerseyName ?? "none";
@@ -89,19 +100,19 @@ export function CheckoutClient() {
     return (
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <div className="space-y-3">
-          <div className="h-44 animate-pulse rounded-2xl border border-white/10 bg-neutral-900/70" />
-          <div className="h-44 animate-pulse rounded-2xl border border-white/10 bg-neutral-900/70" />
+          <div className="h-44 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-neutral-900/70" />
+          <div className="h-44 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-neutral-900/70" />
         </div>
-        <div className="h-52 animate-pulse rounded-2xl border border-white/10 bg-neutral-900/70" />
+        <div className="h-52 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-neutral-900/70" />
       </section>
     );
   }
 
   if (lines.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-dashed border-white/15 bg-neutral-900/60 px-6 py-12 text-center">
-        <p className="text-lg font-semibold text-white">Tu carrito está vacío</p>
-        <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 px-6 py-12 text-center dark:border-white/15 dark:bg-neutral-900/60">
+        <p className="text-lg font-semibold text-zinc-900 dark:text-white">Tu carrito está vacío</p>
+        <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-neutral-400">
           Sumá productos desde la tienda para continuar con el pago.
         </p>
         <Link
@@ -117,9 +128,9 @@ export function CheckoutClient() {
   return (
     <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
       <div className="space-y-5">
-        <section className="rounded-2xl border border-white/10 bg-neutral-900/90 p-4 shadow-lg shadow-black/25 ring-1 ring-white/5 md:p-5">
-          <h2 className="text-base font-semibold text-white md:text-lg">Resumen de tu pedido</h2>
-          <p className="mt-1 text-sm text-neutral-400">
+        <section className={checkoutCardClass}>
+          <h2 className="text-base font-semibold text-zinc-900 md:text-lg dark:text-white">Resumen de tu pedido</h2>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-neutral-400">
             Verificá productos, modalidad de entrega y personalización antes de pasar al pago.
           </p>
           <ul className="mt-4 space-y-3">
@@ -129,54 +140,54 @@ export function CheckoutClient() {
           </ul>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-neutral-900/90 p-4 shadow-lg shadow-black/25 ring-1 ring-white/5 md:p-5">
-          <h2 className="text-base font-semibold text-white md:text-lg">Datos para confirmar la compra</h2>
-          <p className="mt-1 text-sm text-neutral-400">
+        <section className={checkoutCardClass}>
+          <h2 className="text-base font-semibold text-zinc-900 md:text-lg dark:text-white">Datos para confirmar la compra</h2>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-neutral-400">
             Estos datos se usan para contactarte y coordinar la entrega en Uruguay.
           </p>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm text-neutral-200">
+            <label className={checkoutLabelClass}>
               Nombre y apellido
               <input
-                className="min-h-10 rounded-md border border-white/15 bg-neutral-950 px-3 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-sky-400/70"
+                className={checkoutInputClass}
                 value={fullName}
                 onChange={(event) => setFullName(event.target.value)}
                 autoComplete="name"
                 placeholder="Ej: Juan Pérez"
               />
             </label>
-            <label className="flex flex-col gap-1 text-sm text-neutral-200">
+            <label className={checkoutLabelClass}>
               Teléfono
               <input
-                className="min-h-10 rounded-md border border-white/15 bg-neutral-950 px-3 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-sky-400/70"
+                className={checkoutInputClass}
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
                 autoComplete="tel"
                 placeholder="Ej: 099 123 456"
               />
             </label>
-            <label className="flex flex-col gap-1 text-sm text-neutral-200 md:col-span-2">
+            <label className={`${checkoutLabelClass} md:col-span-2`}>
               Dirección
               <input
-                className="min-h-10 rounded-md border border-white/15 bg-neutral-950 px-3 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-sky-400/70"
+                className={checkoutInputClass}
                 value={address}
                 onChange={(event) => setAddress(event.target.value)}
                 autoComplete="street-address"
                 placeholder="Ej: Av. 18 de Julio 1234 apto 5"
               />
             </label>
-            <label className="flex flex-col gap-1 text-sm text-neutral-200">
+            <label className={checkoutLabelClass}>
               Barrio o ciudad
               <input
-                className="min-h-10 rounded-md border border-white/15 bg-neutral-950 px-3 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-sky-400/70"
+                className={checkoutInputClass}
                 value={city}
                 onChange={(event) => setCity(event.target.value)}
                 autoComplete="address-level2"
                 placeholder="Ej: Cordón"
               />
             </label>
-            <label className="flex flex-col gap-1 text-sm text-neutral-200">
+            <label className={checkoutLabelClass}>
               Departamento
               <CheckoutDepartmentDropdown
                 value={department}
@@ -184,19 +195,19 @@ export function CheckoutClient() {
                 onChange={setDepartment}
               />
             </label>
-            <label className="flex flex-col gap-1 text-sm text-neutral-200">
+            <label className={checkoutLabelClass}>
               País
               <input
-                className="min-h-10 rounded-md border border-white/10 bg-neutral-900 px-3 text-sm text-neutral-300"
+                className={checkoutReadonlyInputClass}
                 value={country}
                 readOnly
                 disabled
               />
             </label>
-            <label className="flex flex-col gap-1 text-sm text-neutral-200">
+            <label className={checkoutLabelClass}>
               Email (opcional)
               <input
-                className="min-h-10 rounded-md border border-white/15 bg-neutral-950 px-3 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-sky-400/70"
+                className={checkoutInputClass}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
@@ -255,18 +266,18 @@ export function CheckoutClient() {
             >
               {submitting ? "Confirmando pedido..." : "Confirmar pedido"}
             </button>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-zinc-500 dark:text-neutral-500">
               Al confirmar, se guarda tu pedido con los datos de entrega y se habilita el pago.
             </p>
           </div>
 
           {result?.ok ? (
-            <div className="mt-4 rounded-xl border border-emerald-700/40 bg-emerald-950/30 px-3 py-2.5 text-sm text-emerald-200">
+            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-900 dark:border-emerald-700/40 dark:bg-emerald-950/30 dark:text-emerald-200">
               Pedido confirmado. Referencia: <span className="font-semibold">{result.publicReference}</span>
             </div>
           ) : null}
           {result && !result.ok ? (
-            <div className="mt-4 rounded-xl border border-red-800/50 bg-red-950/30 px-3 py-2.5 text-sm text-red-200">
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-900 dark:border-red-800/50 dark:bg-red-950/30 dark:text-red-200">
               {result.message}
             </div>
           ) : null}
@@ -276,9 +287,9 @@ export function CheckoutClient() {
       <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
         <CheckoutSummaryCard totalLines={lines.length} totalUnits={totalUnits} totalAmount={total} />
 
-        <section className="rounded-2xl border border-white/10 bg-neutral-900/90 p-4 shadow-lg shadow-black/25 ring-1 ring-white/5">
-          <p className="text-sm font-semibold text-white">Pago</p>
-          <p className="mt-1 text-xs leading-relaxed text-neutral-400">
+        <section className={checkoutCardClass}>
+          <p className="text-sm font-semibold text-zinc-900 dark:text-white">Pago</p>
+          <p className="mt-1 text-xs leading-relaxed text-zinc-600 dark:text-neutral-400">
             Cuando confirmes el pedido, podés continuar al pago seguro en Mercado Pago.
           </p>
           <button

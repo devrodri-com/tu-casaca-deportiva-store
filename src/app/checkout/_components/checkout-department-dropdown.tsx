@@ -100,14 +100,16 @@ export function CheckoutDepartmentDropdown({
             setIsOpen(true);
           }
         }}
-        className="inline-flex min-h-10 w-full items-center justify-between rounded-md border border-white/15 bg-neutral-950 px-3 text-left text-sm text-white outline-none transition focus-visible:border-sky-400/70 focus-visible:ring-2 focus-visible:ring-sky-500/35"
+        className="inline-flex min-h-10 w-full items-center justify-between rounded-md border border-zinc-300 bg-white px-3 text-left text-sm text-zinc-900 outline-none transition focus-visible:border-sky-500/70 focus-visible:ring-2 focus-visible:ring-sky-500/35 dark:border-white/15 dark:bg-neutral-950 dark:text-white"
       >
-        <span className={value ? "text-white" : "text-neutral-500"}>{selectedLabel}</span>
+        <span className={value ? "text-zinc-900 dark:text-white" : "text-zinc-400 dark:text-neutral-500"}>
+          {selectedLabel}
+        </span>
         <svg
           viewBox="0 0 20 20"
           fill="none"
           aria-hidden="true"
-          className={`h-4 w-4 text-neutral-400 transition ${isOpen ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-zinc-500 transition dark:text-neutral-400 ${isOpen ? "rotate-180" : ""}`}
         >
           <path
             d="M5 7.5L10 12.5L15 7.5"
@@ -124,7 +126,7 @@ export function CheckoutDepartmentDropdown({
           id={listboxId}
           role="listbox"
           aria-label="Departamento"
-          className="absolute z-20 mt-2 max-h-60 w-full overflow-y-auto rounded-md border border-white/15 bg-neutral-950 p-1 shadow-xl shadow-black/40"
+          className="absolute z-20 mt-2 max-h-60 w-full overflow-y-auto rounded-md border border-zinc-200 bg-white p-1 shadow-xl shadow-zinc-400/25 dark:border-white/15 dark:bg-neutral-950 dark:shadow-black/40"
         >
           {options.map((option, index) => {
             const isSelected = value === option;
@@ -140,10 +142,10 @@ export function CheckoutDepartmentDropdown({
                   }}
                   className={`inline-flex min-h-9 w-full items-center rounded-md px-2.5 text-sm transition ${
                     isSelected
-                      ? "bg-sky-500/20 text-sky-100"
+                      ? "bg-sky-500/15 text-sky-900 dark:bg-sky-500/20 dark:text-sky-100"
                       : isHighlighted
-                        ? "bg-white/10 text-white"
-                        : "text-neutral-200 hover:bg-white/5"
+                        ? "bg-zinc-100 text-zinc-900 dark:bg-white/10 dark:text-white"
+                        : "text-zinc-800 hover:bg-zinc-50 dark:text-neutral-200 dark:hover:bg-white/5"
                   }`}
                 >
                   {option}

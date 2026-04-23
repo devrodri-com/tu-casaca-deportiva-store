@@ -30,10 +30,10 @@ export function CartClient() {
     return (
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
         <div className="space-y-3">
-          <div className="h-40 animate-pulse rounded-2xl border border-white/10 bg-neutral-900/70" />
-          <div className="h-40 animate-pulse rounded-2xl border border-white/10 bg-neutral-900/70" />
+          <div className="h-40 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-neutral-900/70" />
+          <div className="h-40 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-neutral-900/70" />
         </div>
-        <div className="h-48 animate-pulse rounded-2xl border border-white/10 bg-neutral-900/70" />
+        <div className="h-48 animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-neutral-900/70" />
       </section>
     );
   }

@@ -25,7 +25,7 @@ const CATEGORIES = [
 export function HomeCategoryGrid() {
   return (
     <section
-      className="bg-neutral-950 py-12 md:py-20"
+      className="bg-zinc-50 py-12 dark:bg-neutral-950 md:py-20"
       aria-labelledby="home-categories-heading"
     >
       <div className="mx-auto max-w-6xl px-5 md:px-6">
@@ -34,7 +34,7 @@ export function HomeCategoryGrid() {
         </p>
         <h2
           id="home-categories-heading"
-          className="mt-3 text-center text-3xl font-semibold tracking-tight text-white sm:text-4xl md:mt-4 md:text-[2.4rem] md:leading-tight"
+          className="mt-3 text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white sm:text-4xl md:mt-4 md:text-[2.4rem] md:leading-tight"
         >
           Explorar por categoría
         </h2>

@@ -45,8 +45,8 @@ export function StoreProductsFilterBar({
             href={filter.href}
             className={`inline-flex min-h-9 items-center justify-center rounded-full px-4 text-sm font-medium transition ${
               filter.isActive
-                ? "border border-sky-400/45 bg-sky-500/20 text-sky-100 shadow-sm shadow-sky-900/30"
-                : "border border-white/10 bg-neutral-900/75 text-neutral-300 hover:border-sky-500/35 hover:bg-neutral-900 hover:text-sky-200"
+                ? "border border-sky-500/40 bg-sky-500/15 text-sky-800 shadow-sm dark:border-sky-400/45 dark:bg-sky-500/20 dark:text-sky-100 dark:shadow-sky-900/30"
+                : "border border-zinc-300 bg-white text-zinc-700 hover:border-sky-400/50 hover:bg-sky-50 hover:text-sky-800 dark:border-white/10 dark:bg-neutral-900/75 dark:text-neutral-300 dark:hover:border-sky-500/35 dark:hover:bg-neutral-900 dark:hover:text-sky-200"
             }`}
           >
             {filter.label}
@@ -54,9 +54,9 @@ export function StoreProductsFilterBar({
         ))}
       </div>
       {hasActiveFilter ? (
-        <p className="text-center text-xs text-neutral-500">
+        <p className="text-center text-xs text-zinc-500 dark:text-neutral-500">
           Filtro activo.{" "}
-          <Link href="/products" className="text-sky-400 hover:text-sky-300 hover:underline">
+          <Link href="/products" className="text-sky-600 hover:text-sky-700 hover:underline dark:text-sky-400 dark:hover:text-sky-300">
             Limpiar filtros
           </Link>
         </p>

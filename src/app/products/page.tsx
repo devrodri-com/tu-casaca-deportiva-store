@@ -43,24 +43,24 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       : "mt-7 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
   return (
-    <div className="flex min-h-dvh flex-col bg-neutral-950 text-neutral-100">
-      <StorePublicHeader variant="dark" />
+    <div className="storefront-shell">
+      <StorePublicHeader />
       <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-9 md:px-6 md:py-12">
         <section className="mx-auto max-w-3xl text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-400/90">
             TIENDA
           </p>
-          <h1 className="mt-2.5 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+          <h1 className="mt-2.5 text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white md:text-5xl">
             Catálogo
           </h1>
-          <p className="mt-3.5 text-sm leading-relaxed text-neutral-300 md:text-base">
+          <p className="mt-3.5 text-sm leading-relaxed text-zinc-600 dark:text-neutral-300 md:text-base">
             Elegí tu casaca por categoría, disponibilidad y estilo. Stock express 24–48 h o pedidos
             por encargo cuando el talle no está disponible, con personalización en productos
             habilitados.
           </p>
           <StoreProductsFilterBar selectedType={selectedType} selectedAudience={selectedAudience} />
           {hasActiveFilter ? (
-            <p className="mt-3 text-center text-xs text-neutral-500">
+            <p className="mt-3 text-center text-xs text-zinc-500 dark:text-neutral-500">
               Estás viendo productos filtrados.{" "}
               <Link href="/products" className="text-sky-400 hover:text-sky-300 hover:underline">
                 Ver catálogo completo
@@ -81,7 +81,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </ul>
         )}
       </main>
-      <StorePublicFooter variant="dark" />
+      <StorePublicFooter />
     </div>
   );
 }

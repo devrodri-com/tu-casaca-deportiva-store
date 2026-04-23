@@ -49,13 +49,13 @@ export function HomeHeroCarousel() {
 
   return (
     <section
-      className="relative border-b border-white/10"
+      className="relative border-b border-zinc-200 dark:border-white/10"
       role="region"
       aria-label="Carrusel principal"
       aria-roledescription="carrusel"
     >
       <h1 className="sr-only">Tu Casaca Deportiva · Inicio</h1>
-      <div className="relative h-[min(78vh,640px)] w-full overflow-hidden bg-neutral-950">
+      <div className="relative h-[min(78vh,640px)] w-full overflow-hidden bg-zinc-100 dark:bg-neutral-950">
         {SLIDES.map((slide, i) => {
           const isActive = i === index;
           return (

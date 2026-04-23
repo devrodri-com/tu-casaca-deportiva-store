@@ -13,7 +13,7 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
 
   return (
     <section
-      className="bg-neutral-950 py-14 md:py-20"
+      className="bg-zinc-50 py-14 dark:bg-neutral-950 md:py-20"
       aria-labelledby="home-featured-heading"
     >
       <div className="mx-auto max-w-6xl px-5 md:px-6">
@@ -21,26 +21,26 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
           <div>
             <h2
               id="home-featured-heading"
-              className="text-2xl font-semibold tracking-tight text-white md:text-3xl"
+              className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white md:text-3xl"
             >
               En tienda ahora
             </h2>
-            <p className="mt-2 max-w-xl text-sm text-neutral-400 md:text-base">
+            <p className="mt-2 max-w-xl text-sm text-zinc-600 dark:text-neutral-400 md:text-base">
               Productos activos del catálogo. Entrá al detalle para ver talles y disponibilidad.
             </p>
           </div>
           <Link
             href="/products"
-            className="mt-4 inline-flex w-fit text-sm font-semibold text-sky-400 underline-offset-2 transition hover:text-sky-300 hover:underline"
+            className="mt-4 inline-flex w-fit text-sm font-semibold text-sky-600 underline-offset-2 transition hover:text-sky-700 hover:underline dark:text-sky-400 dark:hover:text-sky-300"
           >
             Ver todo el catálogo
           </Link>
         </div>
 
         {items.length === 0 ? (
-          <div className="mt-10 rounded-xl border border-dashed border-white/15 bg-neutral-900/50 px-6 py-14 text-center">
-            <p className="text-base font-medium text-neutral-200">Próximamente nuevos ingresos</p>
-            <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">
+          <div className="mt-10 rounded-xl border border-dashed border-zinc-300 bg-white px-6 py-14 text-center shadow-sm dark:border-white/15 dark:bg-neutral-900/50">
+            <p className="text-base font-medium text-zinc-900 dark:text-neutral-200">Próximamente nuevos ingresos</p>
+            <p className="mx-auto mt-2 max-w-md text-sm text-zinc-600 dark:text-neutral-500">
               Cuando cargues productos activos en el admin, aparecerán aquí automáticamente.
             </p>
             <Link
@@ -54,11 +54,11 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
           <ul className={featuredGridClass}>
             {items.map((p) => (
               <li key={p.slug} className="h-full w-full max-w-74">
-                  <Link
+                <Link
                   href={`/products/${p.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/90 shadow-md shadow-black/25 ring-1 ring-white/5 transition hover:border-sky-500/40 hover:shadow-sky-900/20"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-lg shadow-zinc-300/30 ring-1 ring-zinc-200/80 transition hover:-translate-y-0.5 hover:border-sky-400/50 hover:shadow-sky-500/15 dark:border-white/10 dark:bg-neutral-900/90 dark:shadow-black/25 dark:ring-white/5 dark:hover:border-sky-500/45 dark:hover:shadow-sky-900/20"
                 >
-                  <div className="relative aspect-[15/9] overflow-hidden bg-linear-to-b from-neutral-900 to-neutral-800">
+                  <div className="relative aspect-[15/9] overflow-hidden bg-linear-to-b from-white to-zinc-100 dark:from-neutral-900 dark:to-neutral-800">
                     {p.primaryImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element -- catálogo remoto Supabase; sin optimizador en esta etapa
                       <img
@@ -69,23 +69,23 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
                         height={480}
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xs text-neutral-500">
+                      <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500 dark:text-neutral-500">
                         Sin imagen
                       </div>
                     )}
                   </div>
                   <div className="flex min-h-30 flex-1 flex-col gap-1.5 p-3.5">
-                    <span className="line-clamp-2 text-sm font-semibold leading-snug text-white group-hover:text-sky-100 md:text-[0.95rem]">
+                    <span className="line-clamp-2 text-sm font-semibold leading-snug text-zinc-900 transition group-hover:text-sky-700 md:text-[0.95rem] dark:text-white dark:group-hover:text-sky-100">
                       {p.title}
                     </span>
-                    <span className="text-xs text-neutral-500">{p.productTypeLabel}</span>
+                    <span className="text-xs text-zinc-600 dark:text-neutral-500">{p.productTypeLabel}</span>
                     <span
                       className={`mt-auto inline-flex w-fit rounded px-2 py-0.5 text-[11px] font-medium ${
                         p.deliveryBadgeLabel === "Entrega rapida"
-                          ? "border border-emerald-800/50 bg-emerald-950/50 text-emerald-300"
+                          ? "border border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-800/50 dark:bg-emerald-950/50 dark:text-emerald-300"
                           : p.deliveryBadgeLabel === "Por encargo"
-                            ? "border border-sky-800/40 bg-sky-950/40 text-sky-200"
-                            : "border border-neutral-700 bg-neutral-800 text-neutral-400"
+                            ? "border border-sky-300 bg-sky-50 text-sky-900 dark:border-sky-800/40 dark:bg-sky-950/40 dark:text-sky-200"
+                            : "border border-zinc-300 bg-zinc-100 text-zinc-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400"
                       }`}
                     >
                       {p.deliveryBadgeLabel}
