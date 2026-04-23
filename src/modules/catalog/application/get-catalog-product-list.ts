@@ -10,6 +10,8 @@ export type CatalogProductListItem = {
   audienceLabel: string;
   productTypeLabel: string;
   deliveryBadgeLabel: "Entrega rapida" | "Por encargo" | "Sin stock";
+  /** Precio base mínimo entre variantes, para listado comercial */
+  displayPrice: number | null;
   primaryImageUrl: string | null;
   primaryImageAlt: string | null;
 };
@@ -23,6 +25,8 @@ export async function getCatalogProductList(): Promise<CatalogProductListItem[]>
     const availabilities = variants.map(({ variant }) => resolveAvailability(variant));
     const hasExpress = availabilities.includes("express");
     const hasMadeToOrder = availabilities.includes("made_to_order");
+    const minBasePrice =
+      variants.length > 0 ? Math.min(...variants.map(({ unitBasePrice }) => unitBasePrice)) : null;
 
     const primary = imageMap.get(product.id);
     return {
@@ -42,6 +46,7 @@ export async function getCatalogProductList(): Promise<CatalogProductListItem[]>
         : hasMadeToOrder
           ? "Por encargo"
           : "Sin stock",
+      displayPrice: minBasePrice,
       primaryImageUrl: primary?.publicUrl ?? null,
       primaryImageAlt: primary?.altText ?? null,
     };

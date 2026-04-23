@@ -53,18 +53,18 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
         ) : (
           <ul className={featuredGridClass}>
             {items.map((p) => (
-              <li key={p.slug} className="h-full w-full max-w-[18.5rem]">
+              <li key={p.slug} className="h-full w-full max-w-74">
                   <Link
                   href={`/products/${p.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/90 shadow-md shadow-black/25 ring-1 ring-white/5 transition hover:border-sky-500/40 hover:shadow-sky-900/20"
                 >
-                  <div className="relative aspect-[16/10] overflow-hidden bg-neutral-800">
+                  <div className="relative aspect-[15/9] overflow-hidden bg-linear-to-b from-neutral-900 to-neutral-800">
                     {p.primaryImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element -- catálogo remoto Supabase; sin optimizador en esta etapa
                       <img
                         src={p.primaryImageUrl}
                         alt={p.primaryImageAlt ?? p.title}
-                        className="h-full w-full object-cover transition group-hover:opacity-95"
+                        className="h-full w-full object-contain p-2.5 transition duration-300 group-hover:scale-[1.02]"
                         width={640}
                         height={480}
                       />
