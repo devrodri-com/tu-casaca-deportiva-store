@@ -20,8 +20,9 @@ export default async function AdminOrdersPage() {
         </p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Pedidos</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Referencia, cliente, pago, ítems con express o encargo, y cambio de estado operativo. Los
-          valores enviados al servidor no cambian (mismos códigos en el formulario).
+          Las alertas azules de atención indican pago o stock pendiente; en verde, stock descontado. Cada card
+          resume encargo, express y personalización por línea. El formulario de estado operativo
+          envía los mismos códigos de siempre.
         </p>
       </header>
 
