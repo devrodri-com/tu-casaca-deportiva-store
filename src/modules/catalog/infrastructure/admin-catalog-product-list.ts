@@ -1,5 +1,5 @@
 import "server-only";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 import type { AdminProductListQuery } from "@/modules/catalog/admin/admin-product-list-query";
 import {
   mapProductRow,
@@ -24,7 +24,7 @@ function escapeIlikePattern(value: string): string {
 export async function listAdminCatalogProductsWithVariants(
   query: AdminProductListQuery
 ): Promise<AdminCatalogProductListRow[]> {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServiceRoleSupabaseClient();
 
   let productsQuery = supabase.from("products").select("*");
 

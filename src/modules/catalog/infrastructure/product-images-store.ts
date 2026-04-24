@@ -61,7 +61,7 @@ export async function listProductImageStoragePathsByProductId(
 export async function listProductImagesByProductId(
   productId: string
 ): Promise<CatalogProductImageRow[]> {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServiceRoleSupabaseClient();
   const result = await supabase
     .from("product_images")
     .select("id, storage_path, alt_text, sort_order, is_primary")

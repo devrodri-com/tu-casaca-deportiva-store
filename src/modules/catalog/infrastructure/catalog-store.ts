@@ -157,7 +157,7 @@ export async function updateVariantExpressStock(params: {
 export async function getCatalogProductWithVariantsById(
   productId: string
 ): Promise<CatalogProductRecord | null> {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServiceRoleSupabaseClient();
 
   const productResult = await supabase
     .from("products")
