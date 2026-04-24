@@ -1,6 +1,11 @@
 import Link from "next/link";
 import type { Database } from "@/lib/supabase/database.types";
 import { adminChip } from "@/app/admin/_lib/admin-ui-classes";
+import {
+  getAdminOrderAttention,
+  orderFulfillmentFlags,
+} from "@/app/admin/orders/_lib/admin-order-helpers";
+import { customizationDisplayLine } from "@/modules/orders/application/order-presentation";
 
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 type OrderItemRow = Database["public"]["Tables"]["order_items"]["Row"];
@@ -15,9 +20,9 @@ type AdminOrderCardProps = {
 function paymentLabel(status: OrderRow["payment_status"]): string {
   switch (status) {
     case "awaiting_payment":
-      return "Esperando pago";
+      return "Pago: sin iniciar";
     case "pending":
-      return "Pago pendiente";
+      return "Pago: pendiente (acreditando)";
     case "paid":
       return "Pagado";
     case "failed":
@@ -32,29 +37,33 @@ function paymentChipClass(status: OrderRow["payment_status"]): string {
     case "failed":
       return adminChip.red;
     case "pending":
-    case "awaiting_payment":
       return adminChip.amber;
+    case "awaiting_payment":
+      return adminChip.neutral;
   }
 }
 
-function operationalLabel(status: OrderRow["operational_status"]): string {
-  if (status === null) {
-    return "Sin estado operativo";
+function operationalLabel(
+  order: OrderRow
+): { text: string; className: string } {
+  if (order.payment_status === "failed") {
+    return {
+      text: "Operación: no aplica (pago fallido)",
+      className: adminChip.inactive,
+    };
   }
-  switch (status) {
-    case "paid":
-      return "Pagado (operativo)";
-    case "preparing":
-      return "En preparación";
-    case "ready":
-      return "Listo";
-    case "shipped":
-      return "Enviado";
-    case "delivered":
-      return "Entregado";
-    case "cancelled":
-      return "Cancelado";
+  if (order.operational_status === null) {
+    return { text: "Estado operativo: sin asignar", className: adminChip.surface };
   }
+  const text: Record<NonNullable<OrderRow["operational_status"]>, string> = {
+    paid: "Operativo: pagado",
+    preparing: "En preparación",
+    ready: "Listo",
+    shipped: "Enviado",
+    delivered: "Entregado",
+    cancelled: "Cancelado",
+  };
+  return { text: text[order.operational_status], className: adminChip.neutral };
 }
 
 function fulfillmentLabel(snapshot: OrderItemRow["fulfillment_snapshot"]): string {
@@ -68,7 +77,9 @@ function fulfillmentLabel(snapshot: OrderItemRow["fulfillment_snapshot"]): strin
   }
 }
 
-function fulfillmentChipClass(snapshot: OrderItemRow["fulfillment_snapshot"]): string {
+function fulfillmentChipClass(
+  snapshot: OrderItemRow["fulfillment_snapshot"]
+): string {
   switch (snapshot) {
     case "express":
       return adminChip.emerald;
@@ -93,17 +104,40 @@ function formatHistoryDate(iso: string): string {
   }
 }
 
+function AttentionBlock({ order }: { order: OrderRow }) {
+  const attention = getAdminOrderAttention(order);
+  if (attention.kind === "stock_ok") {
+    return (
+      <div
+        className={`rounded-md px-3 py-2.5 text-xs leading-snug sm:text-sm ${attention.className}`}
+        role="status"
+      >
+        <p className="font-medium">{attention.body}</p>
+        <p className="mt-0.5 opacity-90 tabular-nums">Registrado: {attention.atLabel}</p>
+      </div>
+    );
+  }
+  return (
+    <div
+      className={`rounded-md px-3 py-2.5 text-xs leading-snug sm:text-sm ${attention.className}`}
+      role="alert"
+    >
+      <p className="font-medium">{attention.body}</p>
+    </div>
+  );
+}
+
 export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
-  const stockLine =
-    order.stock_discounted_at !== null
-      ? `Stock descontado: ${formatHistoryDate(order.stock_discounted_at)}`
-      : "Stock aún no descontado";
+  const { hasExpress, hasMadeToOrder } = orderFulfillmentFlags(items);
+  const operational = operationalLabel(order);
 
   return (
     <article className="tcds-card overflow-hidden text-sm">
       <div className="flex flex-col gap-3 border-b border-border bg-surface/40 px-4 py-3 md:flex-row md:flex-wrap md:items-center md:justify-between">
         <div className="min-w-0 space-y-1">
-          <p className="font-mono text-xs font-medium text-muted-foreground">Ref. pública</p>
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Ref. pública
+          </p>
           <p className="font-mono text-base font-semibold tracking-tight text-foreground">
             {order.public_reference}
           </p>
@@ -111,21 +145,41 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
             {order.customer_full_name} · {order.customer_phone}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${paymentChipClass(order.payment_status)}`}
-          >
-            {paymentLabel(order.payment_status)}
-          </span>
-          <span className="inline-flex rounded-md border border-border bg-card px-2 py-1 text-xs font-medium text-foreground">
-            {operationalLabel(order.operational_status)}
-          </span>
-          <span className="text-xs tabular-nums text-muted-foreground">Total ${order.total}</span>
+        <div className="flex w-full min-w-0 flex-col items-stretch gap-2 sm:max-w-lg sm:items-end">
+          <div className="flex flex-wrap items-center justify-end gap-1.5 sm:justify-end">
+            <span
+              className={`inline-flex max-w-full rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${paymentChipClass(order.payment_status)}`}
+            >
+              {paymentLabel(order.payment_status)}
+            </span>
+            <span
+              className={`inline-flex max-w-full rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${operational.className}`}
+            >
+              {operational.text}
+            </span>
+            {hasMadeToOrder ? (
+              <span
+                className={`inline-flex rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${adminChip.sky}`}
+              >
+                Incluye encargo
+              </span>
+            ) : null}
+            {hasExpress ? (
+              <span
+                className={`inline-flex rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${adminChip.emerald}`}
+              >
+                Incluye express
+              </span>
+            ) : null}
+            <span className="inline-flex tabular-nums text-xs text-muted-foreground sm:pl-1">
+              Total ${order.total}
+            </span>
+          </div>
         </div>
       </div>
 
       <div className="space-y-3 px-4 py-3">
-        <p className="text-xs text-muted-foreground">{stockLine}</p>
+        <AttentionBlock order={order} />
 
         <form
           action="/api/admin/orders/status"
@@ -156,7 +210,10 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
           </button>
         </form>
 
-        <Link className="tcds-link inline-flex w-fit text-sm" href={`/orders/${order.public_reference}`}>
+        <Link
+          className="tcds-link inline-flex w-fit text-sm"
+          href={`/orders/${order.public_reference}`}
+        >
           Ver detalle público
         </Link>
 
@@ -164,21 +221,43 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Líneas del pedido
           </h3>
-          <ul className="mt-2 space-y-2">
-            {items.map((item) => (
-              <li
-                key={item.id}
-                className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border/80 py-1.5 last:border-0"
-              >
-                <span className="min-w-0 flex-1 font-medium text-foreground">{item.title_snapshot}</span>
-                <span className="shrink-0 tabular-nums text-muted-foreground">×{item.quantity}</span>
-                <span
-                  className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium ${fulfillmentChipClass(item.fulfillment_snapshot)}`}
+          <ul className="mt-2 space-y-3">
+            {items.map((item) => {
+              const customLine = customizationDisplayLine(
+                item.customization_snapshot
+              );
+              return (
+                <li
+                  key={item.id}
+                  className="space-y-1 border-b border-border/80 pb-2.5 last:border-0 last:pb-0"
                 >
-                  {fulfillmentLabel(item.fulfillment_snapshot)}
-                </span>
-              </li>
-            ))}
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="min-w-0 flex-1 font-medium text-foreground">
+                      {item.title_snapshot}
+                    </span>
+                    <span className="shrink-0 tabular-nums text-muted-foreground">
+                      ×{item.quantity}
+                    </span>
+                    <span
+                      className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium ${fulfillmentChipClass(item.fulfillment_snapshot)}`}
+                    >
+                      {fulfillmentLabel(item.fulfillment_snapshot)}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground sm:text-xs">
+                    Talle {item.size_snapshot}
+                    {item.promised_min_days != null && item.promised_max_days != null
+                      ? ` · ${item.promised_min_days}–${item.promised_max_days} días háb.`
+                      : null}
+                  </p>
+                  {customLine ? (
+                    <p className="text-[11px] text-foreground sm:text-xs">
+                      {customLine}
+                    </p>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         </div>
 
@@ -191,11 +270,16 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
           ) : (
             <ul className="mt-2 max-h-40 space-y-1.5 overflow-y-auto text-xs text-muted-foreground">
               {history.map((event) => (
-                <li key={event.id} className="border-l-2 border-sky-200 pl-2 dark:border-sky-800">
+                <li
+                  key={event.id}
+                  className="border-l-2 border-sky-200 pl-2 dark:border-sky-800"
+                >
                   <span className="font-medium text-foreground">
                     {(event.previous_status ?? "—") + " → " + event.new_status}
                   </span>
-                  <span className="ml-1 text-muted-foreground">{formatHistoryDate(event.changed_at)}</span>
+                  <span className="ml-1 text-muted-foreground">
+                    {formatHistoryDate(event.changed_at)}
+                  </span>
                 </li>
               ))}
             </ul>
