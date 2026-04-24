@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Database } from "@/lib/supabase/database.types";
 import { adminChip } from "@/app/admin/_lib/admin-ui-classes";
 import {
+  adminPaymentStatusLabel,
   formatOrderCreatedAtEsUy,
   getAdminOrderAttention,
   orderFulfillmentFlags,
@@ -22,19 +23,6 @@ type AdminOrderCardProps = {
   items: OrderItemRow[];
   history: HistoryRow[];
 };
-
-function paymentLabel(status: OrderRow["payment_status"]): string {
-  switch (status) {
-    case "awaiting_payment":
-      return "Pago: sin iniciar";
-    case "pending":
-      return "Pago: pendiente (acreditando)";
-    case "paid":
-      return "Pagado";
-    case "failed":
-      return "Pago fallido";
-  }
-}
 
 function paymentChipClass(status: OrderRow["payment_status"]): string {
   switch (status) {
@@ -197,7 +185,7 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
           <span
             className={`inline-flex max-w-full rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${paymentChipClass(order.payment_status)}`}
           >
-            {paymentLabel(order.payment_status)}
+            {adminPaymentStatusLabel(order.payment_status)}
           </span>
           <span
             className={`inline-flex max-w-full rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${operational.className}`}

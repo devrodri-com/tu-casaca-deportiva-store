@@ -8,9 +8,10 @@ const PRIMARY_NAV: readonly { href: string; label: string }[] = [
   { href: "/admin", label: "Inicio" },
   { href: "/admin/products", label: "Productos" },
   { href: "/admin/orders", label: "Pedidos" },
+  { href: "/admin/customers", label: "Clientes" },
 ] as const;
 
-const FUTURE_PLACEHOLDERS = ["Clientes", "Historial", "Usuarios"] as const;
+const FUTURE_PLACEHOLDERS = ["Historial", "Usuarios"] as const;
 
 function navItemIsActive(href: string, pathname: string): boolean {
   if (href === "/admin") {
