@@ -1,12 +1,6 @@
 import type { CatalogAvailability } from "@/modules/catalog";
+import { fulfillmentShortLabel } from "@/modules/orders/application/fulfillment-presentation";
 
 export function labelVariantAvailability(availability: CatalogAvailability): string {
-  switch (availability) {
-    case "express":
-      return "Express";
-    case "made_to_order":
-      return "Por encargo";
-    default:
-      return "No disponible";
-  }
+  return fulfillmentShortLabel(availability);
 }

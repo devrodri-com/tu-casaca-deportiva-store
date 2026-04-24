@@ -5,6 +5,10 @@ import {
   getAdminOrderAttention,
   orderFulfillmentFlags,
 } from "@/app/admin/orders/_lib/admin-order-helpers";
+import {
+  fulfillmentPromisedHabilesRangeSuffix,
+  fulfillmentShortLabel,
+} from "@/modules/orders/application/fulfillment-presentation";
 import { customizationDisplayLine } from "@/modules/orders/application/order-presentation";
 
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
@@ -64,17 +68,6 @@ function operationalLabel(
     cancelled: "Cancelado",
   };
   return { text: text[order.operational_status], className: adminChip.neutral };
-}
-
-function fulfillmentLabel(snapshot: OrderItemRow["fulfillment_snapshot"]): string {
-  switch (snapshot) {
-    case "express":
-      return "Express";
-    case "made_to_order":
-      return "Encargo";
-    case "unavailable":
-      return "Sin stock";
-  }
 }
 
 function fulfillmentChipClass(
@@ -241,14 +234,15 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
                     <span
                       className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium ${fulfillmentChipClass(item.fulfillment_snapshot)}`}
                     >
-                      {fulfillmentLabel(item.fulfillment_snapshot)}
+                      {fulfillmentShortLabel(item.fulfillment_snapshot)}
                     </span>
                   </div>
                   <p className="text-[11px] text-muted-foreground sm:text-xs">
                     Talle {item.size_snapshot}
-                    {item.promised_min_days != null && item.promised_max_days != null
-                      ? ` · ${item.promised_min_days}–${item.promised_max_days} días háb.`
-                      : null}
+                    {fulfillmentPromisedHabilesRangeSuffix(
+                      item.promised_min_days,
+                      item.promised_max_days
+                    )}
                   </p>
                   {customLine ? (
                     <p className="text-[11px] text-foreground sm:text-xs">

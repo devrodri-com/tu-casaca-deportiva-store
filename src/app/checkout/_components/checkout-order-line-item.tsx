@@ -1,24 +1,13 @@
 import Link from "next/link";
 import type { CartLine } from "@/modules/cart";
+import {
+  fulfillmentListCompactLine,
+  fulfillmentShortLabel,
+} from "@/modules/orders/application/fulfillment-presentation";
 
 type CheckoutOrderLineItemProps = {
   line: CartLine;
 };
-
-function fulfillmentLabel(line: CartLine): string {
-  if (line.fulfillment === "express") {
-    return "Express · Retiro hoy / envío 24-48 h";
-  }
-  if (line.fulfillment === "made_to_order") {
-    const min = line.promisedDays.minDays;
-    const max = line.promisedDays.maxDays;
-    if (min !== null && max !== null) {
-      return `Por encargo · ${min}-${max} días`;
-    }
-    return "Por encargo · 14-21 días";
-  }
-  return "Sin disponibilidad";
-}
 
 export function CheckoutOrderLineItem({ line }: CheckoutOrderLineItemProps) {
   const subtotal = line.finalUnitPrice * line.quantity;
@@ -59,16 +48,18 @@ export function CheckoutOrderLineItem({ line }: CheckoutOrderLineItemProps) {
               </Link>
             </div>
             <span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-medium ${badgeClass}`}>
-              {line.fulfillment === "express"
-                ? "Express"
-                : line.fulfillment === "made_to_order"
-                  ? "Encargo"
-                  : "Sin stock"}
+              {fulfillmentShortLabel(line.fulfillment)}
             </span>
           </div>
 
           <p className="text-xs text-zinc-600 dark:text-neutral-400">Talle: {line.size}</p>
-          <p className="text-xs text-zinc-600 dark:text-neutral-400">{fulfillmentLabel(line)}</p>
+          <p className="text-xs text-zinc-600 dark:text-neutral-400">
+            {fulfillmentListCompactLine({
+              fulfillment: line.fulfillment,
+              minDays: line.promisedDays.minDays,
+              maxDays: line.promisedDays.maxDays,
+            })}
+          </p>
           {line.customization ? (
             <p className="text-xs text-sky-700 dark:text-sky-300">
               Personalización: #{line.customization.jerseyNumber} · {line.customization.jerseyName}

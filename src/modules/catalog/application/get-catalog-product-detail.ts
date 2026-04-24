@@ -1,6 +1,7 @@
 import { isValidMadeToOrderRange, resolveAvailability } from "@/modules/catalog";
 import { getCatalogProductBySlug } from "@/modules/catalog/infrastructure/catalog-store";
 import { listProductImagesByProductId } from "@/modules/catalog/infrastructure/product-images-store";
+import { fulfillmentDeliveryLine } from "@/modules/orders/application/fulfillment-presentation";
 import { resolvePurchasableLine } from "@/modules/purchase";
 
 export type CatalogProductDetailResolution = {
@@ -108,12 +109,11 @@ export async function getCatalogProductDetail(
             finalUnitPrice: baseLine.finalUnitPrice,
           }
         : null;
-    const deliveryLabel =
-      availability === "express"
-        ? "Entrega en 24-48h"
-        : availability === "made_to_order"
-          ? "Entrega en 14-21 dias"
-          : "Sin disponibilidad";
+    const deliveryLabel = fulfillmentDeliveryLine({
+      fulfillment: availability,
+      minDays: variant.madeToOrderMinDays,
+      maxDays: variant.madeToOrderMaxDays,
+    });
     const customizationLabel =
       record.product.supportsCustomization &&
       record.product.customizationSurcharge !== null

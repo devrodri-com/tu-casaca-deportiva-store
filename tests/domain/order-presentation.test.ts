@@ -28,25 +28,27 @@ describe("order-presentation", () => {
   });
 
   describe("fulfillmentAndDeliveryText", () => {
-    it("express: etiqueta y texto 24-48 h", () => {
+    it("express: etiqueta y línea alineada con helpers", () => {
       const r = fulfillmentAndDeliveryText({
         fulfillment: "express",
         minDays: null,
         maxDays: null,
       });
       assert.equal(r.shortLabel, "Express");
-      assert.match(r.deliveryLine, /24-48/);
+      assert.equal(r.deliveryLine, "Retiro hoy o envío en 24–48 h");
     });
 
-    it("encargo: rango de días en el texto", () => {
+    it("encargo: rango de días con guión de rango", () => {
       const r = fulfillmentAndDeliveryText({
         fulfillment: "made_to_order",
         minDays: 14,
         maxDays: 21,
       });
       assert.equal(r.shortLabel, "Por encargo");
-      assert.match(r.deliveryLine, /14/);
-      assert.match(r.deliveryLine, /21/);
+      assert.equal(
+        r.deliveryLine,
+        "Entrega estimada en 14–21 días"
+      );
     });
   });
 });

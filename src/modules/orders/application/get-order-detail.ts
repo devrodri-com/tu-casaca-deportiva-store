@@ -20,9 +20,9 @@ export type OrderDetailItem = {
   quantity: number;
   unitPrice: number;
   lineTotal: number;
-  /** "Express" / "Por encargo" / "Por confirmar" */
+  /** "Express" / "Por encargo" / "Sin disponibilidad" (presentación) */
   fulfillmentKind: string;
-  /** Línea completa con plazos o 24-48h */
+  /** Plazo o modalidad (texto unificado) */
   deliveryLine: string;
   customizationLine: string | null;
 };
