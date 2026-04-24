@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type {
-  CatalogProductDetailResolution,
-  CatalogProductDetailVariant,
-} from "@/modules/catalog/application/get-catalog-product-detail";
+import type { CatalogProductDetailVariant } from "@/modules/catalog/application/get-catalog-product-detail";
 import { addCartLine, createCartLineFromSelection } from "@/modules/cart";
+import {
+  FULFILLMENT_CUSTOMIZATION_TO_MADE_TO_ORDER,
+  fulfillmentPdpMainMessage,
+  fulfillmentShortLabel,
+} from "@/modules/orders/application/fulfillment-presentation";
 
 type VariantSelectorProps = {
   productId: string;
@@ -18,45 +20,6 @@ type VariantSelectorProps = {
   supportsCustomization: boolean;
   customizationSurcharge: number | null;
 };
-
-function getMainDeliveryMessage(
-  resolution: CatalogProductDetailResolution,
-  params: { isUnavailable: boolean; isCustomized: boolean }
-): string {
-  if (params.isUnavailable) {
-    return "Sin disponibilidad";
-  }
-  if (params.isCustomized) {
-    const min = resolution.promisedDays.minDays;
-    const max = resolution.promisedDays.maxDays;
-    if (min !== null && max !== null) {
-      return `Con personalización: entrega en ${min}-${max} días`;
-    }
-    return "Con personalización";
-  }
-  if (resolution.fulfillment === "express") {
-    return "Retiro hoy o envío en 24-48 h";
-  }
-  if (resolution.fulfillment === "made_to_order") {
-    const min = resolution.promisedDays.minDays;
-    const max = resolution.promisedDays.maxDays;
-    if (min !== null && max !== null) {
-      return `Entrega estimada en ${min}-${max} días`;
-    }
-    return "Entrega estimada en 14-21 días";
-  }
-  return "Sin disponibilidad";
-}
-
-function pdpTalleModeLabel(availability: CatalogProductDetailVariant["availability"]): string {
-  if (availability === "express") {
-    return "Express";
-  }
-  if (availability === "made_to_order") {
-    return "Por encargo";
-  }
-  return "No disponible";
-}
 
 export function VariantSelector({
   productId,
@@ -136,16 +99,14 @@ export function VariantSelector({
     (!exceedsExpressStock || canSplitWithMadeToOrder);
   const canSubmit = canAddToCart && (!isCustomizedSelection || isCustomizationComplete);
 
-  const mainDeliveryMessage = getMainDeliveryMessage(selectedResolution, {
+  const mainDeliveryMessage = fulfillmentPdpMainMessage({
+    resolution: selectedResolution,
     isUnavailable: selectedVariant.availability === "unavailable",
     isCustomized: isCustomizedSelection,
   });
-  const fulfillmentChipText =
-    selectedResolution.fulfillment === "express"
-      ? "Express"
-      : selectedResolution.fulfillment === "made_to_order"
-        ? "Por encargo"
-        : "Sin disponibilidad";
+  const fulfillmentChipText = fulfillmentShortLabel(
+    selectedResolution.fulfillment
+  );
   const fulfillmentChipClassName =
     selectedResolution.fulfillment === "express"
       ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-800/45 dark:bg-emerald-950/45 dark:text-emerald-300"
@@ -176,7 +137,7 @@ export function VariantSelector({
         <p className="text-sm leading-relaxed text-zinc-600 dark:text-neutral-300">{mainDeliveryMessage}</p>
         {isCustomizedSelection ? (
           <p className="text-xs text-sky-700 dark:text-sky-300">
-            Con personalización este pedido se procesa por encargo.
+            {FULFILLMENT_CUSTOMIZATION_TO_MADE_TO_ORDER}
           </p>
         ) : null}
         {isMixedSplit ? (
@@ -209,7 +170,7 @@ export function VariantSelector({
           {variants.map((variant) => {
             const isCurrent = variant.id === selectedVariant.id;
             const isUnavailable = variant.availability === "unavailable";
-            const mode = pdpTalleModeLabel(variant.availability);
+            const mode = fulfillmentShortLabel(variant.availability);
             const common =
               "inline-flex min-h-[3.25rem] min-w-[3.5rem] flex-col items-center justify-center rounded-md border px-2 py-1.5 text-sm transition";
             let buttonClass = common;
@@ -257,8 +218,7 @@ export function VariantSelector({
               : "Personalización opcional"}
           </p>
           <p className="text-xs leading-relaxed text-zinc-600 dark:text-neutral-400">
-            Sumá nombre y número por + ${customizationSurcharge}. Al personalizar, el pedido pasa a
-            modalidad por encargo.
+            {`Sumá nombre y número por + $${customizationSurcharge}. ${FULFILLMENT_CUSTOMIZATION_TO_MADE_TO_ORDER}`}
           </p>
           <div className="flex flex-wrap gap-2">
             <button

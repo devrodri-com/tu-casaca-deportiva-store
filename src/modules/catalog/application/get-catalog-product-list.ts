@@ -1,6 +1,9 @@
 import { resolveAvailability } from "@/modules/catalog";
 import { listCatalogProductsWithVariants } from "@/modules/catalog/infrastructure/catalog-store";
 import { getProductImageRowsForProductIds } from "@/modules/catalog/infrastructure/product-images-store";
+import type { StorefrontFulfillment } from "@/modules/orders/application/fulfillment-presentation";
+
+export type CatalogDeliveryBadgeKind = StorefrontFulfillment;
 
 export type CatalogProductListItem = {
   slug: string;
@@ -9,7 +12,8 @@ export type CatalogProductListItem = {
   productType: "football_jersey" | "nba_jersey" | "jacket";
   audienceLabel: string;
   productTypeLabel: string;
-  deliveryBadgeLabel: "Entrega rapida" | "Por encargo" | "Sin stock";
+  /** Clave de fulfillment agregada (express > encargo > sin disponibilidad) para badge de listado. */
+  deliveryBadgeKind: CatalogDeliveryBadgeKind;
   /** Precio base mínimo entre variantes, para listado comercial */
   displayPrice: number | null;
   primaryImageUrl: string | null;
@@ -41,11 +45,11 @@ export async function getCatalogProductList(): Promise<CatalogProductListItem[]>
           : product.productType === "nba_jersey"
             ? "Camiseta de basquet"
             : "Campera",
-      deliveryBadgeLabel: hasExpress
-        ? "Entrega rapida"
+      deliveryBadgeKind: hasExpress
+        ? "express"
         : hasMadeToOrder
-          ? "Por encargo"
-          : "Sin stock",
+          ? "made_to_order"
+          : "unavailable",
       displayPrice: minBasePrice,
       primaryImageUrl: primary?.publicUrl ?? null,
       primaryImageAlt: primary?.altText ?? null,

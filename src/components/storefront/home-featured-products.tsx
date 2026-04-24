@@ -1,4 +1,8 @@
 import Link from "next/link";
+import {
+  catalogListDeliveryBadgeClassName,
+  catalogListDeliveryBadgeLabel,
+} from "@/app/products/_lib/catalog-list-delivery-badge";
 import type { CatalogProductListItem } from "@/modules/catalog/application/get-catalog-product-list";
 
 type HomeFeaturedProductsProps = {
@@ -80,15 +84,11 @@ export function HomeFeaturedProducts({ items }: HomeFeaturedProductsProps) {
                     </span>
                     <span className="text-xs text-zinc-600 dark:text-neutral-500">{p.productTypeLabel}</span>
                     <span
-                      className={`mt-auto inline-flex w-fit rounded px-2 py-0.5 text-[11px] font-medium ${
-                        p.deliveryBadgeLabel === "Entrega rapida"
-                          ? "border border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-800/50 dark:bg-emerald-950/50 dark:text-emerald-300"
-                          : p.deliveryBadgeLabel === "Por encargo"
-                            ? "border border-sky-300 bg-sky-50 text-sky-900 dark:border-sky-800/40 dark:bg-sky-950/40 dark:text-sky-200"
-                            : "border border-zinc-300 bg-zinc-100 text-zinc-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400"
-                      }`}
+                      className={`mt-auto inline-flex w-fit rounded px-2 py-0.5 text-[11px] font-medium ${catalogListDeliveryBadgeClassName(
+                        p.deliveryBadgeKind
+                      )}`}
                     >
-                      {p.deliveryBadgeLabel}
+                      {catalogListDeliveryBadgeLabel(p.deliveryBadgeKind)}
                     </span>
                   </div>
                 </Link>

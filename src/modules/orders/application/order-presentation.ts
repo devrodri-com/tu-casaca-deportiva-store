@@ -1,4 +1,5 @@
 import type { Json } from "@/lib/supabase/database.types";
+import { fulfillmentSummaryParts } from "./fulfillment-presentation";
 
 type Fulfillment = "express" | "made_to_order" | "unavailable";
 
@@ -11,32 +12,11 @@ export function fulfillmentAndDeliveryText(params: {
   minDays: number | null;
   maxDays: number | null;
 }): { shortLabel: string; deliveryLine: string } {
-  if (params.fulfillment === "express") {
-    return {
-      shortLabel: "Express",
-      deliveryLine:
-        "Listo 24-48 h: retiro o envío según lo coordinemos por WhatsApp.",
-    };
-  }
-  if (params.fulfillment === "made_to_order") {
-    const { minDays, maxDays } = params;
-    let deliveryLine: string;
-    if (
-      minDays != null &&
-      maxDays != null &&
-      minDays > 0 &&
-      maxDays >= minDays
-    ) {
-      deliveryLine = `Entrega estimada: ${minDays} a ${maxDays} días hábiles.`;
-    } else {
-      deliveryLine = "Entrega según plazo acordado en encargo (típico 14-21 días).";
-    }
-    return { shortLabel: "Por encargo", deliveryLine };
-  }
-  return {
-    shortLabel: "Por confirmar",
-    deliveryLine: "Plazo de entrega a confirmar según stock y personalización.",
-  };
+  return fulfillmentSummaryParts({
+    fulfillment: params.fulfillment,
+    minDays: params.minDays,
+    maxDays: params.maxDays,
+  });
 }
 
 /**
