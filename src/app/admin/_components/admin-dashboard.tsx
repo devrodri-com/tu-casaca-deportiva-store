@@ -25,7 +25,9 @@ export function AdminDashboard() {
           >
             <div className="flex items-start justify-between gap-2">
               <h3 className="text-base font-semibold text-foreground">Productos</h3>
-              <span className="text-xs font-medium text-sky-600 group-hover:underline">Abrir</span>
+              <span className="text-xs font-medium text-sky-600 group-hover:underline dark:text-sky-400">
+                Abrir
+              </span>
             </div>
             <p className="text-sm text-muted-foreground">
               Alta, edición, variantes, imágenes y activación en la tienda pública.
@@ -37,7 +39,9 @@ export function AdminDashboard() {
           >
             <div className="flex items-start justify-between gap-2">
               <h3 className="text-base font-semibold text-foreground">Pedidos</h3>
-              <span className="text-xs font-medium text-sky-600 group-hover:underline">Abrir</span>
+              <span className="text-xs font-medium text-sky-600 group-hover:underline dark:text-sky-400">
+                Abrir
+              </span>
             </div>
             <p className="text-sm text-muted-foreground">
               Referencia pública, ítems, modalidad express/encargo y estado operativo.

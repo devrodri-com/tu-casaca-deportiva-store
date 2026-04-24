@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AdminThemeToggle } from "./admin-theme-toggle";
 
 const PRIMARY_NAV: readonly { href: string; label: string }[] = [
   { href: "/admin", label: "Inicio" },
@@ -23,9 +24,18 @@ type AdminNavPanelProps = {
   onNavigate?: () => void;
   /** Clase del contenedor interno (p. ej. ancho fijo en drawer). */
   className?: string;
+  /**
+   * En mobile el toggle suele mostrarse en la barra superior; en el drawer se oculta
+   * la fila "Tema" para no duplicar.
+   */
+  showThemeInPanel?: boolean;
 };
 
-export function AdminNavPanel({ onNavigate, className = "" }: AdminNavPanelProps) {
+export function AdminNavPanel({
+  onNavigate,
+  className = "",
+  showThemeInPanel = true,
+}: AdminNavPanelProps) {
   const pathname = usePathname() ?? "";
 
   function handleLinkClick(): void {
@@ -46,6 +56,12 @@ export function AdminNavPanel({ onNavigate, className = "" }: AdminNavPanelProps
             <p className="text-[11px] text-muted-foreground">Administración</p>
           </div>
         </div>
+        {showThemeInPanel ? (
+          <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3 dark:border-white/10">
+            <span className="text-xs font-medium text-muted-foreground">Tema</span>
+            <AdminThemeToggle />
+          </div>
+        ) : null}
       </div>
       <nav
         className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto p-2.5"
@@ -64,8 +80,8 @@ export function AdminNavPanel({ onNavigate, className = "" }: AdminNavPanelProps
                   onClick={handleLinkClick}
                   className={`block rounded-md border-l-2 py-2 pl-2.5 pr-2 text-sm font-medium transition-colors ${
                     active
-                      ? "border-sky-600 bg-sky-50 text-foreground"
-                      : "border-transparent text-muted-foreground hover:bg-surface hover:text-foreground"
+                      ? "border-sky-600 bg-sky-50 text-foreground dark:border-sky-500 dark:bg-sky-950/50 dark:text-sky-100"
+                      : "border-transparent text-muted-foreground hover:bg-surface hover:text-foreground dark:hover:bg-white/5"
                   }`}
                   aria-current={active ? "page" : undefined}
                 >

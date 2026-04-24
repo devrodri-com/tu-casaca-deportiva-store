@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Database } from "@/lib/supabase/database.types";
+import { adminChip } from "@/app/admin/_lib/admin-ui-classes";
 
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 type OrderItemRow = Database["public"]["Tables"]["order_items"]["Row"];
@@ -24,15 +25,15 @@ function paymentLabel(status: OrderRow["payment_status"]): string {
   }
 }
 
-function paymentBadgeClass(status: OrderRow["payment_status"]): string {
+function paymentChipClass(status: OrderRow["payment_status"]): string {
   switch (status) {
     case "paid":
-      return "border-emerald-200 bg-emerald-50 text-emerald-900";
+      return adminChip.emerald;
     case "failed":
-      return "border-red-200 bg-red-50 text-red-800";
+      return adminChip.red;
     case "pending":
     case "awaiting_payment":
-      return "border-amber-200 bg-amber-50 text-amber-900";
+      return adminChip.amber;
   }
 }
 
@@ -67,14 +68,14 @@ function fulfillmentLabel(snapshot: OrderItemRow["fulfillment_snapshot"]): strin
   }
 }
 
-function fulfillmentBadgeClass(snapshot: OrderItemRow["fulfillment_snapshot"]): string {
+function fulfillmentChipClass(snapshot: OrderItemRow["fulfillment_snapshot"]): string {
   switch (snapshot) {
     case "express":
-      return "border-emerald-200 bg-emerald-50 text-emerald-900";
+      return adminChip.emerald;
     case "made_to_order":
-      return "border-sky-200 bg-sky-50 text-sky-900";
+      return adminChip.sky;
     case "unavailable":
-      return "border-border bg-surface text-muted-foreground";
+      return adminChip.surface;
   }
 }
 
@@ -112,11 +113,11 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <span
-            className={`inline-flex rounded-md border px-2 py-1 text-xs font-medium ${paymentBadgeClass(order.payment_status)}`}
+            className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${paymentChipClass(order.payment_status)}`}
           >
             {paymentLabel(order.payment_status)}
           </span>
-          <span className="inline-flex rounded-md border border-border bg-white px-2 py-1 text-xs font-medium text-foreground">
+          <span className="inline-flex rounded-md border border-border bg-card px-2 py-1 text-xs font-medium text-foreground">
             {operationalLabel(order.operational_status)}
           </span>
           <span className="text-xs tabular-nums text-muted-foreground">Total ${order.total}</span>
@@ -172,7 +173,7 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
                 <span className="min-w-0 flex-1 font-medium text-foreground">{item.title_snapshot}</span>
                 <span className="shrink-0 tabular-nums text-muted-foreground">×{item.quantity}</span>
                 <span
-                  className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium ${fulfillmentBadgeClass(item.fulfillment_snapshot)}`}
+                  className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium ${fulfillmentChipClass(item.fulfillment_snapshot)}`}
                 >
                   {fulfillmentLabel(item.fulfillment_snapshot)}
                 </span>
@@ -181,7 +182,7 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
           </ul>
         </div>
 
-        <details className="rounded-md border border-border bg-surface/30 px-3 py-2">
+        <details className="rounded-md border border-border bg-surface/30 px-3 py-2 dark:border-white/10">
           <summary className="cursor-pointer text-xs font-medium text-foreground">
             Historial operativo ({history.length})
           </summary>
@@ -190,7 +191,7 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
           ) : (
             <ul className="mt-2 max-h-40 space-y-1.5 overflow-y-auto text-xs text-muted-foreground">
               {history.map((event) => (
-                <li key={event.id} className="border-l-2 border-sky-200 pl-2">
+                <li key={event.id} className="border-l-2 border-sky-200 pl-2 dark:border-sky-800">
                   <span className="font-medium text-foreground">
                     {(event.previous_status ?? "—") + " → " + event.new_status}
                   </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { adminAlert } from "@/app/admin/_lib/admin-ui-classes";
 import type { Product } from "@/modules/catalog";
 import { updateProductAction, type AdminFormState } from "../actions";
 import { productToFormValues, ProductFormFields } from "./product-form-fields";
@@ -20,7 +21,7 @@ export function EditProductForm({ product }: EditProductFormProps) {
     <form action={formAction} className="flex flex-col gap-3">
       {state?.error ? (
         <p
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+          className={`rounded-lg px-4 py-3 text-sm font-medium ${adminAlert.error}`}
           role="alert"
         >
           {state.error}
@@ -28,7 +29,7 @@ export function EditProductForm({ product }: EditProductFormProps) {
       ) : null}
       {state?.success ? (
         <p
-          className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
+          className={`rounded-lg px-4 py-3 text-sm font-medium ${adminAlert.success}`}
           role="status"
         >
           {state.success}

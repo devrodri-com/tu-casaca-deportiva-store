@@ -23,7 +23,7 @@ export function AdminDeleteProductButton({
       <button
         type="submit"
         disabled={pending}
-        className="rounded border border-red-300 bg-red-50 px-2 py-1 text-xs font-medium text-red-900 hover:bg-red-100 disabled:opacity-60"
+        className="rounded border border-red-300 bg-red-50 px-2 py-1 text-xs font-medium text-red-900 transition hover:bg-red-100 disabled:opacity-60 dark:border-red-800/50 dark:bg-red-950/30 dark:text-red-200 dark:hover:bg-red-950/50"
         onClick={(e) => {
           if (
             !window.confirm(
@@ -37,7 +37,7 @@ export function AdminDeleteProductButton({
         {pending ? "…" : "Eliminar"}
       </button>
       {state?.error ? (
-        <span className="max-w-[10rem] text-right text-[10px] leading-tight text-red-600">
+        <span className="max-w-[10rem] text-right text-[10px] leading-tight text-red-600 dark:text-red-400">
           {state.error}
         </span>
       ) : null}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { adminAlert } from "@/app/admin/_lib/admin-ui-classes";
 import { createVariantAction, type AdminFormState } from "../actions";
 import { VariantFormFields } from "./variant-form-fields";
 
@@ -25,12 +26,18 @@ export function CreateVariantForm({ productId, embed = false }: CreateVariantFor
         <h2 className="text-sm font-semibold text-foreground">Nueva variante</h2>
       )}
       {state?.error ? (
-        <p className="text-sm font-medium text-red-600" role="alert">
+        <p
+          className={`rounded-md px-3 py-2 text-sm font-medium ${adminAlert.error}`}
+          role="alert"
+        >
           {state.error}
         </p>
       ) : null}
       {state?.success ? (
-        <p className="text-sm font-medium text-emerald-800" role="status">
+        <p
+          className={`rounded-md px-3 py-2 text-sm font-medium ${adminAlert.success}`}
+          role="status"
+        >
           {state.success}
         </p>
       ) : null}

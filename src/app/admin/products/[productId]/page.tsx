@@ -40,7 +40,7 @@ export default async function AdminEditProductPage({ params }: PageProps) {
           <p className="text-sm text-muted-foreground">Todavia no hay variantes. Usá el bloque de abajo para agregar un talle.</p>
         ) : (
           <div className="tcds-card overflow-hidden p-0">
-            <div className="grid grid-cols-1 border-b border-border bg-surface/50 px-3 py-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:px-4 lg:grid-cols-12">
+            <div className="grid grid-cols-1 border-b border-border bg-surface/50 px-3 py-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:px-4 dark:border-white/10 dark:bg-neutral-900/25 lg:grid-cols-12">
               <span className="hidden lg:col-span-1 lg:block">Talle</span>
               <span className="hidden lg:col-span-2 lg:block">Precio u.</span>
               <span className="hidden lg:col-span-1 lg:block">Stk. exp.</span>

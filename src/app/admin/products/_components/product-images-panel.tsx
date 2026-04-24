@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { adminAlert, adminChip } from "@/app/admin/_lib/admin-ui-classes";
 import type { CatalogProductImageRow } from "@/modules/catalog/infrastructure/product-images-store";
 import type { AdminFormState } from "../actions";
 import {
@@ -34,10 +35,8 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
     >
       {message ? (
         <p
-          className={`mb-4 rounded-md border px-3 py-2 text-sm font-medium ${
-            isError
-              ? "border-red-200 bg-red-50 text-red-800"
-              : "border-emerald-200 bg-emerald-50 text-emerald-900"
+          className={`mb-4 rounded-md px-3 py-2 text-sm font-medium ${
+            isError ? adminAlert.error : adminAlert.success
           }`}
           role={isError ? "alert" : "status"}
         >
@@ -59,7 +58,7 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
               name="file"
               required
               accept="image/jpeg,image/jpg,image/png,image/webp"
-              className="tcds-input cursor-pointer file:mr-3 file:rounded file:border-0 file:bg-surface file:px-2 file:py-1.5 file:text-sm"
+              className="tcds-input cursor-pointer file:mr-3 file:rounded file:border-0 file:bg-surface file:px-2 file:py-1.5 file:text-sm file:dark:bg-neutral-800"
               disabled={pending}
             />
           </label>
@@ -86,7 +85,7 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
           {images.map((img, index) => (
             <li
               key={img.id}
-              className="flex flex-col gap-3 rounded-lg border border-border bg-surface/30 p-3 sm:flex-row sm:items-stretch"
+              className="flex flex-col gap-3 rounded-lg border border-border bg-surface/30 p-3 sm:flex-row sm:items-stretch dark:border-white/10"
             >
               <div className="flex shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -101,7 +100,9 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   {img.isPrimary ? (
-                    <span className="inline-flex rounded-md border border-sky-200 bg-sky-50 px-2 py-0.5 text-xs font-semibold text-sky-900">
+                    <span
+                      className={`inline-flex rounded-md px-2 py-0.5 text-xs font-semibold ${adminChip.sky}`}
+                    >
                       Principal
                     </span>
                   ) : null}
@@ -167,7 +168,7 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
                     <input type="hidden" name="imageId" value={img.id} />
                     <button
                       type="submit"
-                      className="w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-800 transition hover:bg-red-100"
+                      className="w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-800 transition hover:bg-red-100 dark:border-red-800/50 dark:bg-red-950/30 dark:text-red-200 dark:hover:bg-red-950/50"
                       disabled={pending}
                     >
                       Eliminar
