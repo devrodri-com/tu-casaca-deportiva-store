@@ -3,7 +3,10 @@ import type { CartLine } from "@/modules/cart";
 import { getCatalogProductAndVariantByIds } from "@/modules/catalog/infrastructure/catalog-store";
 import { buildOrderFromCart } from "@/modules/orders";
 import { insertOrder } from "@/modules/orders/infrastructure/order-store";
-import { resolvePurchasableLine } from "@/modules/purchase";
+import {
+  assertExpressLinesWithinStock,
+  resolvePurchasableLineForCheckout,
+} from "@/modules/purchase";
 
 type CheckoutConfirmBody = {
   lines: CartLine[];
@@ -93,6 +96,7 @@ export async function POST(request: Request) {
     );
   }
 
+  const expressStockByVariantId = new Map<string, number>();
   let validatedLines: CartLine[];
   try {
     validatedLines = await Promise.all(
@@ -108,6 +112,8 @@ export async function POST(request: Request) {
         if (!authoritative) {
           throw new Error("Producto o variante no encontrado.");
         }
+        const variant = authoritative.variantRecord.variant;
+        expressStockByVariantId.set(variant.id, variant.expressStock);
 
         const customizationEnabled = line.customization?.isCustomized === true;
         if (
@@ -134,15 +140,21 @@ export async function POST(request: Request) {
           }
         }
 
-        const resolvedLine = resolvePurchasableLine({
-          product: authoritative.product,
-          variant: authoritative.variantRecord.variant,
-          unitBasePrice: authoritative.variantRecord.unitBasePrice,
-          customization: {
-            isCustomized: customizationEnabled,
-            surchargeAmount: customizationSurcharge,
+        const resolvedLine = resolvePurchasableLineForCheckout(
+          {
+            product: authoritative.product,
+            variant,
+            unitBasePrice: authoritative.variantRecord.unitBasePrice,
+            customization: {
+              isCustomized: customizationEnabled,
+              surchargeAmount: customizationSurcharge,
+            },
           },
-        });
+          {
+            requestedFulfillment: line.fulfillment,
+            quantity: line.quantity,
+          }
+        );
 
         return {
           productId: authoritative.product.id,
@@ -168,6 +180,14 @@ export async function POST(request: Request) {
           quantity: line.quantity,
         };
       })
+    );
+    assertExpressLinesWithinStock(
+      validatedLines.map((l) => ({
+        variantId: l.variantId,
+        fulfillment: l.fulfillment,
+        quantity: l.quantity,
+      })),
+      expressStockByVariantId
     );
   } catch (error) {
     const message =
