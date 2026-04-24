@@ -1,5 +1,25 @@
 import type { OrderItem, OrderItemSource } from "./order-item";
 import type { CartLine } from "@/modules/cart";
+import type { PurchaseCustomization } from "@/modules/purchase";
+
+/**
+ * Lo que se guarda en `order_items.customization_snapshot`: mantiene encargo e importe
+ * y, si el usuario cargó datos, dorsal y nombre (para el detalle público del pedido).
+ */
+function toPersistedCustomizationSnapshot(
+  c: PurchaseCustomization
+): PurchaseCustomization {
+  const base: PurchaseCustomization = {
+    isCustomized: c.isCustomized,
+    surchargeAmount: c.surchargeAmount,
+  };
+  const n = (c.jerseyNumber ?? "").trim();
+  const name = (c.jerseyName ?? "").trim();
+  if (n.length > 0 && name.length > 0) {
+    return { ...base, jerseyNumber: n, jerseyName: name };
+  }
+  return base;
+}
 
 export type OrderCustomerSnapshot = {
   fullName: string;
@@ -44,10 +64,7 @@ export function buildOrder(params: {
     unitPriceSnapshot: source.line.finalUnitPrice,
     quantity: source.quantity,
     customizationSnapshot: source.customizationSnapshot
-      ? {
-          isCustomized: source.customizationSnapshot.isCustomized,
-          surchargeAmount: source.customizationSnapshot.surchargeAmount,
-        }
+      ? toPersistedCustomizationSnapshot(source.customizationSnapshot)
       : null,
   }));
 
@@ -90,10 +107,12 @@ export function buildOrderFromCart(params: {
     unitPriceSnapshot: line.finalUnitPrice,
     quantity: line.quantity,
     customizationSnapshot: line.customization
-      ? {
+      ? toPersistedCustomizationSnapshot({
           isCustomized: line.customization.isCustomized,
           surchargeAmount: line.customization.surchargeAmount,
-        }
+          jerseyNumber: line.customization.jerseyNumber,
+          jerseyName: line.customization.jerseyName,
+        })
       : null,
   }));
 
