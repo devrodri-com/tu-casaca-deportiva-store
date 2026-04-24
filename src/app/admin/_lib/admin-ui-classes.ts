@@ -1,6 +1,6 @@
 /**
  * Clases compartidas para el panel admin en light y dark (sin duplicar bloques largos en cada componente).
- * Atención / pendiente: acento sky (TCD) — no ámbar/amarillo en dark.
+ * Atención / pendiente: acento sky (TCD) - no ámbar/amarillo en dark.
  */
 const chipSkyAttention =
   "border border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-800/50 dark:bg-sky-950/40 dark:text-sky-200";
@@ -25,8 +25,12 @@ export const adminAlert = {
     "border border-red-200 bg-red-50 text-red-700 dark:border-red-800/50 dark:bg-red-950/30 dark:text-red-200",
   success:
     "border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800/50 dark:bg-emerald-950/30 dark:text-emerald-200",
+  /** Atención estándar (pago sin confirmar, etc.) - sky, sin ámbar. */
   warning:
     "border border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-800/50 dark:bg-sky-950/30 dark:text-sky-200",
+  /** Pago confirmado pero stock aún no descontado: más visible en la lista. */
+  attentionStrong:
+    "border-2 border-sky-400 bg-sky-100 text-sky-950 shadow-sm dark:border-sky-500 dark:bg-sky-950/55 dark:text-sky-50",
 } as const;
 
 /** Cabecera de tabla sticky (productos, etc.) */

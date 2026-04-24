@@ -27,7 +27,7 @@ export default function NosotrosPage() {
     <div className="storefront-shell">
       <StorePublicHeader />
       <main className="mx-auto w-full flex-1 px-5 py-10 md:px-6 md:py-14">
-        {/* Hero / historia — centrado, tono editorial */}
+        {/* Hero / historia - centrado, tono editorial */}
         <section className="mx-auto max-w-2xl text-center">
           <p className="flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-400/95 md:text-xs">
             <FaFutbol className={iconKickerClass} aria-hidden />
@@ -85,7 +85,7 @@ export default function NosotrosPage() {
           </div>
         </section>
 
-        {/* Cómo trabajamos — compacto */}
+        {/* Cómo trabajamos - compacto */}
         <section className="mx-auto mt-14 max-w-3xl border-t border-zinc-200 pt-12 dark:border-white/10 md:mt-16 md:pt-14">
           <h2 className="text-center text-lg font-semibold text-zinc-900 md:text-xl dark:text-white">Cómo trabajamos</h2>
           <p className="mx-auto mt-2 max-w-xl text-center text-xs text-zinc-500 md:text-sm dark:text-neutral-500">
@@ -116,7 +116,7 @@ export default function NosotrosPage() {
           </div>
         </section>
 
-        {/* Compra y confianza — corto y discreto */}
+        {/* Compra y confianza - corto y discreto */}
         <section className="mx-auto mt-12 max-w-2xl border-t border-zinc-200 pb-4 pt-10 dark:border-white/10 md:mt-14 md:pt-12">
           <h2 className="text-center text-base font-semibold text-zinc-900 md:text-lg dark:text-white">Compra y confianza</h2>
           <ul className="mt-5 space-y-2 text-center text-sm text-zinc-700 dark:text-neutral-300">

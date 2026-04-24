@@ -17,7 +17,7 @@ const productTypeLabel: Record<ProductType, string> = {
 
 function minPriceFromVariants(prices: { unitBasePrice: number }[]): string {
   if (prices.length === 0) {
-    return "—";
+    return "-";
   }
   const min = Math.min(...prices.map((p) => p.unitBasePrice));
   return `desde $${min}`;

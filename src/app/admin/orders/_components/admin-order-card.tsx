@@ -2,8 +2,10 @@ import Link from "next/link";
 import type { Database } from "@/lib/supabase/database.types";
 import { adminChip } from "@/app/admin/_lib/admin-ui-classes";
 import {
+  formatOrderCreatedAtEsUy,
   getAdminOrderAttention,
   orderFulfillmentFlags,
+  orderHasCustomizationLine,
 } from "@/app/admin/orders/_lib/admin-order-helpers";
 import {
   fulfillmentPromisedHabilesRangeSuffix,
@@ -41,7 +43,7 @@ function paymentChipClass(status: OrderRow["payment_status"]): string {
     case "failed":
       return adminChip.red;
     case "pending":
-      return adminChip.amber;
+      return adminChip.sky;
     case "awaiting_payment":
       return adminChip.neutral;
   }
@@ -120,54 +122,116 @@ function AttentionBlock({ order }: { order: OrderRow }) {
   );
 }
 
+function stockStatusChip(order: OrderRow): { label: string; className: string } | null {
+  if (order.payment_status !== "paid") {
+    return null;
+  }
+  if (order.stock_discounted_at === null) {
+    return {
+      label: "Stock: pendiente",
+      className: adminChip.sky,
+    };
+  }
+  return {
+    label: "Stock: descontado",
+    className: adminChip.emerald,
+  };
+}
+
 export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
   const { hasExpress, hasMadeToOrder } = orderFulfillmentFlags(items);
   const operational = operationalLabel(order);
+  const stockChip = stockStatusChip(order);
+  const hasCustomization = orderHasCustomizationLine(items);
 
   return (
     <article className="tcds-card overflow-hidden text-sm">
-      <div className="flex flex-col gap-3 border-b border-border bg-surface/40 px-4 py-3 md:flex-row md:flex-wrap md:items-center md:justify-between">
-        <div className="min-w-0 space-y-1">
-          <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Ref. pública
-          </p>
-          <p className="font-mono text-base font-semibold tracking-tight text-foreground">
-            {order.public_reference}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {order.customer_full_name} · {order.customer_phone}
+      <div className="flex flex-col gap-3 border-b border-border bg-surface/40 px-4 py-3.5 sm:px-5">
+        <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1">
+          <div>
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Ref. pública
+            </p>
+            <p className="font-mono text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+              {order.public_reference}
+            </p>
+          </div>
+          <p className="text-right text-xs text-muted-foreground sm:pt-0.5">
+            <span className="block font-medium uppercase tracking-wide text-muted-foreground/90">
+              Creado
+            </span>
+            <span className="tabular-nums text-foreground/90">
+              {formatOrderCreatedAtEsUy(order.created_at)}
+            </span>
           </p>
         </div>
-        <div className="flex w-full min-w-0 flex-col items-stretch gap-2 sm:max-w-lg sm:items-end">
-          <div className="flex flex-wrap items-center justify-end gap-1.5 sm:justify-end">
-            <span
-              className={`inline-flex max-w-full rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${paymentChipClass(order.payment_status)}`}
-            >
-              {paymentLabel(order.payment_status)}
-            </span>
-            <span
-              className={`inline-flex max-w-full rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${operational.className}`}
-            >
-              {operational.text}
-            </span>
-            {hasMadeToOrder ? (
-              <span
-                className={`inline-flex rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${adminChip.sky}`}
-              >
-                Incluye encargo
-              </span>
-            ) : null}
-            {hasExpress ? (
-              <span
-                className={`inline-flex rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${adminChip.emerald}`}
-              >
-                Incluye express
-              </span>
-            ) : null}
-            <span className="inline-flex tabular-nums text-xs text-muted-foreground sm:pl-1">
-              Total ${order.total}
-            </span>
+
+        <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Cliente
+            </p>
+            <p className="truncate text-base font-semibold text-foreground">
+              {order.customer_full_name}
+            </p>
           </div>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Teléfono
+            </p>
+            <a
+              href={`tel:${order.customer_phone.replace(/\s+/g, "")}`}
+              className="inline-block text-base font-semibold text-sky-700 underline-offset-2 hover:underline dark:text-sky-300"
+            >
+              {order.customer_phone}
+            </a>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-baseline justify-between gap-2 border-t border-border/60 pt-2 dark:border-white/10">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Total</p>
+          <p className="text-lg font-bold tabular-nums text-foreground">$ {order.total}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          <span
+            className={`inline-flex max-w-full rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${paymentChipClass(order.payment_status)}`}
+          >
+            {paymentLabel(order.payment_status)}
+          </span>
+          <span
+            className={`inline-flex max-w-full rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${operational.className}`}
+          >
+            {operational.text}
+          </span>
+          {stockChip ? (
+            <span
+              className={`inline-flex rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${stockChip.className}`}
+            >
+              {stockChip.label}
+            </span>
+          ) : null}
+          {hasMadeToOrder ? (
+            <span
+              className={`inline-flex rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${adminChip.sky}`}
+            >
+              Incluye encargo
+            </span>
+          ) : null}
+          {hasExpress ? (
+            <span
+              className={`inline-flex rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${adminChip.emerald}`}
+            >
+              Incluye express
+            </span>
+          ) : null}
+          {hasCustomization ? (
+            <span
+              className={`inline-flex rounded-md px-2 py-1 text-[11px] font-medium sm:text-xs ${adminChip.sky}`}
+            >
+              Incluye personalización
+            </span>
+          ) : null}
         </div>
       </div>
 
@@ -212,40 +276,41 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
 
         <div>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Líneas del pedido
+            Líneas del pedido ({items.length})
           </h3>
-          <ul className="mt-2 space-y-3">
+          <ul className="mt-2 divide-y divide-border overflow-hidden rounded-lg border border-border dark:divide-white/10 dark:border-white/10">
             {items.map((item) => {
               const customLine = customizationDisplayLine(
                 item.customization_snapshot
               );
               return (
-                <li
-                  key={item.id}
-                  className="space-y-1 border-b border-border/80 pb-2.5 last:border-0 last:pb-0"
-                >
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="min-w-0 flex-1 font-medium text-foreground">
-                      {item.title_snapshot}
-                    </span>
-                    <span className="shrink-0 tabular-nums text-muted-foreground">
-                      ×{item.quantity}
-                    </span>
-                    <span
-                      className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium ${fulfillmentChipClass(item.fulfillment_snapshot)}`}
-                    >
-                      {fulfillmentShortLabel(item.fulfillment_snapshot)}
-                    </span>
+                <li key={item.id} className="bg-card/30 px-3 py-2.5 sm:px-3.5 sm:py-3">
+                  <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium leading-snug text-foreground">
+                        {item.title_snapshot}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground sm:text-xs">
+                        Talle {item.size_snapshot}
+                        {fulfillmentPromisedHabilesRangeSuffix(
+                          item.promised_min_days,
+                          item.promised_max_days
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                      <span className="tabular-nums text-xs font-medium text-muted-foreground">
+                        ×{item.quantity}
+                      </span>
+                      <span
+                        className={`inline-flex rounded px-1.5 py-0.5 text-[11px] font-medium ${fulfillmentChipClass(item.fulfillment_snapshot)}`}
+                      >
+                        {fulfillmentShortLabel(item.fulfillment_snapshot)}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-muted-foreground sm:text-xs">
-                    Talle {item.size_snapshot}
-                    {fulfillmentPromisedHabilesRangeSuffix(
-                      item.promised_min_days,
-                      item.promised_max_days
-                    )}
-                  </p>
                   {customLine ? (
-                    <p className="text-[11px] text-foreground sm:text-xs">
+                    <p className="mt-1.5 border-t border-dashed border-border/70 pt-1.5 text-[11px] font-medium text-sky-800 dark:border-white/10 dark:text-sky-200 sm:text-xs">
                       {customLine}
                     </p>
                   ) : null}
@@ -269,7 +334,7 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
                   className="border-l-2 border-sky-200 pl-2 dark:border-sky-800"
                 >
                   <span className="font-medium text-foreground">
-                    {(event.previous_status ?? "—") + " → " + event.new_status}
+                    {(event.previous_status ?? "-") + " → " + event.new_status}
                   </span>
                   <span className="ml-1 text-muted-foreground">
                     {formatHistoryDate(event.changed_at)}

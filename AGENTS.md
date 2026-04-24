@@ -1,4 +1,4 @@
-# AGENTS.md — Tu Casaca Deportiva Store (TCDS)
+# AGENTS.md - Tu Casaca Deportiva Store (TCDS)
 
 ## Rol
 

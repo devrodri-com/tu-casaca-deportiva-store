@@ -62,7 +62,7 @@ export function PublicOrderPage({ order }: PublicOrderPageProps) {
                 <span className="shrink-0 text-muted-foreground">Talle {line.sizeLabel}</span>
               </div>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {line.fulfillmentKind} — {line.deliveryLine}
+                {line.fulfillmentKind} - {line.deliveryLine}
               </p>
               {line.customizationLine ? (
                 <p className="mt-2 text-sm text-foreground">{line.customizationLine}</p>

@@ -3,7 +3,7 @@ name: ui-review-cursor-handoff
 description: Review UI/UX and generate a precise Cursor prompt for implementation.
 ---
 
-# UI Review + Cursor Handoff — TCDS
+# UI Review + Cursor Handoff - TCDS
 
 ## Contexto del producto
 
