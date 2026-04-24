@@ -201,72 +201,24 @@ export async function initializeOrderOperationalStatusAsPaid(params: {
   return (result.data?.length ?? 0) === 1;
 }
 
-export async function claimOrderStockDiscount(params: {
+/**
+ * Descuento atómico de stock express + marca `stock_discounted_at` (RPC Postgres).
+ * Idempotente: si el pedido ya tenía `stock_discounted_at`, devuelve false y no modifica variantes.
+ * Si falta stock express, la RPC hace rollback completo y lanza error (no queda parcial ni fecha seteada).
+ */
+export async function discountOrderExpressStockAtomic(params: {
   orderId: string;
   discountedAt: string;
 }): Promise<boolean> {
   const supabase = createServiceRoleSupabaseClient();
-  const result = await supabase
-    .from("orders")
-    .update({ stock_discounted_at: params.discountedAt })
-    .is("stock_discounted_at", null)
-    .eq("id", params.orderId)
-    .select("id");
+  const result = await supabase.rpc("discount_order_express_stock", {
+    p_order_id: params.orderId,
+    p_discounted_at: params.discountedAt,
+  });
   if (result.error) {
-    throw new Error(`Failed to mark stock discounted: ${result.error.message}`);
+    throw new Error(result.error.message);
   }
-  return (result.data?.length ?? 0) === 1;
-}
-
-export async function rollbackOrderStockDiscountClaim(params: {
-  orderId: string;
-}): Promise<void> {
-  const supabase = createServiceRoleSupabaseClient();
-  const result = await supabase
-    .from("orders")
-    .update({ stock_discounted_at: null })
-    .eq("id", params.orderId);
-  if (result.error) {
-    throw new Error(
-      `Failed to rollback stock discounted claim: ${result.error.message}`
-    );
-  }
-}
-
-export async function discountExpressStockForOrderItems(
-  items: OrderItemRow[]
-): Promise<void> {
-  const supabase = createServiceRoleSupabaseClient();
-  const expressItems = items.filter(
-    (item) => item.fulfillment_snapshot === "express"
-  );
-
-  for (const item of expressItems) {
-    const variantResult = await supabase
-      .from("product_variants")
-      .select("id, express_stock")
-      .eq("id", item.variant_id)
-      .maybeSingle();
-    if (variantResult.error) {
-      throw new Error(
-        `Failed to load variant for stock discount: ${variantResult.error.message}`
-      );
-    }
-    if (!variantResult.data) {
-      continue;
-    }
-
-    const nextStock = Math.max(variantResult.data.express_stock - item.quantity, 0);
-    const updateResult = await supabase
-      .from("product_variants")
-      .update({ express_stock: nextStock })
-      .eq("id", item.variant_id);
-    if (updateResult.error) {
-      throw new Error(
-        `Failed to update variant stock: ${updateResult.error.message}`
-      );
-    }
-  }
+  return result.data === true;
 }
 
 export async function updateOrderOperationalStatus(params: {
