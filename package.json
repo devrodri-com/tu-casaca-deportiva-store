@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test --import tsx tests/domain/purchasable-line.test.ts tests/domain/order-build.test.ts tests/domain/order-presentation.test.ts"
+    "test": "node --test --import tsx tests/domain/purchasable-line.test.ts tests/domain/order-build.test.ts tests/domain/order-presentation.test.ts tests/domain/mercado-pago-preference.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0",

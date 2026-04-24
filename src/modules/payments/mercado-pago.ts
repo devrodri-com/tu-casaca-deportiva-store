@@ -3,6 +3,7 @@ import type { Database } from "@/lib/supabase/database.types";
 
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 type OrderItemRow = Database["public"]["Tables"]["order_items"]["Row"];
+const MERCADO_PAGO_CURRENCY_ID = "UYU";
 
 export type InternalPaymentStatus =
   | "awaiting_payment"
@@ -21,7 +22,7 @@ export function buildMercadoPagoPreferencePayload(params: {
       title: item.title_snapshot,
       quantity: item.quantity,
       unit_price: Number(item.unit_price_snapshot),
-      currency_id: "ARS",
+      currency_id: MERCADO_PAGO_CURRENCY_ID,
     })),
     external_reference: `order:${order.id}`,
     notification_url: `${appUrl}/api/payments/mercadopago/webhook`,
