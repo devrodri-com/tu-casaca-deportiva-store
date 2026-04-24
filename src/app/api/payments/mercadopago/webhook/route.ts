@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getPaymentsEnv } from "@/lib/env/server";
 import {
+  parseMercadoPagoWebhookBody,
+  readJsonValue,
+} from "@/lib/http/validation";
+import {
   isValidMercadoPagoWebhookSignature,
   mapMercadoPagoStatusToInternal,
   parseOrderIdFromExternalReference,
@@ -12,14 +16,6 @@ import {
   updateOrderPaymentState,
 } from "@/modules/orders/infrastructure/order-store";
 
-type MercadoPagoWebhookBody = {
-  type?: string;
-  action?: string;
-  data?: {
-    id?: string | number;
-  };
-};
-
 type MercadoPagoPaymentResponse = {
   id: string | number;
   status: string;
@@ -28,8 +24,22 @@ type MercadoPagoPaymentResponse = {
 };
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as MercadoPagoWebhookBody;
   const url = new URL(request.url);
+
+  const jsonIn = await readJsonValue(request);
+  if (!jsonIn.ok) {
+    return NextResponse.json(
+      { ok: false, message: jsonIn.message },
+      { status: 400 }
+    );
+  }
+  const parsedBody = parseMercadoPagoWebhookBody(jsonIn.value);
+  if (!parsedBody.ok) {
+    return NextResponse.json(
+      { ok: false, message: parsedBody.message },
+      { status: 400 }
+    );
+  }
 
   const notificationId = url.searchParams.get("data.id");
   const signatureHeader = request.headers.get("x-signature");
@@ -49,8 +59,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const eventType = body.type ?? "";
-  const eventAction = body.action ?? "";
+  const eventType = parsedBody.value.type;
+  const eventAction = parsedBody.value.action;
   if (eventType !== "payment" && !eventAction.includes("payment")) {
     return NextResponse.json({ ok: true, ignored: true });
   }

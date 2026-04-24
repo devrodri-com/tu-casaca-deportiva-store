@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getPaymentsEnv } from "@/lib/env/server";
 import {
+  parseMercadoPagoPreferenceBody,
+  readJsonValue,
+} from "@/lib/http/validation";
+import {
   buildMercadoPagoPreferencePayload,
   parseOrderIdFromExternalReference,
 } from "@/modules/payments";
@@ -8,10 +12,6 @@ import {
   getOrderWithItemsById,
   updateOrderMercadoPagoPreferenceId,
 } from "@/modules/orders/infrastructure/order-store";
-
-type PreferenceBody = {
-  orderId: string;
-};
 
 type MercadoPagoPreferenceResponse = {
   id: string;
@@ -21,14 +21,21 @@ type MercadoPagoPreferenceResponse = {
 };
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as PreferenceBody;
-  const orderId = body.orderId?.trim();
-  if (!orderId) {
+  const jsonIn = await readJsonValue(request);
+  if (!jsonIn.ok) {
     return NextResponse.json(
-      { ok: false, message: "orderId es requerido." },
+      { ok: false, message: jsonIn.message },
       { status: 400 }
     );
   }
+  const parsed = parseMercadoPagoPreferenceBody(jsonIn.value);
+  if (!parsed.ok) {
+    return NextResponse.json(
+      { ok: false, message: parsed.message },
+      { status: 400 }
+    );
+  }
+  const orderId = parsed.value.orderId;
 
   const orderWithItems = await getOrderWithItemsById(orderId);
   if (!orderWithItems) {
