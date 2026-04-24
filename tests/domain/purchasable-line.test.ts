@@ -50,6 +50,22 @@ describe("resolvePurchasableLine", () => {
     });
     assert.equal(out.fulfillment, "made_to_order");
     assert.equal(out.finalUnitPrice, 1200);
+    assert.equal(out.promisedDays.minDays, 14);
+    assert.equal(out.promisedDays.maxDays, 21);
+  });
+
+  it("express sin encargo + personalización: lanza (no MTO con días nulos)", () => {
+    const v = variantExpress();
+    assert.throws(
+      () =>
+        resolvePurchasableLine({
+          product: baseProduct,
+          variant: v,
+          unitBasePrice: 1000,
+          customization: { isCustomized: true, surchargeAmount: 200 },
+        }),
+      /encargo habilitado en esta variante/
+    );
   });
 });
 
@@ -105,6 +121,23 @@ describe("resolvePurchasableLineForCheckout", () => {
           { requestedFulfillment: "made_to_order", quantity: 1 }
         ),
       /encargo no está habilitado para esta variante/
+    );
+  });
+
+  it("personalización en variante sin encargo: lanza (misma regla que PDP/checkout)", () => {
+    const v = variantExpress();
+    assert.throws(
+      () =>
+        resolvePurchasableLineForCheckout(
+          {
+            product: baseProduct,
+            variant: v,
+            unitBasePrice: 1000,
+            customization: { isCustomized: true, surchargeAmount: 200 },
+          },
+          { requestedFulfillment: "express", quantity: 1 }
+        ),
+      /encargo habilitado en esta variante/
     );
   });
 });

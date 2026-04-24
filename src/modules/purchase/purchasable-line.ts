@@ -210,10 +210,20 @@ export function resolvePurchasableLine(
   if (input.customization.isCustomized) {
     if (!isValidMadeToOrderRange(input.variant)) {
       throw new Error(
-        "Customized line requires a valid made-to-order promised days range"
+        "La personalización requiere plazos de encargo configurados en la variante."
       );
     }
-
+    if (!input.variant.allowMadeToOrder) {
+      throw new Error("La personalización requiere encargo habilitado en esta variante.");
+    }
+    if (
+      input.variant.madeToOrderMinDays === null ||
+      input.variant.madeToOrderMaxDays === null
+    ) {
+      throw new Error(
+        "La personalización requiere plazos mín/máx de encargo en la variante."
+      );
+    }
     return {
       productId: input.product.id,
       variantId: input.variant.id,

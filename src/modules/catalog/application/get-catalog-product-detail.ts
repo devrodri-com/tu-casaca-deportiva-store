@@ -1,4 +1,4 @@
-import { resolveAvailability } from "@/modules/catalog";
+import { isValidMadeToOrderRange, resolveAvailability } from "@/modules/catalog";
 import { getCatalogProductBySlug } from "@/modules/catalog/infrastructure/catalog-store";
 import { listProductImagesByProductId } from "@/modules/catalog/infrastructure/product-images-store";
 import { resolvePurchasableLine } from "@/modules/purchase";
@@ -73,19 +73,23 @@ export async function getCatalogProductDetail(
         surchargeAmount: 0,
       },
     });
-    const customizedLine =
+    const customizationSurcharge = record.product.customizationSurcharge;
+    const canOfferCustomizationOnThisVariant =
       record.product.supportsCustomization &&
-      record.product.customizationSurcharge !== null
-        ? resolvePurchasableLine({
-            product: record.product,
-            variant,
-            unitBasePrice,
-            customization: {
-              isCustomized: true,
-              surchargeAmount: record.product.customizationSurcharge,
-            },
-          })
-        : null;
+      customizationSurcharge !== null &&
+      variant.allowMadeToOrder &&
+      isValidMadeToOrderRange(variant);
+    const customizedLine = canOfferCustomizationOnThisVariant
+      ? resolvePurchasableLine({
+          product: record.product,
+          variant,
+          unitBasePrice,
+          customization: {
+            isCustomized: true,
+            surchargeAmount: customizationSurcharge,
+          },
+        })
+      : null;
 
     const availability = resolveAvailability(variant);
     const isLowStock = availability === "express" && variant.expressStock <= 3;
