@@ -3,7 +3,7 @@ name: implementation-prompt-hardener
 description: Harden an implementation prompt for safe execution in Cursor in a Next.js + Supabase project.
 ---
 
-# Implementation Prompt Hardener — TCDS
+# Implementation Prompt Hardener - TCDS
 
 ## Contexto del proyecto
 
@@ -70,7 +70,7 @@ name: implementation-prompt-hardener
 description: Harden an implementation prompt for safe execution in Cursor in a Next.js + Supabase project.
 ---
 
-# Implementation Prompt Hardener — TCDS
+# Implementation Prompt Hardener - TCDS
 
 ## Contexto del proyecto
 

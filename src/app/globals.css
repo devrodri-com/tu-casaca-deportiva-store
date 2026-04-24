@@ -3,7 +3,7 @@
 /* Modo oscuro manual: clase `dark` en <html> (ver ThemeBootScript + toggle storefront) */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* TCDS — tokens semánticos; :root = modo claro, .dark = storefront oscuro */
+/* TCDS - tokens semánticos; :root = modo claro, .dark = storefront oscuro */
 :root {
   --background: #ffffff;
   --foreground: #000000;

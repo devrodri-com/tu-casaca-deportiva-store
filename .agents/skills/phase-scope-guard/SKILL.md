@@ -3,7 +3,7 @@ name: phase-scope-guard
 description: Review whether a task or prompt respects the current project stage, scope, and minimum necessary depth before execution.
 ---
 
-# Phase Scope Guard — TCDS
+# Phase Scope Guard - TCDS
 
 ## Contexto del proyecto
 
