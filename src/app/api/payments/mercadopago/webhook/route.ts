@@ -7,10 +7,8 @@ import {
 } from "@/modules/payments";
 import {
   applyOrderOperationalStatusChangeWithHistory,
-  claimOrderStockDiscount,
-  discountExpressStockForOrderItems,
+  discountOrderExpressStockAtomic,
   getOrderWithItemsById,
-  rollbackOrderStockDiscountClaim,
   updateOrderPaymentState,
 } from "@/modules/orders/infrastructure/order-store";
 
@@ -115,19 +113,11 @@ export async function POST(request: Request) {
     });
   }
 
-  if (nextStatus === "paid" && !orderWithItems.order.stock_discounted_at) {
-    const claimed = await claimOrderStockDiscount({
+  if (nextStatus === "paid") {
+    await discountOrderExpressStockAtomic({
       orderId,
       discountedAt: new Date().toISOString(),
     });
-    if (claimed) {
-      try {
-        await discountExpressStockForOrderItems(orderWithItems.items);
-      } catch (error) {
-        await rollbackOrderStockDiscountClaim({ orderId });
-        throw error;
-      }
-    }
   }
 
   return NextResponse.json({ ok: true });
