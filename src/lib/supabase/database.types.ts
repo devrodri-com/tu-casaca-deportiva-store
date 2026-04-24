@@ -275,6 +275,13 @@ export type Database = {
         };
         Returns: boolean;
       };
+      insert_order_with_items: {
+        Args: {
+          p_order: Json;
+          p_items: Json;
+        };
+        Returns: void;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

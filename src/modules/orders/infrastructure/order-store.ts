@@ -4,31 +4,17 @@ import type { Order } from "@/modules/orders";
 import { toOrderItemRows, toOrderRow } from "./order-mappers";
 
 export async function insertOrder(order: Order): Promise<void> {
+  if (order.items.length === 0) {
+    throw new Error("El pedido debe incluir al menos un item.");
+  }
+
   const supabase = createServiceRoleSupabaseClient();
-
-  const orderRow = toOrderRow(order);
-  const itemsRows = toOrderItemRows(order);
-
-  const orderInsertResult = await supabase.from("orders").insert(orderRow);
-  if (orderInsertResult.error) {
-    throw new Error(`Failed to insert order: ${orderInsertResult.error.message}`);
-  }
-
-  if (itemsRows.length === 0) {
-    return;
-  }
-
-  const itemsInsertResult = await supabase.from("order_items").insert(itemsRows);
-  if (itemsInsertResult.error) {
-    const rollbackResult = await supabase.from("orders").delete().eq("id", order.id);
-    if (rollbackResult.error) {
-      throw new Error(
-        `Failed to insert order items: ${itemsInsertResult.error.message}. Rollback failed: ${rollbackResult.error.message}`
-      );
-    }
-    throw new Error(
-      `Failed to insert order items: ${itemsInsertResult.error.message}`
-    );
+  const result = await supabase.rpc("insert_order_with_items", {
+    p_order: toOrderRow(order),
+    p_items: toOrderItemRows(order),
+  });
+  if (result.error) {
+    throw new Error(`Failed to insert order: ${result.error.message}`);
   }
 }
 
