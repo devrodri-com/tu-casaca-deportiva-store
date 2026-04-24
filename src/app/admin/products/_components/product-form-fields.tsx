@@ -51,11 +51,14 @@ type ProductFormFieldsProps = {
   values?: ProductFormFieldValues;
 };
 
+const labelCls = "text-xs font-medium text-foreground";
+const fieldGap = "flex flex-col gap-1.5";
+
 export function ProductFormFields({ values = emptyValues }: ProductFormFieldsProps) {
   return (
-    <div className="flex flex-col gap-3">
-      <label className="flex flex-col gap-1 text-sm text-foreground">
-        Titulo
+    <div className="flex flex-col gap-4">
+      <label className={fieldGap}>
+        <span className={labelCls}>Titulo</span>
         <input
           name="title"
           className="tcds-input"
@@ -63,8 +66,8 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
           required
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm text-foreground">
-        Slug (URL)
+      <label className={fieldGap}>
+        <span className={labelCls}>Slug (URL)</span>
         <input
           name="slug"
           className="tcds-input"
@@ -72,9 +75,9 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
           required
         />
       </label>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm text-foreground">
-          Tipo
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className={fieldGap}>
+          <span className={labelCls}>Tipo</span>
           <select
             name="productType"
             className="tcds-input"
@@ -85,8 +88,8 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
             <option value="jacket">Campera</option>
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-sm text-foreground">
-          Audiencia
+        <label className={fieldGap}>
+          <span className={labelCls}>Audiencia</span>
           <select
             name="audience"
             className="tcds-input"
@@ -97,9 +100,9 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
           </select>
         </label>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm text-foreground">
-          Slug de entidad
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className={fieldGap}>
+          <span className={labelCls}>Slug de entidad</span>
           <input
             name="entitySlug"
             className="tcds-input"
@@ -107,8 +110,8 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
             required
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-foreground">
-          Nombre de entidad
+        <label className={fieldGap}>
+          <span className={labelCls}>Nombre de entidad</span>
           <input
             name="entityName"
             className="tcds-input"
@@ -117,9 +120,9 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
           />
         </label>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm text-foreground">
-          Tipo de entidad
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className={fieldGap}>
+          <span className={labelCls}>Tipo de entidad</span>
           <select
             name="entityKind"
             className="tcds-input"
@@ -130,17 +133,17 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
             <option value="franchise">Franquicia (NBA / liga)</option>
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-sm text-foreground">
-          Era
+        <label className={fieldGap}>
+          <span className={labelCls}>Era</span>
           <select name="era" className="tcds-input" defaultValue={values.era}>
             <option value="current">Actual</option>
             <option value="retro">Retro</option>
           </select>
         </label>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm text-foreground">
-          Personalizacion
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className={fieldGap}>
+          <span className={labelCls}>Personalizacion</span>
           <select
             name="supportsCustomization"
             className="tcds-input"
@@ -150,8 +153,8 @@ export function ProductFormFields({ values = emptyValues }: ProductFormFieldsPro
             <option value="true">Si</option>
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-sm text-foreground">
-          Recargo personalizacion (si aplica)
+        <label className={fieldGap}>
+          <span className={labelCls}>Recargo personalizacion (si aplica)</span>
           <input
             name="customizationSurcharge"
             className="tcds-input"

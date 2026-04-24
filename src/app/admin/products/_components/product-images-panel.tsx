@@ -7,6 +7,7 @@ import {
   mutateProductImageAction,
   uploadProductImageAction,
 } from "../product-image-actions";
+import { AdminFormSection } from "./admin-form-section";
 
 type ProductImagesPanelProps = {
   productId: string;
@@ -27,140 +28,157 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
   const isError = Boolean(uploadState?.error ?? mutState?.error);
 
   return (
-    <section className="tcds-card flex flex-col gap-4 p-4">
-      <div>
-        <h2 className="text-sm font-semibold text-foreground">Imagenes del producto</h2>
-        <p className="mt-1 text-xs text-muted-foreground">
-          JPG, PNG o WebP hasta 5 MB. La primera imagen es principal automaticamente; podés
-          cambiarla cuando quieras.
-        </p>
-      </div>
-
+    <AdminFormSection
+      title="Imágenes del producto"
+      description="JPG, PNG o WebP hasta 5 MB. Orden = galeria en la tienda; la principal se usa como portada. Alt mejora accesibilidad y SEO."
+    >
       {message ? (
         <p
-          className={`text-sm font-medium ${isError ? "text-red-600" : "text-emerald-800"}`}
+          className={`mb-4 rounded-md border px-3 py-2 text-sm font-medium ${
+            isError
+              ? "border-red-200 bg-red-50 text-red-800"
+              : "border-emerald-200 bg-emerald-50 text-emerald-900"
+          }`}
           role={isError ? "alert" : "status"}
         >
           {message}
         </p>
       ) : null}
 
-      <form action={uploadAction} className="flex flex-col gap-2 border-b border-border pb-4">
+      <form
+        action={uploadAction}
+        className="flex flex-col gap-4 border-b border-border pb-6"
+      >
         <input type="hidden" name="productId" value={productId} />
-        <label className="text-xs font-medium text-foreground">
-          Subir imagen
-          <input
-            type="file"
-            name="file"
-            required
-            accept="image/jpeg,image/jpg,image/png,image/webp"
-            className="mt-1 block w-full max-w-md text-sm"
-            disabled={pending}
-          />
-        </label>
-        <label className="text-xs font-medium text-foreground">
-          Texto alternativo (opcional)
-          <input
-            type="text"
-            name="altText"
-            className="mt-1 block w-full max-w-md rounded border border-border px-2 py-1 text-sm"
-            placeholder="Descripcion breve"
-            disabled={pending}
-          />
-        </label>
-        <button type="submit" className="tcds-btn-secondary w-fit text-sm" disabled={pending}>
-          {uploadPending ? "Subiendo…" : "Subir"}
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Subir nueva</p>
+        <div className="grid gap-3 sm:grid-cols-2 sm:items-end">
+          <label className="flex flex-col gap-1.5 text-sm text-foreground">
+            <span className="text-xs font-medium">Archivo</span>
+            <input
+              type="file"
+              name="file"
+              required
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              className="tcds-input cursor-pointer file:mr-3 file:rounded file:border-0 file:bg-surface file:px-2 file:py-1.5 file:text-sm"
+              disabled={pending}
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm text-foreground">
+            <span className="text-xs font-medium">Texto alternativo (opcional)</span>
+            <input
+              type="text"
+              name="altText"
+              className="tcds-input"
+              placeholder="Descripcion breve"
+              disabled={pending}
+            />
+          </label>
+        </div>
+        <button type="submit" className="tcds-btn-primary w-fit" disabled={pending}>
+          {uploadPending ? "Subiendo…" : "Subir imagen"}
         </button>
       </form>
 
       {images.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Todavia no hay imagenes.</p>
+        <p className="pt-2 text-sm text-muted-foreground">Todavia no hay imagenes.</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="mt-2 flex flex-col gap-3">
           {images.map((img, index) => (
             <li
               key={img.id}
-              className="flex flex-wrap items-start gap-3 rounded-md border border-border bg-surface/40 p-3"
+              className="flex flex-col gap-3 rounded-lg border border-border bg-surface/30 p-3 sm:flex-row sm:items-stretch"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={img.publicUrl}
-                alt={img.altText ?? ""}
-                className="h-20 w-20 shrink-0 rounded object-cover"
-                width={80}
-                height={80}
-              />
-              <div className="flex min-w-0 flex-1 flex-col gap-1 text-xs">
-                <p className="font-mono text-[10px] text-muted-foreground break-all">
-                  {img.storagePath}
-                </p>
-                <p className="text-foreground">
-                  Orden: {img.sortOrder}
+              <div className="flex shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img.publicUrl}
+                  alt={img.altText ?? ""}
+                  className="h-24 w-24 rounded-md border border-border object-cover"
+                  width={96}
+                  height={96}
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
                   {img.isPrimary ? (
-                    <span className="ml-2 rounded bg-sky-100 px-1.5 py-0.5 text-sky-900">
+                    <span className="inline-flex rounded-md border border-sky-200 bg-sky-50 px-2 py-0.5 text-xs font-semibold text-sky-900">
                       Principal
                     </span>
                   ) : null}
+                  <span className="text-xs text-muted-foreground">Orden: {img.sortOrder}</span>
+                </div>
+                <p
+                  className="mt-1 font-mono text-[10px] text-muted-foreground break-all"
+                  title={img.storagePath}
+                >
+                  {img.storagePath}
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {!img.isPrimary ? (
-                  <form action={mutAction}>
-                    <input type="hidden" name="_op" value="set_primary" />
+              <div className="flex w-full flex-col gap-2 border-t border-border pt-3 sm:w-52 sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0">
+                <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:sr-only">
+                  Acciones
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  {!img.isPrimary ? (
+                    <form action={mutAction} className="w-full">
+                      <input type="hidden" name="_op" value="set_primary" />
+                      <input type="hidden" name="productId" value={productId} />
+                      <input type="hidden" name="imageId" value={img.id} />
+                      <button
+                        type="submit"
+                        className="tcds-btn-secondary w-full px-2 py-1.5 text-xs"
+                        disabled={pending}
+                      >
+                        Marcar principal
+                      </button>
+                    </form>
+                  ) : null}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <form action={mutAction}>
+                      <input type="hidden" name="_op" value="move_up" />
+                      <input type="hidden" name="productId" value={productId} />
+                      <input type="hidden" name="imageId" value={img.id} />
+                      <button
+                        type="submit"
+                        className="tcds-btn-secondary w-full px-2 py-1.5 text-xs"
+                        disabled={pending || index === 0}
+                        title="Subir en el orden"
+                      >
+                        Arriba
+                      </button>
+                    </form>
+                    <form action={mutAction}>
+                      <input type="hidden" name="_op" value="move_down" />
+                      <input type="hidden" name="productId" value={productId} />
+                      <input type="hidden" name="imageId" value={img.id} />
+                      <button
+                        type="submit"
+                        className="tcds-btn-secondary w-full px-2 py-1.5 text-xs"
+                        disabled={pending || index === images.length - 1}
+                        title="Bajar en el orden"
+                      >
+                        Abajo
+                      </button>
+                    </form>
+                  </div>
+                  <form action={mutAction} className="w-full">
+                    <input type="hidden" name="_op" value="delete" />
                     <input type="hidden" name="productId" value={productId} />
                     <input type="hidden" name="imageId" value={img.id} />
                     <button
                       type="submit"
-                      className="tcds-btn-secondary text-xs"
+                      className="w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-800 transition hover:bg-red-100"
                       disabled={pending}
                     >
-                      Marcar principal
+                      Eliminar
                     </button>
                   </form>
-                ) : null}
-                <form action={mutAction}>
-                  <input type="hidden" name="_op" value="move_up" />
-                  <input type="hidden" name="productId" value={productId} />
-                  <input type="hidden" name="imageId" value={img.id} />
-                  <button
-                    type="submit"
-                    className="tcds-btn-secondary text-xs"
-                    disabled={pending || index === 0}
-                    title="Subir en el orden"
-                  >
-                    Arriba
-                  </button>
-                </form>
-                <form action={mutAction}>
-                  <input type="hidden" name="_op" value="move_down" />
-                  <input type="hidden" name="productId" value={productId} />
-                  <input type="hidden" name="imageId" value={img.id} />
-                  <button
-                    type="submit"
-                    className="tcds-btn-secondary text-xs"
-                    disabled={pending || index === images.length - 1}
-                    title="Bajar en el orden"
-                  >
-                    Abajo
-                  </button>
-                </form>
-                <form action={mutAction}>
-                  <input type="hidden" name="_op" value="delete" />
-                  <input type="hidden" name="productId" value={productId} />
-                  <input type="hidden" name="imageId" value={img.id} />
-                  <button
-                    type="submit"
-                    className="rounded border border-red-200 bg-red-50 px-2 py-1 text-xs font-medium text-red-800 hover:bg-red-100"
-                    disabled={pending}
-                  >
-                    Eliminar
-                  </button>
-                </form>
+                </div>
               </div>
             </li>
           ))}
         </ul>
       )}
-    </section>
+    </AdminFormSection>
   );
 }

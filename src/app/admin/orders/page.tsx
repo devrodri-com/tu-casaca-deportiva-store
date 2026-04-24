@@ -1,8 +1,8 @@
-import Link from "next/link";
 import {
   listOrderStatusHistoryByOrderIds,
   listOrdersWithItems,
 } from "@/modules/orders/infrastructure/order-store";
+import { AdminOrderCard } from "./_components/admin-order-card";
 
 export const dynamic = "force-dynamic";
 
@@ -13,74 +13,25 @@ export default async function AdminOrdersPage() {
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-6 py-10">
-      <h1 className="tcds-title-page">Admin · Pedidos</h1>
+    <main className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-5 py-8 md:px-6">
+      <header className="border-b border-border pb-4">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Operaciones
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Pedidos</h1>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Referencia, cliente, pago, ítems con express o encargo, y cambio de estado operativo. Los
+          valores enviados al servidor no cambian (mismos códigos en el formulario).
+        </p>
+      </header>
+
       {orders.length === 0 ? (
-        <p className="tcds-prose">No hay pedidos.</p>
+        <p className="tcds-prose">No hay pedidos cargados.</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-4">
           {orders.map(({ order, items }) => (
-            <li key={order.id} className="tcds-card p-3 text-sm text-foreground">
-              <p>orderId: {order.id}</p>
-              <p>publicReference: {order.public_reference}</p>
-              <p>paymentStatus: {order.payment_status}</p>
-              <p>operationalStatus: {order.operational_status ?? "sin estado"}</p>
-              <p>
-                stockDiscountedAt: {order.stock_discounted_at ?? "no descontado"}
-              </p>
-              <form
-                action="/api/admin/orders/status"
-                method="post"
-                className="mt-2 flex items-center gap-2"
-              >
-                <input type="hidden" name="orderId" value={order.id} />
-                <select
-                  name="nextOperationalStatus"
-                  defaultValue={order.operational_status ?? ""}
-                  className="tcds-input w-auto min-w-40"
-                >
-                  <option value="" disabled>
-                    Seleccionar estado
-                  </option>
-                  <option value="paid">paid</option>
-                  <option value="preparing">preparing</option>
-                  <option value="ready">ready</option>
-                  <option value="shipped">shipped</option>
-                  <option value="delivered">delivered</option>
-                  <option value="cancelled">cancelled</option>
-                </select>
-                <button type="submit" className="tcds-btn-secondary">
-                  Guardar estado
-                </button>
-              </form>
-              <Link
-                className="tcds-link"
-                href={`/orders/${order.public_reference}`}
-              >
-                Ver detalle
-              </Link>
-              <ul className="mt-2 flex flex-col gap-1">
-                {items.map((item) => (
-                  <li key={item.id}>
-                    {item.title_snapshot} · qty {item.quantity} ·{" "}
-                    {item.fulfillment_snapshot}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-2">
-                <p className="font-medium">Historial operativo:</p>
-                <ul className="flex flex-col gap-1">
-                  {(historyByOrderId.get(order.id) ?? []).map((event) => (
-                    <li key={event.id}>
-                      {event.previous_status ?? "null"} -&gt; {event.new_status} ·{" "}
-                      {event.changed_at}
-                    </li>
-                  ))}
-                  {(historyByOrderId.get(order.id) ?? []).length === 0 ? (
-                    <li>Sin historial</li>
-                  ) : null}
-                </ul>
-              </div>
+            <li key={order.id}>
+              <AdminOrderCard order={order} items={items} history={historyByOrderId.get(order.id) ?? []} />
             </li>
           ))}
         </ul>
