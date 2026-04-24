@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import type { CartLine } from "@/modules/cart";
+import {
+  parseCheckoutConfirmBody,
+  readJsonValue,
+} from "@/lib/http/validation";
 import { getCatalogProductAndVariantByIds } from "@/modules/catalog/infrastructure/catalog-store";
 import { buildOrderFromCart } from "@/modules/orders";
 import { insertOrder } from "@/modules/orders/infrastructure/order-store";
@@ -8,93 +12,23 @@ import {
   resolvePurchasableLineForCheckout,
 } from "@/modules/purchase";
 
-type CheckoutConfirmBody = {
-  lines: CartLine[];
-  customer: {
-    fullName: string;
-    phone: string;
-    email: string | null;
-    address: string;
-    city: string;
-    department: string;
-    country: "Uruguay";
-  };
-};
-
-const URUGUAY_DEPARTMENTS = new Set([
-  "Montevideo",
-  "Canelones",
-  "Maldonado",
-  "Colonia",
-  "San José",
-  "Florida",
-  "Lavalleja",
-  "Rocha",
-  "Treinta y Tres",
-  "Cerro Largo",
-  "Durazno",
-  "Flores",
-  "Soriano",
-  "Río Negro",
-  "Paysandú",
-  "Salto",
-  "Artigas",
-  "Rivera",
-  "Tacuarembó",
-]);
-
 export async function POST(request: Request) {
-  const body = (await request.json()) as CheckoutConfirmBody;
+  const jsonIn = await readJsonValue(request);
+  if (!jsonIn.ok) {
+    return NextResponse.json(
+      { ok: false, message: jsonIn.message },
+      { status: 400 }
+    );
+  }
+  const parsed = parseCheckoutConfirmBody(jsonIn.value);
+  if (!parsed.ok) {
+    return NextResponse.json(
+      { ok: false, message: parsed.message },
+      { status: 400 }
+    );
+  }
+  const body = parsed.value;
   const customer = body.customer;
-
-  if (!Array.isArray(body.lines) || body.lines.length === 0) {
-    return NextResponse.json(
-      { ok: false, message: "El carrito no puede estar vacío." },
-      { status: 400 }
-    );
-  }
-
-  if (!customer || customer.fullName.trim().length === 0) {
-    return NextResponse.json(
-      { ok: false, message: "fullName es requerido." },
-      { status: 400 }
-    );
-  }
-
-  if (!customer || customer.phone.trim().length === 0) {
-    return NextResponse.json(
-      { ok: false, message: "Teléfono es requerido." },
-      { status: 400 }
-    );
-  }
-
-  if (!customer || customer.address.trim().length === 0) {
-    return NextResponse.json(
-      { ok: false, message: "Dirección es requerida." },
-      { status: 400 }
-    );
-  }
-
-  if (!customer || customer.city.trim().length === 0) {
-    return NextResponse.json(
-      { ok: false, message: "Barrio o ciudad es requerido." },
-      { status: 400 }
-    );
-  }
-
-  if (!customer || !URUGUAY_DEPARTMENTS.has(customer.department.trim())) {
-    return NextResponse.json(
-      { ok: false, message: "Seleccioná un departamento válido de Uruguay." },
-      { status: 400 }
-    );
-  }
-
-  if (!customer || customer.country.trim() !== "Uruguay") {
-    return NextResponse.json(
-      { ok: false, message: "País inválido para este checkout." },
-      { status: 400 }
-    );
-  }
 
   const expressStockByVariantId = new Map<string, number>();
   let validatedLines: CartLine[];
