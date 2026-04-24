@@ -24,8 +24,8 @@ export default function NosotrosPage() {
   const whatsappUrl = appConfig.storefrontWhatsappUrl;
 
   return (
-    <div className="flex min-h-dvh flex-col bg-neutral-950 text-neutral-100">
-      <StorePublicHeader variant="dark" />
+    <div className="storefront-shell">
+      <StorePublicHeader />
       <main className="mx-auto w-full flex-1 px-5 py-10 md:px-6 md:py-14">
         {/* Hero / historia — centrado, tono editorial */}
         <section className="mx-auto max-w-2xl text-center">
@@ -34,10 +34,10 @@ export default function NosotrosPage() {
             <span>TU CASACA DEPORTIVA</span>
             <FaBasketballBall className={iconKickerClass} aria-hidden />
           </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl dark:text-white">
             Nuestra historia
           </h1>
-          <div className="mt-6 space-y-5 text-sm leading-relaxed text-neutral-300 md:text-base">
+          <div className="mt-6 space-y-5 text-sm leading-relaxed text-zinc-700 md:text-base dark:text-neutral-300">
             <p>
               Tu Casaca Deportiva nació con una misión clara: llevar la pasión del fútbol y la NBA a
               cada rincón de Uruguay. Somos una tienda online especializada en casacas de calidad
@@ -52,7 +52,7 @@ export default function NosotrosPage() {
             </p>
           </div>
 
-          <ul className="mx-auto mt-8 max-w-md space-y-3 text-left text-sm text-neutral-200 md:text-[15px]">
+          <ul className="mx-auto mt-8 max-w-md space-y-3 text-left text-sm text-zinc-800 md:text-[15px] dark:text-neutral-200">
             <li className="flex items-start gap-3">
               <FaGlobe className={iconBenefitClass} aria-hidden />
               <span>Envíos a todo el país</span>
@@ -78,7 +78,7 @@ export default function NosotrosPage() {
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center justify-center rounded-md border border-white/20 px-6 text-sm font-semibold text-neutral-100 transition hover:border-sky-500/50 hover:text-sky-200"
+              className="inline-flex min-h-11 items-center justify-center rounded-md border border-zinc-300 px-6 text-sm font-semibold text-zinc-800 transition hover:border-sky-400 hover:text-sky-800 dark:border-white/20 dark:text-neutral-100 dark:hover:border-sky-500/50 dark:hover:text-sky-200"
             >
               Instagram
             </a>
@@ -86,29 +86,29 @@ export default function NosotrosPage() {
         </section>
 
         {/* Cómo trabajamos — compacto */}
-        <section className="mx-auto mt-14 max-w-3xl border-t border-white/10 pt-12 md:mt-16 md:pt-14">
-          <h2 className="text-center text-lg font-semibold text-white md:text-xl">Cómo trabajamos</h2>
-          <p className="mx-auto mt-2 max-w-xl text-center text-xs text-neutral-500 md:text-sm">
+        <section className="mx-auto mt-14 max-w-3xl border-t border-zinc-200 pt-12 dark:border-white/10 md:mt-16 md:pt-14">
+          <h2 className="text-center text-lg font-semibold text-zinc-900 md:text-xl dark:text-white">Cómo trabajamos</h2>
+          <p className="mx-auto mt-2 max-w-xl text-center text-xs text-zinc-500 md:text-sm dark:text-neutral-500">
             Tres modalidades que vas a ver también al comprar: claras desde el catálogo hasta el
             checkout.
           </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-3 sm:gap-5">
-            <div className="rounded-xl border border-white/10 bg-neutral-900/50 px-4 py-4 text-center sm:text-left">
-              <p className="text-sm font-semibold text-sky-300">Stock express</p>
-              <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+            <div className="rounded-xl border border-zinc-200 bg-white px-4 py-4 text-center sm:text-left dark:border-white/10 dark:bg-neutral-900/50">
+              <p className="text-sm font-semibold text-sky-700 dark:text-sky-300">Stock express</p>
+              <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-neutral-400">
                 Retiro hoy o envío en 24–48 h según disponibilidad.
               </p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-neutral-900/50 px-4 py-4 text-center sm:text-left">
-              <p className="text-sm font-semibold text-sky-300">Pedidos por encargo</p>
-              <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+            <div className="rounded-xl border border-zinc-200 bg-white px-4 py-4 text-center sm:text-left dark:border-white/10 dark:bg-neutral-900/50">
+              <p className="text-sm font-semibold text-sky-700 dark:text-sky-300">Pedidos por encargo</p>
+              <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-neutral-400">
                 Cuando un talle no está en stock express, puede gestionarse por encargo con entrega
                 estimada de 14–21 días.
               </p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-neutral-900/50 px-4 py-4 text-center sm:text-left">
-              <p className="text-sm font-semibold text-sky-300">Personalización</p>
-              <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+            <div className="rounded-xl border border-zinc-200 bg-white px-4 py-4 text-center sm:text-left dark:border-white/10 dark:bg-neutral-900/50">
+              <p className="text-sm font-semibold text-sky-700 dark:text-sky-300">Personalización</p>
+              <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-neutral-400">
                 Nombre y número disponibles en productos habilitados. Al personalizar, el pedido
                 pasa a modalidad por encargo.
               </p>
@@ -117,9 +117,9 @@ export default function NosotrosPage() {
         </section>
 
         {/* Compra y confianza — corto y discreto */}
-        <section className="mx-auto mt-12 max-w-2xl border-t border-white/10 pb-4 pt-10 md:mt-14 md:pt-12">
-          <h2 className="text-center text-base font-semibold text-white md:text-lg">Compra y confianza</h2>
-          <ul className="mt-5 space-y-2 text-center text-sm text-neutral-300">
+        <section className="mx-auto mt-12 max-w-2xl border-t border-zinc-200 pb-4 pt-10 dark:border-white/10 md:mt-14 md:pt-12">
+          <h2 className="text-center text-base font-semibold text-zinc-900 md:text-lg dark:text-white">Compra y confianza</h2>
+          <ul className="mt-5 space-y-2 text-center text-sm text-zinc-700 dark:text-neutral-300">
             <li>Pago seguro con Mercado Pago</li>
             <li>Envíos a todo Uruguay</li>
             <li>
@@ -130,7 +130,7 @@ export default function NosotrosPage() {
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sky-400 underline-offset-2 hover:underline"
+                    className="text-sky-600 underline-offset-2 hover:underline dark:text-sky-400"
                   >
                     WhatsApp
                   </a>
@@ -140,14 +140,14 @@ export default function NosotrosPage() {
               )}
             </li>
           </ul>
-          <p className="mx-auto mt-8 max-w-xl text-center text-[11px] leading-relaxed text-neutral-500 md:text-xs">
+          <p className="mx-auto mt-8 max-w-xl text-center text-[11px] leading-relaxed text-zinc-500 md:text-xs dark:text-neutral-500">
             Todos nuestros productos importados de China cumplen con las normativas legales locales.
             Garantizamos una compra segura y transparente, gestionando los impuestos y aranceles
             conforme a la ley de cada país.
           </p>
         </section>
       </main>
-      <StorePublicFooter variant="dark" />
+      <StorePublicFooter />
     </div>
   );
 }

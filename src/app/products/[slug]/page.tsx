@@ -22,28 +22,28 @@ export default async function ProductDetailPage({
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-neutral-950 text-neutral-100">
-      <StorePublicHeader variant="dark" />
+    <div className="storefront-shell">
+      <StorePublicHeader />
       <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-8 md:px-6 md:py-10">
         <div className="mx-auto max-w-5xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-sky-400/90">
             Producto
           </p>
-          <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight text-white md:text-4xl">
+          <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight text-zinc-900 dark:text-white md:text-4xl">
             {product.title}
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs md:text-sm">
-            <span className="rounded-full border border-white/10 bg-neutral-900/70 px-3 py-1 text-neutral-200">
+            <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-zinc-800 dark:border-white/10 dark:bg-neutral-900/70 dark:text-neutral-200">
               {product.productTypeLabel}
             </span>
-            <span className="rounded-full border border-white/10 bg-neutral-900/70 px-3 py-1 text-neutral-300">
+            <span className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-zinc-700 dark:border-white/10 dark:bg-neutral-900/70 dark:text-neutral-300">
               {product.audienceLabel}
             </span>
-            <span className="rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 font-medium text-sky-200">
+            <span className="rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 font-medium text-sky-700 dark:text-sky-200">
               {product.startingPrice !== null ? `Desde $${product.startingPrice}` : "Consultar precio"}
             </span>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-400">
+          <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-neutral-400">
             Elegí talle, revisá disponibilidad real y confirmá si querés personalización antes de
             agregar al carrito.
           </p>
@@ -69,7 +69,7 @@ export default async function ProductDetailPage({
           />
         </div>
       </main>
-      <StorePublicFooter variant="dark" />
+      <StorePublicFooter />
     </div>
   );
 }

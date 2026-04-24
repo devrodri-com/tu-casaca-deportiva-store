@@ -27,7 +27,7 @@ export function ProductPdpGallery({ images, title }: ProductPdpGalleryProps) {
   if (images.length === 0) {
     return (
       <div
-        className="flex aspect-[4/3] w-full items-center justify-center rounded-2xl border border-dashed border-white/15 bg-neutral-900/70 text-sm text-neutral-500"
+        className="flex aspect-[4/3] w-full items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-zinc-100 text-sm text-zinc-500 dark:border-white/15 dark:bg-neutral-900/70 dark:text-neutral-500"
         aria-label="Sin imagen de producto"
       >
         Sin imagen por ahora
@@ -41,7 +41,7 @@ export function ProductPdpGallery({ images, title }: ProductPdpGalleryProps) {
       <img
         src={main.url}
         alt={main.alt ?? title}
-        className="aspect-[4/3] w-full rounded-2xl border border-white/10 bg-linear-to-b from-neutral-900 to-neutral-800 object-contain p-3 shadow-lg shadow-black/30"
+        className="aspect-[4/3] w-full rounded-2xl border border-zinc-200 bg-linear-to-b from-white to-zinc-100 object-contain p-3 shadow-lg shadow-zinc-200/40 dark:border-white/10 dark:from-neutral-900 dark:to-neutral-800 dark:shadow-black/30"
         width={800}
         height={600}
       />
@@ -57,7 +57,7 @@ export function ProductPdpGallery({ images, title }: ProductPdpGalleryProps) {
                   className={`rounded-lg border p-0.5 transition ${
                     selected
                       ? "border-sky-500 ring-2 ring-sky-400/70"
-                      : "border-white/15 hover:border-sky-500/40"
+                      : "border-zinc-300 hover:border-sky-500/50 dark:border-white/15 dark:hover:border-sky-500/40"
                   }`}
                   aria-current={selected ? "true" : undefined}
                   aria-label={`Ver imagen ${idx + 1}`}
@@ -66,7 +66,7 @@ export function ProductPdpGallery({ images, title }: ProductPdpGalleryProps) {
                   <img
                     src={img.url}
                     alt=""
-                    className="h-14 w-14 rounded-md bg-neutral-900 object-contain p-1.5"
+                    className="h-14 w-14 rounded-md bg-linear-to-b from-white to-zinc-100 object-contain p-1.5 dark:from-neutral-900 dark:to-neutral-800"
                     width={56}
                     height={56}
                   />

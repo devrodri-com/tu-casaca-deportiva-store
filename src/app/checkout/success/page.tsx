@@ -16,14 +16,16 @@ export default async function CheckoutSuccessPage({
     : null;
 
   return (
-    <div className="flex min-h-dvh flex-col bg-neutral-950 text-neutral-100">
-      <StorePublicHeader variant="dark" />
+    <div className="storefront-shell">
+      <StorePublicHeader />
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-6 py-10">
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Pago en proceso de confirmación</h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-neutral-300">
+        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+          Pago en proceso de confirmación
+        </h1>
+        <p className="max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-neutral-300">
           Recibimos tu regreso desde Mercado Pago. La acreditación final se confirma automáticamente.
         </p>
-        <div className="rounded-2xl border border-white/10 bg-neutral-900/90 p-4 text-sm text-neutral-200 ring-1 ring-white/5">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4 text-sm text-zinc-800 ring-1 ring-zinc-200/80 dark:border-white/10 dark:bg-neutral-900/90 dark:text-neutral-200 dark:ring-white/5">
           <p>Pedido: {order?.orderId ?? "No disponible"}</p>
           <p>
             Estado del pago: {order?.paymentStatus ?? "No disponible"}{" "}
@@ -39,7 +41,7 @@ export default async function CheckoutSuccessPage({
           </Link>
         ) : null}
       </main>
-      <StorePublicFooter variant="dark" />
+      <StorePublicFooter />
     </div>
   );
 }

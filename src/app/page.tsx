@@ -15,8 +15,8 @@ export default async function HomePage() {
   const featured = catalog.slice(0, 6);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-neutral-950 text-neutral-100">
-      <StorePublicHeader variant="dark" />
+    <div className="storefront-shell">
+      <StorePublicHeader />
       <HomeHeroCarousel />
       <HomeTrustBar />
       <HomeInstagramStrip />
@@ -24,7 +24,7 @@ export default async function HomePage() {
       <HomeInstitutionalBlock />
       <HomeFeaturedProducts items={featured} />
       <div className="flex-1" aria-hidden />
-      <StorePublicFooter variant="dark" />
+      <StorePublicFooter />
     </div>
   );
 }

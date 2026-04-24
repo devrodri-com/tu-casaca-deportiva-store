@@ -17,7 +17,7 @@ const BULLETS: readonly BulletItem[] = [
 export function HomeInstitutionalBlock() {
   return (
     <section
-      className="bg-neutral-950 pt-16 pb-16 md:pt-20 md:pb-20"
+      className="bg-zinc-50 pt-16 pb-16 dark:bg-neutral-950 md:pt-20 md:pb-20"
       aria-labelledby="home-institutional-heading"
     >
       <div className="mx-auto max-w-2xl px-5 text-center md:px-6">
@@ -26,11 +26,11 @@ export function HomeInstitutionalBlock() {
         </p>
         <h2
           id="home-institutional-heading"
-          className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl"
+          className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-zinc-900 dark:text-white sm:text-4xl"
         >
           Casacas de Fútbol y NBA
         </h2>
-        <p className="mt-5 text-left text-sm leading-relaxed text-neutral-300 sm:text-center md:text-base">
+        <p className="mt-5 text-left text-sm leading-relaxed text-zinc-600 dark:text-neutral-300 sm:text-center md:text-base">
           En Tu Casaca Deportiva ofrecemos casacas de calidad premium - temporada 25/26 y también
           camisetas retro de todas las épocas. Envíos a todo Uruguay y atención personalizada por
           WhatsApp.
@@ -44,7 +44,9 @@ export function HomeInstitutionalBlock() {
               <span className="inline-flex h-4 w-4 items-center justify-center" aria-hidden>
                 <Icon className="h-4 w-4 text-[#3B82F6]" />
               </span>
-              <span className="text-sm leading-relaxed text-neutral-200 md:text-base">{text}</span>
+              <span className="text-sm leading-relaxed text-zinc-800 dark:text-neutral-200 md:text-base">
+                {text}
+              </span>
             </li>
           ))}
         </ul>
