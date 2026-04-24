@@ -24,10 +24,10 @@ export function ProductActiveToggle({ productId, isActive }: ProductActiveToggle
         </button>
       </form>
       {state?.error ? (
-        <p className="max-w-[12rem] text-xs text-red-600">{state.error}</p>
+        <p className="max-w-[12rem] text-xs text-red-600 dark:text-red-400">{state.error}</p>
       ) : null}
       {state?.success ? (
-        <p className="max-w-[12rem] text-xs text-emerald-800">{state.success}</p>
+        <p className="max-w-[12rem] text-xs text-emerald-800 dark:text-emerald-300">{state.success}</p>
       ) : null}
     </div>
   );

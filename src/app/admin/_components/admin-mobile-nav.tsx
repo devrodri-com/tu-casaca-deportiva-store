@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AdminNavPanel } from "./admin-nav-panel";
+import { AdminThemeToggle } from "./admin-theme-toggle";
 
 function MenuIcon() {
   return (
@@ -85,15 +86,16 @@ export function AdminMobileNav() {
   return (
     <>
       <div
-        className="sticky top-0 z-30 flex items-center justify-end border-b border-border bg-card/95 py-2.5 pl-3 pr-2 backdrop-blur supports-backdrop-filter:bg-card/80 md:hidden"
+        className="sticky top-0 z-30 flex items-center justify-end gap-2 border-b border-border bg-card/95 py-2.5 pl-3 pr-2 backdrop-blur supports-backdrop-filter:bg-card/80 md:hidden"
         role="banner"
       >
+        <AdminThemeToggle />
         <button
           type="button"
           onClick={() => {
             setOpen(true);
           }}
-          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md border border-border bg-white text-foreground shadow-sm transition hover:bg-surface"
+          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md border border-border bg-card text-foreground shadow-sm transition hover:bg-surface dark:hover:bg-white/5"
           aria-label="Abrir menú de administración"
           aria-expanded={open}
           aria-controls="admin-nav-drawer"
@@ -126,14 +128,18 @@ export function AdminMobileNav() {
               <button
                 type="button"
                 onClick={close}
-                className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md text-foreground transition hover:bg-surface"
+                className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md text-foreground transition hover:bg-surface dark:hover:bg-white/5"
                 aria-label="Cerrar menú"
               >
                 <CloseIcon />
               </button>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto">
-              <AdminNavPanel onNavigate={close} className="h-full" />
+              <AdminNavPanel
+                onNavigate={close}
+                className="h-full"
+                showThemeInPanel={false}
+              />
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ProductType } from "@/modules/catalog";
 import { parseAdminProductListQuery } from "@/modules/catalog/admin/admin-product-list-query";
 import { listAdminCatalogProductsWithVariants } from "@/modules/catalog/infrastructure/admin-catalog-product-list";
+import { adminChip, adminTableTheadClass } from "../_lib/admin-ui-classes";
 import { AdminDeleteProductButton } from "./_components/admin-delete-product-button";
 import { AdminProductsFilterBar } from "./_components/admin-products-filter-bar";
 import { ProductActiveToggle } from "./_components/product-active-toggle";
@@ -73,7 +74,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
           <div className="max-w-full overflow-x-auto">
             <table className="w-full min-w-[920px] text-left text-sm">
               <thead>
-                <tr className="sticky top-0 z-[1] border-b border-border bg-white text-xs uppercase tracking-wide text-muted-foreground shadow-sm">
+                <tr className={adminTableTheadClass}>
                   <th className="px-3 py-2.5 font-medium">Producto</th>
                   <th className="px-3 py-2.5 font-medium">Estado</th>
                   <th className="px-3 py-2.5 font-medium">Tipo</th>
@@ -102,7 +103,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
                   return (
                     <tr
                       key={product.id}
-                      className="border-b border-border last:border-0 hover:bg-surface/40"
+                      className="border-b border-border last:border-0 hover:bg-surface/40 dark:hover:bg-white/5"
                     >
                       <td className="max-w-[14rem] px-3 py-2.5 align-top">
                         <Link
@@ -116,9 +117,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
                         <div className="flex flex-col gap-1.5">
                           <span
                             className={`inline-flex w-fit rounded px-2 py-0.5 text-[11px] font-medium ${
-                              product.isActive
-                                ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
-                                : "border border-neutral-300 bg-neutral-100 text-neutral-700"
+                              product.isActive ? adminChip.emerald : adminChip.inactive
                             }`}
                           >
                             {product.isActive ? "Activo" : "Inactivo"}

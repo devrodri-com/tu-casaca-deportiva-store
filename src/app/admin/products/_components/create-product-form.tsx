@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { adminAlert } from "@/app/admin/_lib/admin-ui-classes";
 import { createProductAction, type AdminFormState } from "../actions";
 import { ProductFormFields } from "./product-form-fields";
 import { AdminFormSection } from "./admin-form-section";
@@ -14,7 +15,7 @@ export function CreateProductForm() {
     <form action={formAction} className="flex flex-col gap-4">
       {state?.error ? (
         <p
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+          className={`rounded-lg px-4 py-3 text-sm font-medium ${adminAlert.error}`}
           role="alert"
         >
           {state.error}
@@ -31,7 +32,7 @@ export function CreateProductForm() {
       >
         <div className="flex flex-col gap-6">
           <ProductFormFields />
-          <div className="rounded-lg border border-border bg-surface/50 p-4">
+          <div className="rounded-lg border border-border bg-surface/50 p-4 dark:border-white/10">
             <label className="flex flex-col gap-2 text-sm text-foreground">
               <span className="text-xs font-medium">Precio inicial (talles S a XXL)</span>
               <input

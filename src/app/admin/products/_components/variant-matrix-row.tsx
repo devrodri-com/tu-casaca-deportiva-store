@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { adminChip } from "@/app/admin/_lib/admin-ui-classes";
 import type { CatalogAvailability } from "@/modules/catalog";
 import { labelVariantAvailability } from "@/modules/catalog/admin/variant-availability-label";
 import type { CatalogVariantRecord } from "@/modules/catalog/infrastructure/catalog-mappers";
@@ -16,11 +17,11 @@ type VariantMatrixRowProps = {
 function availabilityChipClass(availability: CatalogAvailability): string {
   switch (availability) {
     case "express":
-      return "border-emerald-200 bg-emerald-50 text-emerald-900";
+      return adminChip.emerald;
     case "made_to_order":
-      return "border-sky-200 bg-sky-50 text-sky-900";
+      return adminChip.sky;
     case "unavailable":
-      return "border-neutral-200 bg-neutral-100 text-neutral-700";
+      return adminChip.neutral;
   }
 }
 
@@ -39,10 +40,14 @@ export function VariantMatrixRow({ productId, record, availability }: VariantMat
       className="grid grid-cols-1 gap-3 border-b border-border p-3 last:border-0 sm:grid-cols-2 sm:gap-2 lg:grid-cols-12 lg:items-end lg:gap-2 lg:px-2"
     >
       {state?.error ? (
-        <p className="text-sm font-medium text-red-600 sm:col-span-2 lg:col-span-12">{state.error}</p>
+        <p className="text-sm font-medium text-red-600 sm:col-span-2 lg:col-span-12 dark:text-red-400">
+          {state.error}
+        </p>
       ) : null}
       {state?.success ? (
-        <p className="text-sm text-emerald-800 sm:col-span-2 lg:col-span-12">{state.success}</p>
+        <p className="text-sm text-emerald-800 sm:col-span-2 lg:col-span-12 dark:text-emerald-300">
+          {state.success}
+        </p>
       ) : null}
       <label className="flex flex-col gap-1 text-xs text-foreground lg:col-span-1">
         <span className="font-medium">Talle</span>
@@ -110,7 +115,7 @@ export function VariantMatrixRow({ productId, record, availability }: VariantMat
           Estado
         </span>
         <span
-          className={`inline-flex w-fit max-w-full rounded-md border px-2 py-1 text-xs font-medium ${availabilityChipClass(availability)}`}
+          className={`inline-flex w-fit max-w-full rounded-md px-2 py-1 text-xs font-medium ${availabilityChipClass(availability)}`}
         >
           {availabilityLabel}
         </span>

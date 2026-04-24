@@ -72,7 +72,7 @@ export function AdminProductsFilterBar({ query }: AdminProductsFilterBarProps) {
             name="q"
             defaultValue={query.search}
             placeholder="Título, slug o entidad"
-            className="rounded border border-border px-2 py-1.5 text-sm"
+            className="tcds-input"
             autoComplete="off"
             disabled={pending}
           />
@@ -82,7 +82,7 @@ export function AdminProductsFilterBar({ query }: AdminProductsFilterBarProps) {
           <select
             name="status"
             defaultValue={query.status}
-            className="rounded border border-border px-2 py-1.5 text-sm"
+            className="tcds-input"
             disabled={pending}
           >
             <option value="all">Todos</option>
@@ -95,7 +95,7 @@ export function AdminProductsFilterBar({ query }: AdminProductsFilterBarProps) {
           <select
             name="type"
             defaultValue={query.productType}
-            className="rounded border border-border px-2 py-1.5 text-sm"
+            className="tcds-input"
             disabled={pending}
           >
             <option value="all">Todos</option>
@@ -109,7 +109,7 @@ export function AdminProductsFilterBar({ query }: AdminProductsFilterBarProps) {
           <select
             name="audience"
             defaultValue={query.audience}
-            className="rounded border border-border px-2 py-1.5 text-sm"
+            className="tcds-input"
             disabled={pending}
           >
             <option value="all">Todos</option>
@@ -122,7 +122,7 @@ export function AdminProductsFilterBar({ query }: AdminProductsFilterBarProps) {
           <select
             name="custom"
             defaultValue={query.customization}
-            className="rounded border border-border px-2 py-1.5 text-sm"
+            className="tcds-input"
             disabled={pending}
           >
             <option value="all">Todos</option>

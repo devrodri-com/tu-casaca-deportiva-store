@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { adminChip } from "@/app/admin/_lib/admin-ui-classes";
 import type { Product, ProductType } from "@/modules/catalog";
 import { ProductActiveToggle } from "./product-active-toggle";
 
@@ -32,10 +33,8 @@ export function AdminProductPageHeader({ product }: AdminProductPageHeaderProps)
       </div>
       <div className="flex flex-wrap items-center gap-2.5">
         <span
-          className={`inline-flex rounded-md border px-2.5 py-1 text-xs font-medium ${
-            product.isActive
-              ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-              : "border-neutral-300 bg-neutral-100 text-neutral-700"
+          className={`inline-flex rounded-md px-2.5 py-1 text-xs font-medium ${
+            product.isActive ? adminChip.emerald : adminChip.inactive
           }`}
         >
           {product.isActive ? "Activo en tienda" : "Inactivo (no visible)"}
