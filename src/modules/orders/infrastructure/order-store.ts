@@ -127,6 +127,19 @@ export async function listOrdersWithItems(): Promise<
   }));
 }
 
+/** Solo filas de `orders` (sin items); más liviano para vistas derivadas como clientes admin. */
+export async function listOrderRowsOnly(): Promise<OrderRow[]> {
+  const supabase = createServiceRoleSupabaseClient();
+  const ordersResult = await supabase
+    .from("orders")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (ordersResult.error) {
+    throw new Error(`Failed to load orders: ${ordersResult.error.message}`);
+  }
+  return ordersResult.data;
+}
+
 export async function updateOrderMercadoPagoPreferenceId(params: {
   orderId: string;
   preferenceId: string;

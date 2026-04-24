@@ -95,6 +95,22 @@ export function buildAdminOrdersFilterCounts(
   };
 }
 
+/** Etiqueta legible para chips/listados admin (no exponer valores crudos). */
+export function adminPaymentStatusLabel(
+  status: OrderRow["payment_status"]
+): string {
+  switch (status) {
+    case "awaiting_payment":
+      return "Pago: sin iniciar";
+    case "pending":
+      return "Pago: pendiente (acreditando)";
+    case "paid":
+      return "Pagado";
+    case "failed":
+      return "Pago fallido";
+  }
+}
+
 export function formatOrderCreatedAtEsUy(iso: string): string {
   try {
     return new Date(iso).toLocaleString("es-UY", {
