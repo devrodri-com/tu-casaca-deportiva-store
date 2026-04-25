@@ -46,10 +46,17 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
 
       <form
         action={uploadAction}
-        className="flex flex-col gap-4 border-b border-border pb-6"
+        className="flex flex-col gap-4 rounded-lg border border-border bg-surface/20 p-3.5 dark:border-white/10 dark:bg-neutral-900/20"
       >
         <input type="hidden" name="productId" value={productId} />
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Subir nueva</p>
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Subir nueva
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            La imagen marcada como principal se usa como portada. El orden define la galería en la tienda.
+          </p>
+        </div>
         <div className="grid gap-3 sm:grid-cols-2 sm:items-end">
           <label className="flex flex-col gap-1.5 text-sm text-foreground">
             <span className="text-xs font-medium">Archivo</span>
@@ -81,11 +88,17 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
       {images.length === 0 ? (
         <p className="pt-2 text-sm text-muted-foreground">Todavia no hay imagenes.</p>
       ) : (
-        <ul className="mt-2 flex flex-col gap-3">
+        <div className="mt-4 space-y-2">
+          <p className="text-xs text-muted-foreground">
+            Ordená con <span className="font-medium text-foreground">Arriba/Abajo</span>.{" "}
+            <span className="font-medium text-foreground">Eliminar</span> quita la imagen del producto de forma
+            definitiva.
+          </p>
+          <ul className="flex flex-col gap-3">
           {images.map((img, index) => (
             <li
               key={img.id}
-              className="flex flex-col gap-3 rounded-lg border border-border bg-surface/30 p-3 sm:flex-row sm:items-stretch dark:border-white/10"
+              className="flex flex-col gap-3 rounded-lg border border-border bg-surface/30 p-3.5 sm:flex-row sm:items-stretch dark:border-white/10"
             >
               <div className="flex shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -103,11 +116,14 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
                     <span
                       className={`inline-flex rounded-md px-2 py-0.5 text-xs font-semibold ${adminChip.sky}`}
                     >
-                      Principal
+                      Principal (portada)
                     </span>
                   ) : null}
-                  <span className="text-xs text-muted-foreground">Orden: {img.sortOrder}</span>
+                  <span className="text-xs text-muted-foreground">Orden galería: {img.sortOrder}</span>
                 </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {img.altText?.trim() ? `Alt: ${img.altText}` : "Alt: sin descripción"}
+                </p>
                 <p
                   className="mt-1 font-mono text-[10px] text-muted-foreground break-all"
                   title={img.storagePath}
@@ -170,6 +186,7 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
                       type="submit"
                       className="w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-800 transition hover:bg-red-100 dark:border-red-800/50 dark:bg-red-950/30 dark:text-red-200 dark:hover:bg-red-950/50"
                       disabled={pending}
+                      title="Acción destructiva"
                     >
                       Eliminar
                     </button>
@@ -178,7 +195,8 @@ export function ProductImagesPanel({ productId, images }: ProductImagesPanelProp
               </div>
             </li>
           ))}
-        </ul>
+          </ul>
+        </div>
       )}
     </AdminFormSection>
   );

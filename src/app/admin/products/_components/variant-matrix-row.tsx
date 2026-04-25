@@ -37,7 +37,7 @@ export function VariantMatrixRow({ productId, record, availability }: VariantMat
   return (
     <form
       action={formAction}
-      className="grid grid-cols-1 gap-3 border-b border-border p-3 last:border-0 sm:grid-cols-2 sm:gap-2 lg:grid-cols-12 lg:items-end lg:gap-2 lg:px-2"
+      className="grid grid-cols-1 gap-3 border-b border-border p-3.5 last:border-0 sm:grid-cols-2 sm:gap-2.5 lg:grid-cols-12 lg:items-end lg:gap-3 lg:px-3"
     >
       {state?.error ? (
         <p className="text-sm font-medium text-red-600 sm:col-span-2 lg:col-span-12 dark:text-red-400">
@@ -66,7 +66,9 @@ export function VariantMatrixRow({ productId, record, availability }: VariantMat
         />
       </label>
       <label className="flex flex-col gap-1 text-xs text-foreground lg:col-span-1">
-        <span className="font-medium">Stock exp.</span>
+        <span className="font-medium" title="Stock express disponible para entrega rápida">
+          Stock exp.
+        </span>
         <input
           name="expressStock"
           className="tcds-input"
@@ -89,7 +91,9 @@ export function VariantMatrixRow({ productId, record, availability }: VariantMat
         </select>
       </label>
       <label className="flex flex-col gap-1 text-xs text-foreground lg:col-span-1">
-        <span className="font-medium">Min d.</span>
+        <span className="font-medium" title="Días mínimos de encargo">
+          Min d.
+        </span>
         <input
           name="madeToOrderMinDays"
           className="tcds-input"
@@ -100,7 +104,9 @@ export function VariantMatrixRow({ productId, record, availability }: VariantMat
         />
       </label>
       <label className="flex flex-col gap-1 text-xs text-foreground lg:col-span-1">
-        <span className="font-medium">Max d.</span>
+        <span className="font-medium" title="Días máximos de encargo">
+          Max d.
+        </span>
         <input
           name="madeToOrderMaxDays"
           className="tcds-input"
@@ -120,10 +126,10 @@ export function VariantMatrixRow({ productId, record, availability }: VariantMat
           {availabilityLabel}
         </span>
       </div>
-      <div className="flex items-end justify-start lg:col-span-2">
+      <div className="flex items-end justify-start lg:col-span-2 lg:justify-end">
         <button
           type="submit"
-          className="tcds-btn-secondary w-full min-w-0 sm:w-auto"
+          className="tcds-btn-secondary w-full min-w-0 sm:w-auto lg:min-w-[8.5rem]"
           disabled={pending}
         >
           {pending ? "Guardando…" : "Guardar fila"}
