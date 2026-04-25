@@ -136,6 +136,45 @@ export function buildAdminCustomerSummaries(
   return out;
 }
 
+function normalizeCustomerSearchQuery(q: string | undefined): string {
+  if (q === undefined) {
+    return "";
+  }
+  return q.trim().toLowerCase();
+}
+
+function customerMatchesSearch(
+  customer: AdminCustomerSummary,
+  normalizedQuery: string
+): boolean {
+  if (normalizedQuery.length === 0) {
+    return true;
+  }
+  const fields = [
+    customer.displayName,
+    customer.phoneDisplay ?? "",
+    customer.emailTrimmed ?? "",
+    customer.lastKnownAddressLine,
+  ];
+  return fields.some((field) =>
+    field.toLowerCase().includes(normalizedQuery)
+  );
+}
+
+export function getAdminCustomers(params: {
+  orders: OrderRow[];
+  q?: string;
+}): AdminCustomerSummary[] {
+  const summaries = buildAdminCustomerSummaries(params.orders);
+  const normalizedQuery = normalizeCustomerSearchQuery(params.q);
+  if (normalizedQuery.length === 0) {
+    return summaries;
+  }
+  return summaries.filter((customer) =>
+    customerMatchesSearch(customer, normalizedQuery)
+  );
+}
+
 const MAX_GRUPO_PARAM_LENGTH = 400;
 
 /**
