@@ -37,6 +37,7 @@ type PillDef = { id: AdminOrdersFilter; label: string };
 const PILLS: PillDef[] = [
   { id: "all", label: "Todos" },
   { id: "no_payment", label: "Sin pago" },
+  { id: "stale_payment", label: "Posible abandono" },
   { id: "pending", label: "Pendientes" },
   { id: "paid", label: "Pagados" },
   { id: "failed", label: "Fallidos" },
@@ -49,6 +50,8 @@ function countFor(filter: AdminOrdersFilter, counts: AdminOrdersFilterCounts): n
       return counts.all;
     case "no_payment":
       return counts.no_payment;
+    case "stale_payment":
+      return counts.stale_payment;
     case "pending":
       return counts.pending;
     case "paid":
