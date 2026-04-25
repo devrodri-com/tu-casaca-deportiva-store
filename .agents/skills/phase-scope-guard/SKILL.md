@@ -49,6 +49,10 @@ Revisar una tarea, prompt o pedido antes de ejecutarlo y determinar si:
 - si se están creando capas, archivos o abstracciones por prolijidad y no por necesidad
 - si la tarea puede resolverse con menos superficie
 
+- si el prompt para Cursor es demasiado grande o abierto
+- si la tarea puede dividirse en pasos más pequeños y ejecutables
+- si faltan archivos objetivo o límites claros de ejecución
+
 ---
 
 ## Reglas
@@ -59,6 +63,9 @@ Revisar una tarea, prompt o pedido antes de ejecutarlo y determinar si:
 - NO permitir prompts ambiguos si pueden generar sobretrabajo
 - Priorizar siempre el mínimo cambio suficiente para habilitar la siguiente etapa
 
+- Si el prompt es grande o ambiguo, dividirlo antes de ejecutar
+- No permitir que Cursor tenga que interpretar arquitectura o intención
+
 ---
 
 ## Output
@@ -67,8 +74,9 @@ Revisar una tarea, prompt o pedido antes de ejecutarlo y determinar si:
 2. Qué parte del pedido sí corresponde a esta etapa  
 3. Qué parte del pedido se está adelantando o mezclando  
 4. Riesgos de sobrealcance  
-5. Versión corregida del alcance  
-6. Prompt ajustado o validado  
+5. Decisión: ejecutar o dividir en múltiples prompts  
+6. Versión corregida del alcance  
+7. Prompt ajustado o validado  
 
 ---
 

@@ -65,6 +65,15 @@ Si un prompt está abierto o ambiguo, debe endurecerse antes de ejecutarse
 - No agregar librerías sin necesidad real
 - No romper el modelo de dominio definido
 
+## UI and component structure
+
+- Avoid very large pages that mix too many UI concerns
+- Prefer extracting components when a page grows or mixes responsibilities
+- Do not over-fragment into trivial components
+- Aim for balance:
+  - pages should remain readable
+  - components should have clear, focused responsibility
+
 ---
 
 ## Reglas de implementación
@@ -204,3 +213,24 @@ Si alguno de estos falta, el prompt está incompleto y no debe ejecutarse.
 Excepción:
 Para cambios puramente visuales o triviales (textos, spacing, layout menor),
 puede omitirse el punto 3 SOLO si no hay transformación de datos, labels o lógica.
+
+
+## Cursor execution quality
+
+Every prompt for Cursor must be:
+- small and bounded
+- tied to specific files or clearly scoped discovery
+- not open-ended
+- not requiring architectural decisions
+
+If Cursor has to “figure out what to do”, the prompt is wrong.
+
+Prefer:
+- multiple small prompts instead of one large prompt
+- explicit file targets
+- explicit expected results
+
+Avoid:
+- vague goals ("improve", "refactor", "fix flow")
+- mixed concerns in a single execution
+- letting Cursor infer architecture

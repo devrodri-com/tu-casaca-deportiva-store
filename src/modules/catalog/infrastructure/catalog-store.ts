@@ -379,17 +379,54 @@ export async function deleteCatalogProductSafely(params: {
   if (!productResult.data) {
     throw new Error("Producto no encontrado");
   }
+
+  const tryDeleteProduct = async (): Promise<{ ok: true } | { ok: false; message: string; code: string | null }> => {
+    const delProduct = await supabase
+      .from("products")
+      .delete()
+      .eq("id", params.productId);
+    if (delProduct.error) {
+      return {
+        ok: false,
+        message: delProduct.error.message,
+        code: delProduct.error.code ?? null,
+      };
+    }
+    return { ok: true };
+  };
+
   const paths = await listProductImageStoragePathsByProductId(params.productId);
-  const delVariants = await supabase
-    .from("product_variants")
-    .delete()
-    .eq("product_id", params.productId);
-  if (delVariants.error) {
-    throw new Error(delVariants.error.message);
+
+  // Primer intento directo: si hay cascadas, evita borrar dependencias manualmente.
+  const firstDelete = await tryDeleteProduct();
+  if (!firstDelete.ok) {
+    if (firstDelete.code !== "23503") {
+      throw new Error(firstDelete.message);
+    }
+
+    // Fallback defensivo para esquemas sin cascade: primero dependencias DB, luego producto.
+    const delImagesMetadata = await supabase
+      .from("product_images")
+      .delete()
+      .eq("product_id", params.productId);
+    if (delImagesMetadata.error) {
+      throw new Error(delImagesMetadata.error.message);
+    }
+
+    const delVariants = await supabase
+      .from("product_variants")
+      .delete()
+      .eq("product_id", params.productId);
+    if (delVariants.error) {
+      throw new Error(delVariants.error.message);
+    }
+
+    const secondDelete = await tryDeleteProduct();
+    if (!secondDelete.ok) {
+      throw new Error(secondDelete.message);
+    }
   }
-  const delProduct = await supabase.from("products").delete().eq("id", params.productId);
-  if (delProduct.error) {
-    throw new Error(delProduct.error.message);
-  }
+
+  // Storage al final: evita producto sobreviviente con imágenes rotas por borrado prematuro.
   await removeProductImageObjects(paths);
 }

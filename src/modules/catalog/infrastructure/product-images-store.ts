@@ -154,13 +154,7 @@ export async function setProductImagePrimary(params: {
   if (!target.data) {
     throw new Error("Imagen no encontrada");
   }
-  const clear = await supabase
-    .from("product_images")
-    .update({ is_primary: false })
-    .eq("product_id", params.productId);
-  if (clear.error) {
-    throw new Error(clear.error.message);
-  }
+
   const mark = await supabase
     .from("product_images")
     .update({ is_primary: true })
@@ -173,6 +167,16 @@ export async function setProductImagePrimary(params: {
   }
   if (!mark.data) {
     throw new Error("No se pudo marcar la imagen principal");
+  }
+
+  // Limpia el resto después de asegurar el target, evitando dejar sin primary por input inválido.
+  const clearOthers = await supabase
+    .from("product_images")
+    .update({ is_primary: false })
+    .eq("product_id", params.productId)
+    .neq("id", params.imageId);
+  if (clearOthers.error) {
+    throw new Error(clearOthers.error.message);
   }
 }
 
@@ -195,7 +199,13 @@ export async function deleteProductImageRow(params: {
   }
   const wasPrimary = row.data.is_primary;
   const storagePath = row.data.storage_path;
-  await removeProductImageObject(storagePath);
+  try {
+    await removeProductImageObject(storagePath);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "No se pudo borrar el archivo de imagen";
+    throw new Error(`No se pudo borrar el archivo en storage: ${message}`);
+  }
   const del = await supabase
     .from("product_images")
     .delete()
