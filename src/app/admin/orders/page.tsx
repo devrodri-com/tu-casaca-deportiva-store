@@ -24,6 +24,7 @@ type AdminOrdersPageProps = {
 export default async function AdminOrdersPage({
   searchParams,
 }: AdminOrdersPageProps) {
+  const now = new Date();
   const params = await searchParams;
   const filter = parseAdminOrdersFilter(params.filter);
   const customerGrupo = parseAdminOrdersGrupoParam(params.grupo);
@@ -37,7 +38,7 @@ export default async function AdminOrdersPage({
   const ordersForCounts = customerGrupo
     ? orderRows.filter((o) => orderBelongsToCustomerGroup(o, customerGrupo))
     : orderRows;
-  const counts = buildAdminOrdersFilterCounts(ordersForCounts);
+  const counts = buildAdminOrdersFilterCounts(ordersForCounts, now);
 
   const filtered = orders.filter(({ order }) => {
     if (
@@ -46,7 +47,7 @@ export default async function AdminOrdersPage({
     ) {
       return false;
     }
-    return orderMatchesAdminOrdersFilter(order, filter);
+    return orderMatchesAdminOrdersFilter(order, filter, now);
   });
 
   const orderInGrupo = customerGrupo

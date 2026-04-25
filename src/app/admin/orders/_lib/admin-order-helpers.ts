@@ -4,13 +4,33 @@ import { adminAlert } from "@/app/admin/_lib/admin-ui-classes";
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 type OrderItemRow = Database["public"]["Tables"]["order_items"]["Row"];
 
+export const AWAITING_PAYMENT_STALE_MINUTES = 30;
+
+export function isAwaitingPaymentPossibleAbandonment(params: {
+  paymentStatus: OrderRow["payment_status"];
+  createdAt: string;
+  now?: Date;
+}): boolean {
+  if (params.paymentStatus !== "awaiting_payment") {
+    return false;
+  }
+  const createdAtMs = new Date(params.createdAt).getTime();
+  if (!Number.isFinite(createdAtMs)) {
+    return false;
+  }
+  const nowMs = (params.now ?? new Date()).getTime();
+  const staleMs = AWAITING_PAYMENT_STALE_MINUTES * 60 * 1000;
+  return nowMs - createdAtMs > staleMs;
+}
+
 export type AdminOrdersFilter =
   | "all"
   | "no_payment"
   | "pending"
   | "paid"
   | "failed"
-  | "stock_pending";
+  | "stock_pending"
+  | "stale_payment";
 
 export function parseAdminOrdersFilter(
   raw: string | undefined
@@ -20,7 +40,8 @@ export function parseAdminOrdersFilter(
     raw === "pending" ||
     raw === "paid" ||
     raw === "failed" ||
-    raw === "stock_pending"
+    raw === "stock_pending" ||
+    raw === "stale_payment"
   ) {
     return raw;
   }
@@ -29,7 +50,8 @@ export function parseAdminOrdersFilter(
 
 export function orderMatchesAdminOrdersFilter(
   order: OrderRow,
-  filter: AdminOrdersFilter
+  filter: AdminOrdersFilter,
+  now?: Date
 ): boolean {
   if (filter === "all") {
     return true;
@@ -50,6 +72,13 @@ export function orderMatchesAdminOrdersFilter(
     return (
       order.payment_status === "paid" && order.stock_discounted_at === null
     );
+  }
+  if (filter === "stale_payment") {
+    return isAwaitingPaymentPossibleAbandonment({
+      paymentStatus: order.payment_status,
+      createdAt: order.created_at,
+      now,
+    });
   }
   return true;
 }
@@ -77,10 +106,12 @@ export type AdminOrdersFilterCounts = {
   paid: number;
   failed: number;
   stock_pending: number;
+  stale_payment: number;
 };
 
 export function buildAdminOrdersFilterCounts(
-  orders: OrderRow[]
+  orders: OrderRow[],
+  now?: Date
 ): AdminOrdersFilterCounts {
   return {
     all: orders.length,
@@ -91,6 +122,13 @@ export function buildAdminOrdersFilterCounts(
     failed: orders.filter((o) => o.payment_status === "failed").length,
     stock_pending: orders.filter(
       (o) => o.payment_status === "paid" && o.stock_discounted_at === null
+    ).length,
+    stale_payment: orders.filter((o) =>
+      isAwaitingPaymentPossibleAbandonment({
+        paymentStatus: o.payment_status,
+        createdAt: o.created_at,
+        now,
+      })
     ).length,
   };
 }
@@ -125,6 +163,27 @@ export function formatOrderCreatedAtEsUy(iso: string): string {
   }
 }
 
+function formatElapsedSinceCreatedAt(params: {
+  createdAt: string;
+  now?: Date;
+}): string | null {
+  const createdAtMs = new Date(params.createdAt).getTime();
+  if (!Number.isFinite(createdAtMs)) {
+    return null;
+  }
+  const nowMs = (params.now ?? new Date()).getTime();
+  const elapsedMs = nowMs - createdAtMs;
+  if (elapsedMs < 0) {
+    return null;
+  }
+  const elapsedMinutes = Math.floor(elapsedMs / (60 * 1000));
+  if (elapsedMinutes < 60) {
+    return `${elapsedMinutes} min`;
+  }
+  const elapsedHours = Math.floor(elapsedMinutes / 60);
+  return `${elapsedHours} h`;
+}
+
 export type AdminOrderAttention =
   | { kind: "failed"; className: string; body: string }
   | { kind: "payment_incomplete"; className: string; body: string }
@@ -149,7 +208,10 @@ function formatDateTimeLocal(iso: string): string {
  * Resumen operativo por pedido: qué pide atención y estado de descontar stock.
  * No aplica a pedidos aún no pagados (salvo pago en curso) o fallidos.
  */
-export function getAdminOrderAttention(order: OrderRow): AdminOrderAttention {
+export function getAdminOrderAttention(
+  order: OrderRow,
+  now?: Date
+): AdminOrderAttention {
   if (order.payment_status === "failed") {
     return {
       kind: "failed",
@@ -161,6 +223,23 @@ export function getAdminOrderAttention(order: OrderRow): AdminOrderAttention {
     order.payment_status === "awaiting_payment" ||
     order.payment_status === "pending"
   ) {
+    if (
+      order.payment_status === "awaiting_payment" &&
+      isAwaitingPaymentPossibleAbandonment({
+        paymentStatus: order.payment_status,
+        createdAt: order.created_at,
+        now,
+      })
+    ) {
+      const ageLabel =
+        formatElapsedSinceCreatedAt({ createdAt: order.created_at, now }) ??
+        "más de 30 min";
+      return {
+        kind: "payment_incomplete",
+        className: adminAlert.attentionStrong,
+        body: `Posible abandono: pedido sin pago desde hace ${ageLabel}. No operar.`,
+      };
+    }
     return {
       kind: "payment_incomplete",
       className: adminAlert.warning,
