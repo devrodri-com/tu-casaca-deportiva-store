@@ -131,6 +131,8 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
   const operational = operationalLabel(order);
   const stockChip = stockStatusChip(order);
   const hasCustomization = orderHasCustomizationLine(items);
+  const isDevSimulationVisible =
+    process.env.NODE_ENV === "development" && order.payment_status !== "paid";
 
   return (
     <article className="tcds-card overflow-hidden text-sm">
@@ -254,6 +256,52 @@ export function AdminOrderCard({ order, items, history }: AdminOrderCardProps) {
             Guardar estado
           </button>
         </form>
+
+        {isDevSimulationVisible ? (
+          <section
+            className="rounded-md border border-sky-300 bg-sky-50 px-3 py-2.5 dark:border-sky-800/50 dark:bg-sky-950/30"
+            aria-label="Simulación dev de pago"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-sky-900 dark:text-sky-100">
+              Simulación dev
+            </p>
+            <p className="mt-1 text-xs text-sky-900/95 dark:text-sky-200/90">
+              Herramienta solo local para pruebas. No usar como acción operativa real.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <form action="/api/admin/orders/dev-payment" method="post">
+                <input type="hidden" name="orderId" value={order.id} />
+                <input type="hidden" name="nextPaymentStatus" value="pending" />
+                <button
+                  type="submit"
+                  className="inline-flex min-h-8 items-center justify-center rounded-md border border-sky-400/60 bg-white px-2.5 text-xs font-medium text-sky-900 transition hover:bg-sky-100 dark:border-sky-600 dark:bg-sky-950/60 dark:text-sky-100 dark:hover:bg-sky-900/60"
+                >
+                  Simular pendiente
+                </button>
+              </form>
+              <form action="/api/admin/orders/dev-payment" method="post">
+                <input type="hidden" name="orderId" value={order.id} />
+                <input type="hidden" name="nextPaymentStatus" value="paid" />
+                <button
+                  type="submit"
+                  className="inline-flex min-h-8 items-center justify-center rounded-md border border-emerald-400/60 bg-white px-2.5 text-xs font-medium text-emerald-900 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950/45 dark:text-emerald-100 dark:hover:bg-emerald-900/50"
+                >
+                  Simular pagado
+                </button>
+              </form>
+              <form action="/api/admin/orders/dev-payment" method="post">
+                <input type="hidden" name="orderId" value={order.id} />
+                <input type="hidden" name="nextPaymentStatus" value="failed" />
+                <button
+                  type="submit"
+                  className="inline-flex min-h-8 items-center justify-center rounded-md border border-red-400/60 bg-white px-2.5 text-xs font-medium text-red-800 transition hover:bg-red-100 dark:border-red-700 dark:bg-red-950/45 dark:text-red-100 dark:hover:bg-red-900/50"
+                >
+                  Simular fallido
+                </button>
+              </form>
+            </div>
+          </section>
+        ) : null}
 
         <Link
           className="tcds-link inline-flex w-fit text-sm"
