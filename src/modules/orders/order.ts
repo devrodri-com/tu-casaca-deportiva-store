@@ -34,6 +34,7 @@ export type OrderCustomerSnapshot = {
 export type Order = {
   id: string;
   publicReference: string;
+  checkoutIdempotencyKey: string | null;
   customer: OrderCustomerSnapshot;
   items: OrderItem[];
   total: number;
@@ -42,6 +43,7 @@ export type Order = {
 export function buildOrder(params: {
   id: string;
   publicReference: string;
+  checkoutIdempotencyKey?: string | null;
   customer: OrderCustomerSnapshot;
   items: OrderItemSource[];
 }): Order {
@@ -76,6 +78,7 @@ export function buildOrder(params: {
   return {
     id: params.id,
     publicReference: params.publicReference,
+    checkoutIdempotencyKey: params.checkoutIdempotencyKey ?? null,
     customer: params.customer,
     items,
     total,
@@ -85,6 +88,7 @@ export function buildOrder(params: {
 export function buildOrderFromCart(params: {
   id: string;
   publicReference: string;
+  checkoutIdempotencyKey?: string | null;
   customer: OrderCustomerSnapshot;
   lines: CartLine[];
 }): Order {
@@ -124,6 +128,7 @@ export function buildOrderFromCart(params: {
   return {
     id: params.id,
     publicReference: params.publicReference,
+    checkoutIdempotencyKey: params.checkoutIdempotencyKey ?? null,
     customer: params.customer,
     items,
     total,

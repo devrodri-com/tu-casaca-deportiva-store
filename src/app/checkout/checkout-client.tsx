@@ -58,6 +58,45 @@ const checkoutLabelClass = "flex flex-col gap-1 text-sm text-zinc-700 dark:text-
 const checkoutReadonlyInputClass =
   "min-h-10 rounded-md border border-zinc-200 bg-zinc-100 px-3 text-sm text-zinc-600 dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-300";
 
+const CHECKOUT_IDEMPOTENCY_STORAGE_KEY = "tcds_checkout_idempotency_key";
+
+let inMemoryCheckoutIdempotencyKey: string | null = null;
+
+function generateCheckoutIdempotencyKey(): string {
+  if (typeof globalThis.crypto?.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
+  }
+  return `ck_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 14)}`;
+}
+
+function getOrCreateCheckoutIdempotencyKey(): string {
+  if (typeof window === "undefined") {
+    if (inMemoryCheckoutIdempotencyKey) {
+      return inMemoryCheckoutIdempotencyKey;
+    }
+    const generated = generateCheckoutIdempotencyKey();
+    inMemoryCheckoutIdempotencyKey = generated;
+    return generated;
+  }
+
+  try {
+    const stored = window.localStorage.getItem(CHECKOUT_IDEMPOTENCY_STORAGE_KEY);
+    if (stored && stored.trim().length > 0) {
+      return stored;
+    }
+    const generated = generateCheckoutIdempotencyKey();
+    window.localStorage.setItem(CHECKOUT_IDEMPOTENCY_STORAGE_KEY, generated);
+    return generated;
+  } catch {
+    if (inMemoryCheckoutIdempotencyKey) {
+      return inMemoryCheckoutIdempotencyKey;
+    }
+    const generated = generateCheckoutIdempotencyKey();
+    inMemoryCheckoutIdempotencyKey = generated;
+    return generated;
+  }
+}
+
 function checkoutLineKey(line: CartLine): string {
   const customizationNumber = line.customization?.jerseyNumber ?? "none";
   const customizationName = line.customization?.jerseyName ?? "none";
@@ -226,6 +265,9 @@ export function CheckoutClient() {
               className="inline-flex min-h-11 items-center justify-center rounded-md bg-sky-500 px-5 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:bg-sky-500/40 disabled:text-white/80"
               disabled={submitting || !isFormValid}
               onClick={async () => {
+                if (submitting) {
+                  return;
+                }
                 if (!isFormValid) {
                   return;
                 }
@@ -234,10 +276,12 @@ export function CheckoutClient() {
                 setResult(null);
 
                 try {
+                  const checkoutIdempotencyKey = getOrCreateCheckoutIdempotencyKey();
                   const response = await fetch("/api/checkout/confirm", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                      checkoutIdempotencyKey,
                       lines,
                       customer: {
                         fullName,

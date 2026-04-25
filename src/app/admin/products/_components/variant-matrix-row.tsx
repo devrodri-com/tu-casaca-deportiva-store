@@ -129,7 +129,7 @@ export function VariantMatrixRow({ productId, record, availability }: VariantMat
       <div className="flex items-end justify-start lg:col-span-2 lg:justify-end">
         <button
           type="submit"
-          className="tcds-btn-secondary w-full min-w-0 sm:w-auto lg:min-w-[8.5rem]"
+          className="tcds-btn-secondary w-full min-w-0 sm:w-auto lg:min-w-34"
           disabled={pending}
         >
           {pending ? "Guardando…" : "Guardar fila"}

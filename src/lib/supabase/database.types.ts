@@ -123,6 +123,7 @@ export type Database = {
           customer_city: string;
           customer_department: string;
           customer_country: string;
+          checkout_idempotency_key: string | null;
           payment_status: "awaiting_payment" | "pending" | "paid" | "failed";
           mercado_pago_preference_id: string | null;
           mercado_pago_payment_id: string | null;
@@ -151,6 +152,7 @@ export type Database = {
           customer_city?: string;
           customer_department?: string;
           customer_country?: string;
+          checkout_idempotency_key?: string | null;
           payment_status?: "awaiting_payment" | "pending" | "paid" | "failed";
           mercado_pago_preference_id?: string | null;
           mercado_pago_payment_id?: string | null;

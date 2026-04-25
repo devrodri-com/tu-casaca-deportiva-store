@@ -44,6 +44,7 @@ function isNonEmptyTrimmedString(value: unknown): value is string {
 }
 
 type CheckoutConfirmValid = {
+  checkoutIdempotencyKey: string;
   lines: CartLine[];
   customer: {
     fullName: string;
@@ -294,6 +295,16 @@ export function parseCheckoutConfirmBody(
   if (!isPlainObject(raw)) {
     return fail("El cuerpo debe ser un objeto JSON.");
   }
+  if (!isNonEmptyTrimmedString(raw.checkoutIdempotencyKey)) {
+    return fail("checkoutIdempotencyKey es requerido.");
+  }
+  const checkoutIdempotencyKey = raw.checkoutIdempotencyKey.trim();
+  if (
+    checkoutIdempotencyKey.length < 20 ||
+    checkoutIdempotencyKey.length > 120
+  ) {
+    return fail("checkoutIdempotencyKey inválido.");
+  }
   if (!Array.isArray(raw.lines) || raw.lines.length === 0) {
     return fail("El carrito no puede estar vacío.");
   }
@@ -309,7 +320,14 @@ export function parseCheckoutConfirmBody(
   if (!customer.ok) {
     return customer;
   }
-  return { ok: true, value: { lines, customer: customer.value } };
+  return {
+    ok: true,
+    value: {
+      checkoutIdempotencyKey,
+      lines,
+      customer: customer.value,
+    },
+  };
 }
 
 export type MercadoPagoPreferenceBody = {

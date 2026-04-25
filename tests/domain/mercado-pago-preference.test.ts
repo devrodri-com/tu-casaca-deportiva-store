@@ -35,6 +35,7 @@ function makeOrder(overrides: Partial<OrderRow> = {}): OrderRow {
     customer_city: "Montevideo",
     customer_department: "Montevideo",
     customer_country: "Uruguay",
+    checkout_idempotency_key: null,
     payment_status: "awaiting_payment",
     mercado_pago_preference_id: null,
     mercado_pago_payment_id: null,
