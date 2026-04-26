@@ -8,6 +8,7 @@ export function toOrderRow(order: Order): OrderInsert {
   return {
     id: order.id,
     public_reference: order.publicReference,
+    checkout_idempotency_key: order.checkoutIdempotencyKey,
     total: order.total.toString(),
     customer_full_name: order.customer.fullName,
     customer_phone: order.customer.phone,

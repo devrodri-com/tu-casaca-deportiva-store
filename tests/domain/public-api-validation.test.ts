@@ -29,6 +29,8 @@ const baseCustomer = {
   country: "Uruguay" as const,
 };
 
+const baseCheckoutIdempotencyKey = "ck_0123456789abcdef0123456789";
+
 test("parseMercadoPagoPreferenceBody rechaza {} y orderId no string", () => {
   const e = parseMercadoPagoPreferenceBody({});
   assert.equal(e.ok, false);
@@ -43,16 +45,19 @@ test("parseMercadoPagoPreferenceBody rechaza {} y orderId no string", () => {
 
 test("parseCheckoutConfirmBody: quantity 1.5, 999 y finalUnitPrice string devuelve ok false", () => {
   const a = parseCheckoutConfirmBody({
+    checkoutIdempotencyKey: baseCheckoutIdempotencyKey,
     lines: [{ ...baseLine, quantity: 1.5 }],
     customer: baseCustomer,
   });
   assert.equal(a.ok, false);
   const b = parseCheckoutConfirmBody({
+    checkoutIdempotencyKey: baseCheckoutIdempotencyKey,
     lines: [{ ...baseLine, quantity: 999 }],
     customer: baseCustomer,
   });
   assert.equal(b.ok, false);
   const c = parseCheckoutConfirmBody({
+    checkoutIdempotencyKey: baseCheckoutIdempotencyKey,
     lines: [{ ...baseLine, finalUnitPrice: "1000" }],
     customer: baseCustomer,
   } as unknown);
@@ -61,6 +66,7 @@ test("parseCheckoutConfirmBody: quantity 1.5, 999 y finalUnitPrice string devuel
 
 test("parseCheckoutConfirmBody: isCustomized true y nombre vacío", () => {
   const r = parseCheckoutConfirmBody({
+    checkoutIdempotencyKey: baseCheckoutIdempotencyKey,
     lines: [
       {
         ...baseLine,
@@ -75,6 +81,31 @@ test("parseCheckoutConfirmBody: isCustomized true y nombre vacío", () => {
     customer: baseCustomer,
   });
   assert.equal(r.ok, false);
+});
+
+test("parseCheckoutConfirmBody: checkoutIdempotencyKey requerido y longitud válida", () => {
+  const missing = parseCheckoutConfirmBody({
+    lines: [baseLine],
+    customer: baseCustomer,
+  });
+  assert.equal(missing.ok, false);
+
+  const short = parseCheckoutConfirmBody({
+    checkoutIdempotencyKey: "short-key",
+    lines: [baseLine],
+    customer: baseCustomer,
+  });
+  assert.equal(short.ok, false);
+
+  const valid = parseCheckoutConfirmBody({
+    checkoutIdempotencyKey: baseCheckoutIdempotencyKey,
+    lines: [baseLine],
+    customer: baseCustomer,
+  });
+  assert.equal(valid.ok, true);
+  if (valid.ok) {
+    assert.equal(valid.value.checkoutIdempotencyKey, baseCheckoutIdempotencyKey);
+  }
 });
 
 test("parseMercadoPagoWebhookBody: no objeto, type numérico", () => {

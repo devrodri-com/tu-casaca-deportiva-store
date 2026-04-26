@@ -6,7 +6,10 @@ import {
 } from "@/lib/http/validation";
 import { getCatalogProductAndVariantByIds } from "@/modules/catalog/infrastructure/catalog-store";
 import { buildOrderFromCart } from "@/modules/orders";
-import { insertOrder } from "@/modules/orders/infrastructure/order-store";
+import {
+  getOrderByCheckoutIdempotencyKey,
+  insertOrder,
+} from "@/modules/orders/infrastructure/order-store";
 import {
   assertExpressLinesWithinStock,
   resolvePurchasableLineForCheckout,
@@ -29,6 +32,18 @@ export async function POST(request: Request) {
   }
   const body = parsed.value;
   const customer = body.customer;
+  const checkoutIdempotencyKey = body.checkoutIdempotencyKey;
+
+  const existingOrder = await getOrderByCheckoutIdempotencyKey(
+    checkoutIdempotencyKey
+  );
+  if (existingOrder) {
+    return NextResponse.json({
+      ok: true,
+      orderId: existingOrder.id,
+      publicReference: existingOrder.publicReference,
+    });
+  }
 
   const expressStockByVariantId = new Map<string, number>();
   let validatedLines: CartLine[];
@@ -134,6 +149,7 @@ export async function POST(request: Request) {
   const order = buildOrderFromCart({
     id: orderId,
     publicReference,
+    checkoutIdempotencyKey,
     customer: {
       fullName: customer.fullName.trim(),
       phone: customer.phone.trim(),
@@ -146,7 +162,25 @@ export async function POST(request: Request) {
     lines: validatedLines,
   });
 
-  await insertOrder(order);
+  try {
+    await insertOrder(order);
+  } catch (error) {
+    const racedOrder = await getOrderByCheckoutIdempotencyKey(
+      checkoutIdempotencyKey
+    );
+    if (racedOrder) {
+      return NextResponse.json({
+        ok: true,
+        orderId: racedOrder.id,
+        publicReference: racedOrder.publicReference,
+      });
+    }
+    const message =
+      error instanceof Error
+        ? error.message
+        : "No se pudo confirmar el pedido. Intentá nuevamente.";
+    return NextResponse.json({ ok: false, message }, { status: 400 });
+  }
 
   return NextResponse.json({ ok: true, orderId, publicReference });
 }

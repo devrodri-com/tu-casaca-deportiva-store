@@ -18,6 +18,27 @@ export async function insertOrder(order: Order): Promise<void> {
   }
 }
 
+export async function getOrderByCheckoutIdempotencyKey(
+  checkoutIdempotencyKey: string
+): Promise<{ id: string; publicReference: string } | null> {
+  const supabase = createServiceRoleSupabaseClient();
+  const result = await supabase
+    .from("orders")
+    .select("id, public_reference")
+    .eq("checkout_idempotency_key", checkoutIdempotencyKey)
+    .maybeSingle();
+  if (result.error) {
+    throw new Error(`Failed to load order by idempotency key: ${result.error.message}`);
+  }
+  if (!result.data) {
+    return null;
+  }
+  return {
+    id: result.data.id,
+    publicReference: result.data.public_reference,
+  };
+}
+
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 type OrderItemRow = Database["public"]["Tables"]["order_items"]["Row"];
 type OrderStatusHistoryRow =

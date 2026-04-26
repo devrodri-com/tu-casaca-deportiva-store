@@ -30,6 +30,7 @@ function makeOrderRow(params: {
     customer_city: "Centro",
     customer_department: "Montevideo",
     customer_country: "Uruguay",
+    checkout_idempotency_key: null,
     payment_status: params.paymentStatus,
     mercado_pago_preference_id: null,
     mercado_pago_payment_id: null,
